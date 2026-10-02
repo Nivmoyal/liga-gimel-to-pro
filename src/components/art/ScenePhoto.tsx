@@ -55,15 +55,17 @@ const SOFT_EDGES = 'linear-gradient(180deg, transparent 0%, #000 18%, #000 80%, 
  */
 export function ScenePhoto({ scene, sport, seed, height = 200, className = '', children, fade = true }: ScenePhotoProps) {
   const photo = useScenePhoto(scene, sport, seed ?? '');
-  const [loaded, setLoaded] = useState(false);
+  // Which image finished loading. Tracking the src (instead of resetting a flag
+  // in an effect) avoids hiding an embedded image that loaded before the effect ran.
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
+  const loaded = photo !== null && loadedSrc === photo.src;
   const [wide, setWide] = useState(false);
-  useEffect(() => setLoaded(false), [photo?.src]);
   // A landscape picture on a full-screen portrait scene is shown whole over a
   // blurred copy of itself instead of being cropped to a narrow, blown-up strip.
   const letterbox = wide && PORTRAIT_KEYS.has(scene);
-  const markLoaded = (img: HTMLImageElement) => {
+  const markLoaded = (img: HTMLImageElement, src: string) => {
     setWide(img.naturalWidth > img.naturalHeight * 1.2);
-    setLoaded(true);
+    setLoadedSrc(src);
   };
   return (
     <div className={`relative overflow-hidden bg-black ${fade ? 'photo-fade' : ''} ${className}`} style={{ height }}>
@@ -84,9 +86,9 @@ export function ScenePhoto({ scene, sport, seed, height = 200, className = '', c
           referrerPolicy="no-referrer"
           ref={(img) => {
             // Embedded (data URI) images can finish before React attaches onLoad.
-            if (img?.complete && img.naturalWidth > 0 && !loaded) markLoaded(img);
+            if (img?.complete && img.naturalWidth > 0 && !loaded) markLoaded(img, photo.src);
           }}
-          onLoad={(e) => markLoaded(e.currentTarget)}
+          onLoad={(e) => markLoaded(e.currentTarget, photo.src)}
           onError={photo.onError}
           className={`absolute transition-opacity duration-500 ${letterbox ? 'inset-x-0 top-[27%] h-auto w-full' : 'inset-0 h-full w-full object-cover'} ${loaded ? 'opacity-100' : 'opacity-0'}`}
           style={letterbox ? { maskImage: SOFT_EDGES, WebkitMaskImage: SOFT_EDGES } : undefined}

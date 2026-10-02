@@ -486,5 +486,21 @@
       "author": "תמונת AI",
       "license": "AI"
     }
+  ],
+  "referee_basketball": [
+    {
+      "file": "images/referee_basketball.jpg",
+      "title": "A basketball referee signalling a foul with a whistle, players reacting.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "referee_football": [
+    {
+      "file": "images/referee_football.jpg",
+      "title": "A football referee showing a yellow card, players protesting around him.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
   ]
 }

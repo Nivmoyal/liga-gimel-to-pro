@@ -29,6 +29,12 @@ export function PreMatchModal({ state, dispatch }: Props) {
       kicker={
         <>
           <MatchHeader state={state} />
+          {match.info && (
+            <div className="mt-1 text-[11px] text-muted">
+              {match.info.kickoff} | {match.info.venue} | {match.info.weatherLabel} | {match.info.attendance.toLocaleString('he-IL')} צופים
+              {match.info.derby ? ' | דרבי!' : ''}
+            </div>
+          )}
           <div className="mt-2 text-brand">{event.speaker}</div>
         </>
       }

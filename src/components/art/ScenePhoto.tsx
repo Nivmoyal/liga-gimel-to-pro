@@ -1,7 +1,39 @@
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { SportType } from '../../types/game';
 import { backdropFor, photoFor } from '../../data/photos';
 import type { Backdrop } from '../../data/photos';
+import { hashString } from '../../data/clubIdentity';
+import { PORTRAIT_KEYS } from '../../data/photoQueries';
+import { cachedPhotos, loadPhotos, photoKey } from '../../services/photoService';
+import type { RemotePhoto } from '../../services/photoService';
+
+/** Installed photo first, otherwise a live Commons photo (cached), otherwise null. */
+function useScenePhoto(scene: string, sport: SportType, seed: string) {
+  const local = photoFor(scene, sport, seed);
+  const key = local ? null : photoKey(scene, sport);
+  const [remote, setRemote] = useState<RemotePhoto[] | null>(() => (key ? cachedPhotos(key) : null));
+  const [failed, setFailed] = useState(0);
+  useEffect(() => {
+    setFailed(0);
+    if (!key) return;
+    const hit = cachedPhotos(key);
+    if (hit) {
+      setRemote(hit);
+      return;
+    }
+    let alive = true;
+    loadPhotos(key, PORTRAIT_KEYS.has(scene)).then((photos) => alive && setRemote(photos.length ? photos : null));
+    return () => {
+      alive = false;
+    };
+  }, [key, scene]);
+  if (local) return { src: `${import.meta.env.BASE_URL}photos/${local.file}`, author: local.author, title: local.title, onError: () => {} };
+  if (!remote || failed >= remote.length) return null;
+  const pool = Math.min(remote.length, 10);
+  const photo = remote[(hashString(seed || scene) + failed) % pool];
+  return { src: photo.url, author: photo.author, title: photo.title, onError: () => setFailed((f) => f + 1) };
+}
 
 interface ScenePhotoProps {
   scene: string;
@@ -19,16 +51,25 @@ interface ScenePhotoProps {
  * for the scene, a dark atmospheric backdrop is shown instead.
  */
 export function ScenePhoto({ scene, sport, seed, height = 200, className = '', children, fade = true }: ScenePhotoProps) {
-  const photo = photoFor(scene, sport, seed);
+  const photo = useScenePhoto(scene, sport, seed ?? '');
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => setLoaded(false), [photo?.src]);
   return (
     <div className={`relative overflow-hidden bg-black ${fade ? 'photo-fade' : ''} ${className}`} style={{ height }}>
-      {photo ? (
-        <img src={`${import.meta.env.BASE_URL}photos/${photo.file}`} alt={photo.title ?? ''} className="h-full w-full object-cover" loading="lazy" />
-      ) : (
-        <CinematicBackdrop kind={backdropFor(scene, sport)} />
+      <CinematicBackdrop kind={backdropFor(scene, sport)} />
+      {photo && (
+        <img
+          key={photo.src}
+          src={photo.src}
+          alt={photo.title ?? ''}
+          referrerPolicy="no-referrer"
+          onLoad={() => setLoaded(true)}
+          onError={photo.onError}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        />
       )}
-      {photo?.author && (
-        <span className="absolute bottom-1 left-2 z-10 text-[9px] text-white/45">צילום: {photo.author}</span>
+      {photo?.author && loaded && (
+        <span className="absolute right-2 top-1 z-20 max-w-[60%] truncate text-[9px] text-white/45">צילום: {photo.author}</span>
       )}
       {children && <div className="absolute inset-0 z-10">{children}</div>}
     </div>

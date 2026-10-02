@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Camera, ChevronLeft, Play, Plus, Trophy } from 'lucide-react';
 import type { GameState } from '../types/game';
 import { SPORT_LABEL, divisionName } from '../data/sports';
@@ -6,6 +6,8 @@ import { calcOvr } from '../services/playerUtils';
 import { ScenePhoto } from './art/ScenePhoto';
 import { Crest } from './art/Crest';
 import { CaptainBadge } from './ui/CaptainBadge';
+import { prefetchPhotos } from '../services/photoService';
+import { PHOTO_QUERIES, PORTRAIT_KEYS } from '../data/photoQueries';
 
 interface TitleScreenProps {
   save: GameState | null;
@@ -18,6 +20,13 @@ interface TitleScreenProps {
 export function TitleScreen({ save, onContinue, onNewGame, onCredits }: TitleScreenProps) {
   const [confirm, setConfirm] = useState(false);
   const p = save?.player;
+  // Warm the photo cache in the background so match scenes appear instantly.
+  useEffect(() => {
+    const sport = p?.sport ?? 'football';
+    const keys = Object.keys(PHOTO_QUERIES).filter((k) => !k.endsWith(sport === 'football' ? '_basketball' : '_football'));
+    const first = ['title', 'intro_1', 'intro_2', 'intro_3'];
+    void prefetchPhotos([...first, ...keys.filter((k) => !first.includes(k))], PORTRAIT_KEYS);
+  }, [p?.sport]);
   return (
     <div className="relative mx-auto flex min-h-dvh max-w-md flex-col overflow-hidden">
       <ScenePhoto scene="title" sport={p?.sport ?? 'football'} height="100dvh" className="!absolute inset-0" fade={false} />

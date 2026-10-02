@@ -18,12 +18,12 @@ export const INTERNATIONAL_WINDOWS = [4, 9];
 /** Team strength of Israel per sport/level and the OVR + form needed for a call-up. */
 export const NATIONAL_SETUP: Record<SportType, Record<NationalLevel, { strength: number; minOvr: number; minForm: number; maxAge?: number }>> = {
   football: {
-    u21: { strength: 56, minOvr: 49, minForm: 6.7, maxAge: 21 },
-    senior: { strength: 68, minOvr: 60, minForm: 6.8 },
+    u21: { strength: 56, minOvr: 49, minForm: 6.4, maxAge: 21 },
+    senior: { strength: 68, minOvr: 60, minForm: 6.5 },
   },
   basketball: {
-    u21: { strength: 60, minOvr: 56, minForm: 6.8, maxAge: 21 },
-    senior: { strength: 72, minOvr: 66, minForm: 6.8 },
+    u21: { strength: 60, minOvr: 56, minForm: 6.6, maxAge: 21 },
+    senior: { strength: 72, minOvr: 66, minForm: 6.6 },
   },
 };
 

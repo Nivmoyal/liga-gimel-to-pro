@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { EVENT_POOLS, filterEvents, getAllEvents, parseText } from '../services/eventEngine';
+import { EVENT_POOLS, filterEvents, getAllEvents, parseEvent, parseText } from '../services/eventEngine';
+import { parseClock, scoreAt } from '../services/matchEngine';
 import { gameReducer } from '../state/gameReducer';
 import type { GameAction } from '../state/gameReducer';
 import type { GameState, Position, SetupData, SportType } from '../types/game';
@@ -61,6 +62,67 @@ describe('event engine', () => {
   });
 });
 
+describe('situation catalogue', () => {
+  it('has between 1,000 and 2,000 distinct situations', () => {
+    const all = getAllEvents();
+    expect(all.length).toBeGreaterThanOrEqual(1000);
+    expect(all.length).toBeLessThanOrEqual(2000);
+    // Within a sport, every situation reads differently.
+    const texts = new Set(all.map((e) => `${e.sport}|${e.title}|${e.text}`));
+    expect(texts.size).toBe(all.length);
+  });
+
+  it('resolves every placeholder in every situation', () => {
+    const ctx = {
+      playerName: 'דני כהן', club: 'הפועל קצרין', opponent: 'מכבי מעלות', job: 'מאבטח', agent: 'אבי שמעוני',
+      sport: 'football' as const, scoreLine: 'התוצאה שוויונית 1-1', referee: 'יוסי לוי', venue: 'המגרש העירוני קצרין',
+    };
+    for (const event of getAllEvents()) {
+      const parsed = parseEvent(event, ctx);
+      const strings = [parsed.title, parsed.text, parsed.speaker, parsed.tip ?? '', ...parsed.choices.flatMap((c) => [c.label, c.success.text, c.fail?.text ?? ''])];
+      for (const str of strings) expect(str.includes('{'), `${event.id}: ${str}`).toBe(false);
+    }
+  });
+
+  it('gives every in-game situation a clock and clutch moments a late one', () => {
+    for (const e of EVENT_POOLS.inGame) {
+      if (!e.clock) continue;
+      const m = parseClock(e.clock, e.sport === 'basketball' ? 'basketball' : 'football');
+      expect(m, e.id).not.toBeNull();
+      if (e.clutch) expect(m!, e.id).toBeGreaterThan(e.sport === 'basketball' ? 39 : 88);
+    }
+  });
+});
+
+describe('live match timeline', () => {
+  it('ends with a score equal to the sum of its entries and no basketball ties', () => {
+    for (const sport of ['football', 'basketball'] as const) {
+      for (let run = 0; run < 30; run++) {
+        let s: GameState | null = gameReducer(null, {
+          type: 'NEW_GAME',
+          setup: { name: 'בדיקה', shirtNumber: 8, sport, position: sport === 'football' ? 'striker' : 'SG', region: 'center', club: sport === 'football' ? 'השקמה רמת חן' : 'אליצור גבעתיים', jobId: 'pizza' },
+        });
+        s = gameReducer(s, { type: 'START_MATCHDAY' });
+        let guard = 0;
+        while (s!.phase !== 'matchSummary' && guard++ < 50) {
+          const st: GameState = s!;
+          if (st.phase === 'preMatch') s = gameReducer(s, st.currentMatch!.pendingOutcome ? { type: 'PRE_CONTINUE' } : { type: 'PRE_CHOICE', index: run % 3 });
+          else if (st.phase === 'live') s = gameReducer(s, { type: 'LIVE_ADVANCE' });
+          else if (st.phase === 'inGame') s = gameReducer(s, st.currentMatch!.pendingOutcome ? { type: 'INGAME_CONTINUE' } : { type: 'INGAME_CHOICE', index: run % 3 });
+        }
+        const m = s!.currentMatch!;
+        const total = scoreAt(m.timeline, Infinity);
+        expect(m.result!.teamScore).toBe(total.team);
+        expect(m.result!.oppScore).toBe(total.opp);
+        if (sport === 'basketball') expect(total.team).not.toBe(total.opp);
+        if (sport === 'football') expect(m.timeline.filter((e) => e.kind === 'goal').reduce((a, e) => a + e.team + e.opp, 0)).toBe(total.team + total.opp);
+        // Decisions happen in chronological order.
+        expect([...m.decisionMinutes].sort((a, b) => a - b)).toEqual(m.decisionMinutes);
+      }
+    }
+  });
+});
+
 describe('zero emoji rule', () => {
   it('contains no emoji in source or data files', () => {
     const files = walk(join(__dirname, '..')).filter((f) => /\.(tsx?|json|css)$/.test(f));
@@ -113,6 +175,9 @@ function autoplay(setup: SetupData, seasons: number) {
       case 'preMatch':
         dispatch(s.currentMatch?.pendingOutcome ? { type: 'PRE_CONTINUE' } : { type: 'PRE_CHOICE', index: guard % 3 });
         break;
+      case 'live':
+        dispatch({ type: 'LIVE_ADVANCE' });
+        break;
       case 'inGame':
         dispatch(s.currentMatch?.pendingOutcome ? { type: 'INGAME_CONTINUE' } : { type: 'INGAME_CHOICE', index: guard % 3 });
         break;
@@ -152,7 +217,7 @@ describe('save migration', () => {
     const { shirtNumber: _n, sponsors: _s, national: _nat, isCaptain: _c2, ...oldPlayer } = fresh.player;
     const { nationalCallUp: _c, ...oldState } = fresh;
     const migrated = migrateSave({ ...oldState, version: 1, player: oldPlayer } as unknown as GameState)!;
-    expect(migrated.version).toBe(3);
+    expect(migrated.version).toBe(4);
     expect(migrated.player.shirtNumber).toBe(10);
     expect(migrated.player.isCaptain).toBe(false);
     expect(migrated.flags.captainOfferSeason).toBe(0);

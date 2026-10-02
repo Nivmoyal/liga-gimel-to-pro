@@ -2,7 +2,7 @@ import { CircleAlert, Play } from 'lucide-react';
 import type { GameState } from '../types/game';
 import { CTA_LABEL } from '../data/sports';
 import { fixtureFor } from '../services/leagueEngine';
-import { matchdayBlocker } from '../state/gameLogic';
+import { matchdayBlocker, nextFixtureInfo } from '../state/gameLogic';
 
 interface MainCTAProps {
   state: GameState;
@@ -14,6 +14,7 @@ export function MainCTA({ state, onStart }: MainCTAProps) {
   const blocker = matchdayBlocker(state);
   const fixture = fixtureFor(state.league, state.matchday);
   const opponent = state.league.teams[fixture.opponentIndex]?.name ?? '';
+  const info = nextFixtureInfo(state);
   return (
     <div className="fixed inset-x-0 bottom-[calc(3.6rem+env(safe-area-inset-bottom))] z-30 bg-gradient-to-t from-pitch via-pitch/95 to-transparent px-4 pb-2 pt-5">
       <div className="mx-auto max-w-md">
@@ -32,6 +33,9 @@ export function MainCTA({ state, onStart }: MainCTAProps) {
             <div className="text-lg font-black leading-tight">{CTA_LABEL[state.player.sport]}</div>
             <div className="text-xs font-semibold opacity-75">
               מחזור {state.matchday + 1} | {fixture.home ? 'בבית' : 'בחוץ'} מול {opponent}
+            </div>
+            <div className="text-[11px] font-semibold opacity-70">
+              {info.kickoff} | {info.venue}{info.derby ? ' | דרבי' : ''}
             </div>
           </div>
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/15">

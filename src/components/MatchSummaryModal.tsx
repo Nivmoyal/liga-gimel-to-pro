@@ -5,6 +5,7 @@ import { Sheet } from './ui/Sheet';
 import { GoldButton } from './ui/GoldButton';
 import { Crest } from './art/Crest';
 import { ScenePhoto } from './art/ScenePhoto';
+import { formatClock, scoreAt } from '../services/matchEngine';
 
 interface Props {
   state: GameState;
@@ -96,6 +97,8 @@ export function MatchSummaryModal({ state, dispatch }: Props) {
         </div>
       )}
 
+      <MatchFacts state={state} />
+
       {match.log.length > 0 && (
         <div>
           <h3 className="mb-2 text-sm font-bold text-muted">הרגעים שלך</h3>
@@ -117,5 +120,80 @@ export function MatchSummaryModal({ state, dispatch }: Props) {
         </div>
       )}
     </Sheet>
+  );
+}
+
+/** Goal list (football) or quarter scores (basketball) plus basic stats. */
+function MatchFacts({ state }: { state: GameState }) {
+  const match = state.currentMatch!;
+  const sport = state.player.sport;
+  if (sport === 'football') {
+    const goals = match.timeline.filter((e) => e.kind === 'goal');
+    return (
+      <div className="mb-4 space-y-2">
+        {goals.length > 0 && (
+          <ul className="space-y-1 rounded-2xl border border-line bg-card p-3 text-sm">
+            {goals.map((g, i) => (
+              <li key={i} className={`flex gap-2 ${g.side === 'opp' ? 'text-ink/70' : ''} ${g.mine ? 'font-bold text-brand' : ''}`}>
+                <span className="w-10 shrink-0 font-black tabular-nums">{formatClock(g.minute, sport, match.totalMinutes)}</span>
+                <span className="truncate">{g.text}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {match.extra && (
+          <div className="grid grid-cols-3 gap-2 text-center text-xs">
+            <div className="rounded-xl border border-line bg-card p-2">
+              <div className="text-lg font-black">{match.extra.possession}%</div>
+              <div className="text-muted">החזקה</div>
+            </div>
+            <div className="rounded-xl border border-line bg-card p-2">
+              <div className="text-lg font-black">{match.extra.shotsTeam}</div>
+              <div className="text-muted">בעיטות שלנו</div>
+            </div>
+            <div className="rounded-xl border border-line bg-card p-2">
+              <div className="text-lg font-black">{match.extra.shotsOpp}</div>
+              <div className="text-muted">בעיטות יריבה</div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+  const quarters = [10, 20, 30, 40, ...(match.totalMinutes > 40 ? [match.totalMinutes] : [])];
+  let prev = { team: 0, opp: 0 };
+  const rows = quarters.map((q) => {
+    const s = scoreAt(match.timeline, q);
+    const row = { team: s.team - prev.team, opp: s.opp - prev.opp };
+    prev = s;
+    return row;
+  });
+  return (
+    <div className="mb-4 overflow-hidden rounded-2xl border border-line bg-card text-sm">
+      <table className="w-full text-center">
+        <thead className="bg-card-2 text-[11px] text-muted">
+          <tr>
+            <th className="py-1.5 text-right pr-3">קבוצה</th>
+            {rows.map((_, i) => (
+              <th key={i}>{i < 4 ? `ר${i + 1}` : 'הארכה'}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="tabular-nums">
+          <tr className="border-t border-line font-bold text-brand">
+            <td className="py-1.5 pr-3 text-right">{match.national ? 'ישראל' : state.player.club}</td>
+            {rows.map((r, i) => (
+              <td key={i}>{r.team}</td>
+            ))}
+          </tr>
+          <tr className="border-t border-line">
+            <td className="py-1.5 pr-3 text-right">{match.opponent}</td>
+            {rows.map((r, i) => (
+              <td key={i}>{r.opp}</td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 }

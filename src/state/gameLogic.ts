@@ -11,6 +11,8 @@ import type {
   GameFlags,
   GameState,
   JobId,
+  MatchInfoState,
+  MatchState,
   NationalCallUp,
   NationalLevel,
   NewsItem,
@@ -58,7 +60,19 @@ import {
   simulateOtherFixtures,
   sortedTable,
 } from '../services/leagueEngine';
-import { applyMatchEffects, createMatchState, determineRole, finalizeMatch, inGameEventCount } from '../services/matchEngine';
+import {
+  applyMatchEffects,
+  createMatchState,
+  decisionEntries,
+  determineRole,
+  finalizeFromTimeline,
+  inGameEventCount,
+  kickoff,
+  overtimeIfTied,
+  planDecisionMinutes,
+  prepareClutch,
+} from '../services/matchEngine';
+import { matchInfo, rosterFor } from '../services/rosterEngine';
 import { leagueRoundNews, makeNews, matchNews, rumorNews } from '../services/newsEngine';
 import { baseSalary, contractForDivision, generateOffers } from '../services/transferEngine';
 import {
@@ -73,7 +87,7 @@ import {
   trainingGain,
 } from '../services/playerUtils';
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 const MAX_NEWS = 60;
 const SEEN_MEMORY = 40;
 
@@ -138,12 +152,15 @@ function emptyNational() {
 export function migrateSave(raw: GameState): GameState | null {
   if (!raw?.player) return null;
   if (raw.version === SAVE_VERSION) return raw;
-  if (raw.version !== 1 && raw.version !== 2) return null;
+  if (raw.version < 1 || raw.version > 3) return null;
+  // Older saves cannot resume a match mid-way: the match restarts from the dashboard.
+  const midMatch = ['preMatch', 'inGame', 'matchSummary', 'postMatch'].includes(raw.phase);
   return {
     ...raw,
     version: SAVE_VERSION,
-    nationalCallUp: raw.nationalCallUp ?? null,
-    currentMatch: raw.currentMatch ? { ...raw.currentMatch, national: raw.currentMatch.national ?? null } : null,
+    phase: midMatch ? 'dashboard' : raw.phase,
+    nationalCallUp: midMatch ? null : (raw.nationalCallUp ?? null),
+    currentMatch: null,
     flags: { ...raw.flags, captainOfferSeason: raw.flags.captainOfferSeason ?? 0 },
     player: {
       ...raw.player,
@@ -547,6 +564,15 @@ export function dismissLife(state: GameState): GameState {
 // Matchday flow
 // ------------------------------------------------------------------
 
+/** Conditions (venue, weather, crowd, referee, kickoff) for the next league fixture. */
+export function nextFixtureInfo(state: GameState): MatchInfoState {
+  const fixture = fixtureFor(state.league, state.matchday);
+  const opp = state.league.teams[fixture.opponentIndex]?.name ?? '';
+  const home = fixture.home ? state.player.club : opp;
+  const away = fixture.home ? opp : state.player.club;
+  return matchInfo(state.player.sport, state.player.division, home, away, state.season, state.matchday);
+}
+
 export function startMatchday(state: GameState): GameState {
   if (state.phase !== 'dashboard') return state;
   const blocker = matchdayBlocker(state);
@@ -556,13 +582,12 @@ export function startMatchday(state: GameState): GameState {
   const fixture = fixtureFor(state.league, state.matchday);
   const opponent = state.league.teams[fixture.opponentIndex];
   const role = determineRole(state.player);
-  const match = createMatchState(opponent.name, opponent.strength, fixture.home, role);
+  const match = createMatchState(opponent.name, opponent.strength, fixture.home, role, nextFixtureInfo(state));
   let next: GameState = { ...state, currentMatch: match, toast: null };
 
-  if (role === 'injured') {
-    return finishMatch(next);
-  }
-  const pre = pickEvent('preMatch', next.player, next.seenEvents, { matchday: next.matchday });
+  // Injured players watch from the stands: straight to the live match.
+  if (role === 'injured') return continuePreMatch({ ...next, phase: 'preMatch' });
+  const pre = pickEvent('preMatch', next.player, next.seenEvents, { matchday: next.matchday, weather: match.info?.weather, derby: match.info?.derby });
   if (!pre) return continuePreMatch({ ...next, phase: 'preMatch' });
   next = { ...next, phase: 'preMatch', currentMatch: { ...match, preEventId: pre.id } };
   return next;
@@ -577,27 +602,104 @@ export function choosePreMatch(state: GameState, index: number): GameState {
   const resolution = resolveChoice(choice, state.player);
   let next = applyEffects(state, resolution.outcome.effects);
   next = markSeen(next, event.id);
-  const updatedMatch = applyMatchEffects(match, resolution.outcome.effects, false);
+  const updatedMatch = applyMatchEffects(match, resolution.outcome.effects);
   return { ...next, currentMatch: { ...updatedMatch, pendingOutcome: toPending(resolution) } };
 }
 
+/** Rosters, strength and naming for the side the player represents in the current match. */
+function liveContext(state: GameState) {
+  const match = state.currentMatch!;
+  const { player } = state;
+  const sport = player.sport;
+  if (match.national) {
+    const top = topDivision(sport);
+    return {
+      teamName: NATIONAL_TEAM_NAME[match.national],
+      teamRoster: rosterFor('ישראל', sport, top),
+      oppRoster: rosterFor(match.opponent, sport, top, true),
+      clubStrength: NATIONAL_SETUP[sport][match.national].strength,
+      division: top,
+    };
+  }
+  return {
+    teamName: player.club,
+    teamRoster: rosterFor(player.club, sport, player.division),
+    oppRoster: rosterFor(match.opponent, sport, player.division),
+    clubStrength: playerClubStrength(state),
+    division: player.division,
+  };
+}
+
+/** Picks the decision moments and kicks off the live match. */
 export function continuePreMatch(state: GameState): GameState {
   const match = state.currentMatch;
   if (!match) return state;
-  const role = determineRole(state.player);
+  const role = match.role === 'injured' ? 'injured' : determineRole(state.player);
   const count = inGameEventCount(role);
-  const events = pickInGameEvents(state.player, state.seenEvents, count);
-  const nextMatch = {
+  const sport = state.player.sport;
+  const picked = pickInGameEvents(state.player, state.seenEvents, count, {
+    weather: match.info?.weather,
+    derby: match.info?.derby,
+    minMinute: role === 'rotation' ? (sport === 'football' ? 60 : 20) : undefined,
+  });
+  const planned = planDecisionMinutes(picked, sport, role);
+  // Decision moments play out in chronological order.
+  const order = picked.map((e, i) => ({ e, m: planned[i] })).sort((a, b) => a.m - b.m);
+  const events = order.map((o) => o.e);
+  const minutes = order.map((o) => o.m);
+  const clutchIdx = events.findIndex((e) => e.clutch);
+  const ctx = liveContext(state);
+  const prepared: MatchState = {
     ...match,
     role,
     pendingOutcome: null,
     inGameEventIds: events.map((e) => e.id),
     inGameIndex: 0,
-    clutch: events.some((e) => e.clutch),
+    clutch: clutchIdx >= 0,
   };
-  const next: GameState = { ...state, currentMatch: nextMatch };
-  if (events.length === 0) return finishMatch(next);
-  return { ...next, phase: 'inGame' };
+  const live = kickoff(prepared, {
+    player: state.player,
+    teamName: ctx.teamName,
+    clubStrength: ctx.clubStrength,
+    division: ctx.division,
+    teamRoster: ctx.teamRoster,
+    oppRoster: ctx.oppRoster,
+    decisionMinutes: minutes,
+    clutchMinute: clutchIdx >= 0 ? minutes[clutchIdx] : null,
+  });
+  return { ...state, currentMatch: { ...live, clock: 0 }, phase: 'live' };
+}
+
+/** Where the live playback stops next: the next decision moment or full time. */
+export function nextLiveStop(match: MatchState): { minute: number; decision: boolean } {
+  if (match.inGameIndex < match.inGameEventIds.length) return { minute: match.decisionMinutes[match.inGameIndex], decision: true };
+  return { minute: match.totalMinutes, decision: false };
+}
+
+/** Jumps the live match to its next stop: opens a decision, adds overtime, or ends the match. */
+export function advanceLive(state: GameState): GameState {
+  const match = state.currentMatch;
+  if (!match || state.phase !== 'live') return state;
+  const stop = nextLiveStop(match);
+  const ctx = liveContext(state);
+  if (stop.decision) {
+    let next: MatchState = { ...match, clock: stop.minute };
+    const event = getEventById(match.inGameEventIds[match.inGameIndex]);
+    if (event?.clutch) {
+      const prepared = prepareClutch(next, stop.minute, state.player.sport, ctx.teamName, ctx.oppRoster, ctx.teamRoster);
+      if (prepared) next = prepared;
+      else {
+        // Too lopsided for a last-second decider: swap in a regular moment.
+        const swap = pickInGameEvents(state.player, [...state.seenEvents, ...match.inGameEventIds], 1, { noClutch: true })[0];
+        if (swap) next = { ...next, clutch: false, inGameEventIds: next.inGameEventIds.map((id, i) => (i === match.inGameIndex ? swap.id : id)) };
+      }
+    }
+    return { ...state, currentMatch: next, phase: 'inGame' };
+  }
+  const atEnd: MatchState = { ...match, clock: match.totalMinutes };
+  const ot = overtimeIfTied(atEnd, state.player.sport, ctx.teamName);
+  if (ot) return { ...state, currentMatch: ot };
+  return finishMatch({ ...state, currentMatch: atEnd });
 }
 
 export function chooseInGame(state: GameState, index: number): GameState {
@@ -610,9 +712,24 @@ export function chooseInGame(state: GameState, index: number): GameState {
   const resolution = resolveChoice(choice, state.player);
   let next = applyEffects(state, resolution.outcome.effects);
   next = markSeen(next, event.id);
-  let updated = applyMatchEffects(match, resolution.outcome.effects, Boolean(event.clutch));
+  const ctx = liveContext(state);
+  const minute = match.decisionMinutes[match.inGameIndex] ?? match.clock;
+  const entries = decisionEntries(
+    minute,
+    event,
+    resolution.outcome.effects,
+    resolution.success,
+    resolution.outcome.text,
+    state.player.sport,
+    state.player.name,
+    ctx.teamRoster,
+    ctx.oppRoster,
+    match.opponent,
+  );
+  let updated = applyMatchEffects(match, resolution.outcome.effects);
   updated = {
     ...updated,
+    timeline: [...updated.timeline, ...entries].sort((a, b) => a.minute - b.minute),
     log: [
       ...updated.log,
       { eventId: event.id, title: event.title, choice: choice.label, success: resolution.success, text: resolution.outcome.text },
@@ -625,10 +742,7 @@ export function chooseInGame(state: GameState, index: number): GameState {
 export function continueInGame(state: GameState): GameState {
   const match = state.currentMatch;
   if (!match) return state;
-  const nextIndex = match.inGameIndex + 1;
-  const next: GameState = { ...state, currentMatch: { ...match, inGameIndex: nextIndex, pendingOutcome: null } };
-  if (nextIndex >= match.inGameEventIds.length) return finishMatch(next);
-  return next;
+  return { ...state, phase: 'live', currentMatch: { ...match, inGameIndex: match.inGameIndex + 1, pendingOutcome: null } };
 }
 
 /** Simulates the result, updates the league table, stats, economy and news. */
@@ -639,7 +753,7 @@ function finishMatch(state: GameState): GameState {
   const { player } = state;
   const sport = player.sport;
   const clubIdx = playerClubIndex(state.league);
-  const fin = finalizeMatch(match, player, playerClubStrength(state));
+  const fin = finalizeFromTimeline(match, player);
   const { result } = fin;
 
   // League table
@@ -838,7 +952,7 @@ export function captainOfferReady(state: GameState): boolean {
     stats.starts >= 3 &&
     player.coachApproval >= 70 &&
     player.teamMorale >= 50 &&
-    averageRating(stats) >= 6.8
+    averageRating(stats) >= 6.5
   );
 }
 
@@ -1066,7 +1180,26 @@ export function acceptCallUp(state: GameState): GameState {
   const { player } = state;
   const strength = NATIONAL_SETUP[player.sport][callUp.level].strength;
   const role = calcOvr(player) >= strength - 2 && player.energy >= 25 ? 'starter' : 'rotation';
-  const match = { ...createMatchState(callUp.opponent, callUp.opponentStrength, callUp.home, role), national: callUp.level };
+  const venue =
+    player.sport === 'football'
+      ? callUp.home
+        ? pickRandom(['אצטדיון סמי עופר', 'אצטדיון טדי', 'אצטדיון בלומפילד'])
+        : `האצטדיון הלאומי של ${callUp.opponent}`
+      : callUp.home
+        ? pickRandom(['היכל מנורה מבטחים', 'ארנה ירושלים'])
+        : `הארנה הלאומית של ${callUp.opponent}`;
+  const info: MatchInfoState = {
+    venue,
+    city: callUp.home ? 'ישראל' : callUp.opponent,
+    attendance: callUp.level === 'senior' ? randInt(14000, 30000) : randInt(2500, 7000),
+    weather: player.sport === 'football' ? 'clear' : 'hall_loud',
+    weatherLabel: player.sport === 'football' ? `ערב נעים, ${randInt(16, 24)} מעלות` : 'ארנה מלאה',
+    temperature: 20,
+    referee: pickRandom(['קלמנט טורפן', 'דניאל זיברט', 'יואל מורנו', 'אנטוניו מאטאו']),
+    kickoff: 'ערב נבחרות 21:45',
+    derby: false,
+  };
+  const match = { ...createMatchState(callUp.opponent, callUp.opponentStrength, callUp.home, role, info), national: callUp.level };
   let next: GameState = addNews(
     { ...state, currentMatch: match, toast: null },
     [newsNow(state, 'club', `${player.name} זומן ל${NATIONAL_TEAM_NAME[callUp.level]} לקראת המשחק מול ${callUp.opponent}`)],
@@ -1090,8 +1223,7 @@ function finishNationalMatch(state: GameState): GameState {
   const level = match.national!;
   const { player } = state;
   const sport = player.sport;
-  const strength = NATIONAL_SETUP[sport][level].strength;
-  const fin = finalizeMatch(match, { ...player, division: topDivision(sport) }, strength);
+  const fin = finalizeFromTimeline(match, player);
   const { result } = fin;
   const played = result.rating !== null;
   const national = { ...player.national };

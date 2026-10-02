@@ -112,6 +112,10 @@ export interface EventConditions {
   positions?: Position[];
   matchResult?: Array<'win' | 'draw' | 'loss'>;
   minMatchday?: number;
+  /** Only on match days with this weather / hall condition. */
+  weather?: string[];
+  /** Only in derbies. */
+  derby?: boolean;
 }
 
 export interface GameEvent {
@@ -142,6 +146,10 @@ export interface EventContext {
   job: string;
   agent: string;
   sport: SportType;
+  /** Live score phrase for {תוצאה} during a match. */
+  scoreLine?: string;
+  referee?: string;
+  venue?: string;
 }
 
 // ------------------------------------------------------------------
@@ -266,6 +274,41 @@ export interface PendingOutcome {
   effects: Effects;
 }
 
+export interface TimelineEntry {
+  /** Game minute (football 0-95, basketball 0-40, overtime beyond). */
+  minute: number;
+  kind: 'goal' | 'score' | 'chance' | 'card' | 'sub' | 'period' | 'info' | 'moment' | 'run' | 'highlight';
+  side: 'team' | 'opp' | 'neutral';
+  text: string;
+  /** Points / goals this entry adds to each side. */
+  team: number;
+  opp: number;
+  /** Scoring buckets that move the score without a feed line. */
+  hidden?: boolean;
+  /** Involves the player. */
+  mine?: boolean;
+  /** Base entries can be rewritten (e.g. before a clutch moment); decision results cannot. */
+  base?: boolean;
+}
+
+export interface MatchInfoState {
+  venue: string;
+  city: string;
+  attendance: number;
+  weather: string;
+  weatherLabel: string;
+  temperature: number;
+  referee: string;
+  kickoff: string;
+  derby: boolean;
+}
+
+export interface MatchExtraStats {
+  possession: number;
+  shotsTeam: number;
+  shotsOpp: number;
+}
+
 export interface MatchState {
   opponent: string;
   /** Set for national team matches (no league table impact). */
@@ -283,12 +326,15 @@ export interface MatchState {
   playerAssists: number;
   playerPoints: number;
   playerRebounds: number;
-  teamScoreDelta: number;
-  oppScoreDelta: number;
-  /** Score changes from the clutch scenario, applied after the match is levelled. */
-  clutchTeamDelta: number;
-  clutchOppDelta: number;
   ratingDelta: number;
+  /** Live match */
+  info: MatchInfoState | null;
+  timeline: TimelineEntry[];
+  clock: number;
+  totalMinutes: number;
+  decisionMinutes: number[];
+  base: { goals: number; assists: number; points: number; rebounds: number };
+  extra: MatchExtraStats | null;
   pendingOutcome: PendingOutcome | null;
   result: MatchResult | null;
 }
@@ -331,7 +377,8 @@ export type GamePhase =
   | 'postMatch'
   | 'transfer'
   | 'seasonEnd'
-  | 'callUp';
+  | 'callUp'
+  | 'live';
 
 export interface NationalCallUp {
   level: NationalLevel;

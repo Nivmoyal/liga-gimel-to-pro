@@ -8,6 +8,7 @@ import preMatchJson from '../data/events/preMatchEvents.json';
 import inGameJson from '../data/events/inGameEvents.json';
 import postMatchJson from '../data/events/postMatchEvents.json';
 import lifeJson from '../data/events/lifeEvents.json';
+import { generatedEvents } from './eventGenerator';
 
 import type {
   EventChoice,
@@ -23,13 +24,17 @@ import { SPORT_LABEL, SURFACE_LABEL } from '../data/sports';
 import { getJob } from '../data/jobs';
 import { getAgent } from '../data/agents';
 import { NATIONAL_TEAM_NAME } from '../data/national';
-import { calcOvr, clamp, shuffle } from './playerUtils';
+import { calcOvr, clamp } from './playerUtils';
+import { parseClock, scoreAt } from './matchEngine';
 
+const GENERATED = generatedEvents();
+
+/** Hand-written events plus generated situations (templates x contexts). */
 export const EVENT_POOLS: Record<EventType, GameEvent[]> = {
-  preMatch: preMatchJson as GameEvent[],
-  inGame: inGameJson as GameEvent[],
-  postMatch: postMatchJson as GameEvent[],
-  life: lifeJson as GameEvent[],
+  preMatch: [...(preMatchJson as GameEvent[]), ...GENERATED.preMatch],
+  inGame: [...(inGameJson as GameEvent[]), ...GENERATED.inGame],
+  postMatch: [...(postMatchJson as GameEvent[]), ...GENERATED.postMatch],
+  life: [...(lifeJson as GameEvent[]), ...GENERATED.life],
 };
 
 const EVENT_INDEX: Map<string, GameEvent> = new Map(
@@ -51,7 +56,7 @@ export function getAllEvents(): GameEvent[] {
 // Placeholder parser
 // ------------------------------------------------------------------
 
-const PLACEHOLDER_RE = /\{(שחקן|קבוצה|יריבה|עבודה|סוכן|משטח|ספורט)\}/g;
+const PLACEHOLDER_RE = /\{(שחקן|קבוצה|יריבה|עבודה|סוכן|משטח|ספורט|תוצאה|שופט|אצטדיון)\}/g;
 
 export function parseText(text: string, ctx: EventContext): string {
   return text.replace(PLACEHOLDER_RE, (_match, key: string) => {
@@ -70,21 +75,41 @@ export function parseText(text: string, ctx: EventContext): string {
         return SURFACE_LABEL[ctx.sport];
       case 'ספורט':
         return SPORT_LABEL[ctx.sport];
+      case 'תוצאה':
+        return ctx.scoreLine ?? 'המשחק פתוח';
+      case 'שופט':
+        return ctx.referee ?? 'השופט';
+      case 'אצטדיון':
+        return ctx.venue ?? 'המגרש';
       default:
         return key;
     }
   });
 }
 
+/** Live score phrase for {תוצאה}, from the player's side. */
+function scoreLine(state: Pick<GameState, 'player' | 'currentMatch'>, club: string): string | undefined {
+  const match = state.currentMatch;
+  if (!match || match.timeline.length === 0) return undefined;
+  const { team, opp } = scoreAt(match.timeline, match.decisionMinutes[match.inGameIndex] ?? match.clock);
+  const sep = state.player.sport === 'basketball' ? ':' : '-';
+  if (team === opp) return `התוצאה שוויונית ${team}${sep}${opp}`;
+  return team > opp ? `${club} ביתרון ${team}${sep}${opp}` : `${club} בפיגור ${team}${sep}${opp}`;
+}
+
 export function buildContext(state: Pick<GameState, 'player' | 'currentMatch'>, opponentOverride?: string): EventContext {
   const { player } = state;
+  const club = state.currentMatch?.national ? NATIONAL_TEAM_NAME[state.currentMatch.national] : player.club;
   return {
     playerName: player.name,
-    club: state.currentMatch?.national ? NATIONAL_TEAM_NAME[state.currentMatch.national] : player.club,
+    club,
     opponent: opponentOverride ?? state.currentMatch?.opponent ?? 'היריבה',
     job: getJob(player.jobId)?.name ?? 'מובטל',
     agent: getAgent(player.agentId)?.name ?? 'הסוכן',
     sport: player.sport,
+    scoreLine: scoreLine(state, club),
+    referee: state.currentMatch?.info?.referee,
+    venue: state.currentMatch?.info?.venue,
   };
 }
 
@@ -119,6 +144,8 @@ export function parseEffects(effects: Effects, ctx: EventContext): Effects {
 export interface FilterExtras {
   matchResult?: 'win' | 'draw' | 'loss';
   matchday?: number;
+  weather?: string;
+  derby?: boolean;
 }
 
 export function isEligible(event: GameEvent, player: Player, extras: FilterExtras = {}): boolean {
@@ -135,6 +162,8 @@ export function isEligible(event: GameEvent, player: Player, extras: FilterExtra
   if (c.positions && !c.positions.includes(player.position)) return false;
   if (c.matchResult && (!extras.matchResult || !c.matchResult.includes(extras.matchResult))) return false;
   if (c.minMatchday !== undefined && (extras.matchday ?? 0) < c.minMatchday) return false;
+  if (c.weather && (!extras.weather || !c.weather.includes(extras.weather))) return false;
+  if (c.derby && !extras.derby) return false;
   return true;
 }
 
@@ -142,12 +171,18 @@ export function filterEvents(type: EventType, player: Player, extras: FilterExtr
   return EVENT_POOLS[type].filter((event) => !event.trigger && isEligible(event, player, extras));
 }
 
+/** Events tied to today's conditions (weather, derby) are more likely to come up. */
+function eventWeight(e: GameEvent): number {
+  const situational = e.conditions?.weather || e.conditions?.derby ? 3 : 1;
+  return (e.weight ?? 1) * situational;
+}
+
 function weightedPick(events: GameEvent[]): GameEvent | null {
   if (events.length === 0) return null;
-  const total = events.reduce((sum, e) => sum + (e.weight ?? 1), 0);
+  const total = events.reduce((sum, e) => sum + eventWeight(e), 0);
   let roll = Math.random() * total;
   for (const event of events) {
-    roll -= event.weight ?? 1;
+    roll -= eventWeight(event);
     if (roll <= 0) return event;
   }
   return events[events.length - 1];
@@ -170,19 +205,33 @@ export function pickEvent(
 }
 
 /** Picks the in-game scenarios for one match. A clutch scenario (if any) is always last. */
-export function pickInGameEvents(player: Player, seen: string[], count: number): GameEvent[] {
+export function pickInGameEvents(
+  player: Player,
+  seen: string[],
+  count: number,
+  opts: { weather?: string; derby?: boolean; noClutch?: boolean; minMinute?: number } = {},
+): GameEvent[] {
   if (count <= 0) return [];
-  const eligible = filterEvents('inGame', player);
+  const all = filterEvents('inGame', player, { weather: opts.weather, derby: opts.derby }).filter((e) => !(opts.noClutch && e.clutch));
+  // Substitutes only see moments from the time they are on the pitch.
+  const late = opts.minMinute ? all.filter((e) => (parseClock(e.clock, player.sport) ?? 0) >= opts.minMinute!) : all;
+  const eligible = late.length >= count ? late : all;
   const fresh = eligible.filter((e) => !seen.includes(e.id));
-  const pool = shuffle(fresh.length >= count ? fresh : eligible);
+  const pool = [...(fresh.length >= count ? fresh : eligible)];
   const picked: GameEvent[] = [];
+  const usedTemplates = new Set<string>();
   let hasClutch = false;
-  for (const event of pool) {
-    if (picked.length >= count) break;
+  while (picked.length < count && pool.length > 0) {
+    const event = weightedPick(pool)!;
+    pool.splice(pool.indexOf(event), 1);
+    // Never two variations of the same situation in one match.
+    const template = event.id.replace(/_v\d+$/, '').replace(/__.*$/, '');
+    if (usedTemplates.has(template)) continue;
     if (event.clutch) {
       if (hasClutch) continue;
       hasClutch = true;
     }
+    usedTemplates.add(template);
     picked.push(event);
   }
   return [...picked.filter((e) => !e.clutch), ...picked.filter((e) => e.clutch)];

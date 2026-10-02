@@ -1,0 +1,146 @@
+[
+  { "key": "pq_big_win", "sport": "both", "scene": "press", "conditions": { "matchResult": ["win"] },
+    "title": ["ניצחון חשוב", "הערב הזה"],
+    "text": ["'{שחקן}, ניצחון גדול על {יריבה}. מה הרגשת על {משטח}?'", "'ניצחון ל{קבוצה}! איך זה מרגיש מבפנים?'"],
+    "choices": [
+      { "label": "זה ניצחון של כולם", "success": { "text": ["תשובה שהחדר אוהב.", "צניעות שמחזקת את הקבוצה."], "effects": { "teamMorale": 5, "fanRep": 2, "followers": 40 } } },
+      { "label": "אני בכושר של החיים שלי", "success": { "text": ["ציטוט שרץ ברשתות.", "ביטחון שיש לו מחיר בחדר."], "effects": { "followers": 120, "fanRep": 2, "teamMorale": -3, "confidence": 3 } } },
+      { "label": "מודה לאוהדים", "success": { "text": ["האוהדים משתפים את הקטע.", "חיבור לקהל."], "effects": { "fanRep": 5, "followers": 60 } } }
+    ] },
+  { "key": "pq_title_race", "sport": "both", "scene": "press", "conditions": { "matchResult": ["win"], "minMatchday": 5 },
+    "title": ["המאבק בצמרת", "לאן {קבוצה} הולכת?"],
+    "text": ["'{קבוצה} בתנופה. אפשר לדבר על עלייה ליגה?'", "'עוד ניצחון. מה המטרה של {קבוצה} העונה?'"],
+    "choices": [
+      { "label": "מדברים על עלייה בקול", "success": { "text": ["האוהדים מתלהבים. הלחץ עולה.", "מטרה גלויה."], "effects": { "fanRep": 4, "followers": 60, "confidence": 2 } } },
+      { "label": "משחק אחרי משחק", "success": { "text": ["תשובה של מאמן. המאמן אוהב.", "שקט ורגוע."], "effects": { "coachApproval": 3 } } },
+      { "label": "מקווה להיות הקלף של {קבוצה}", "success": { "text": ["תשובה אישית. נשמע אמביציוזי.", "הסקאוטים קוראים."], "effects": { "followers": 80, "teamMorale": -1, "confidence": 2 } } }
+    ] },
+  { "key": "pq_scored", "sport": "football", "scene": "press", "conditions": { "matchResult": ["win", "draw"] },
+    "title": ["על השער שלך", "רגע השער"],
+    "text": ["'ספר לנו על המהלך הגדול שלך היום מול {יריבה}.'", "'מה עבר לך בראש ברגע הגדול של המשחק?'"],
+    "choices": [
+      { "label": "מתאר כל פרט", "success": { "text": ["התיאור שלך הופך לכתבה שלמה.", "אנשים אוהבים לשמוע מבפנים."], "effects": { "followers": 90, "fanRep": 2 } } },
+      { "label": "נותן קרדיט למבשל", "success": { "text": ["החבר מתרגש לשמוע.", "קבוצתיות."], "effects": { "teamMorale": 4, "fanRep": 1 } } },
+      { "label": "מקדיש למשפחה", "success": { "text": ["רגע אישי ומרגש.", "האוהדים מתחברים."], "effects": { "fanRep": 4, "followers": 50 } } }
+    ] },
+  { "key": "pq_comeback", "sport": "both", "scene": "press", "conditions": { "matchResult": ["win"] },
+    "title": ["אופי של קבוצה", "לא מוותרים"],
+    "text": ["'הקבוצה הראתה אופי היום. מאיפה זה מגיע?'", "'{קבוצה} לא נשברה. מה נאמר בחדר ההלבשה?'"],
+    "choices": [
+      { "label": "מהמאמן", "success": { "text": ["המאמן קורא את זה ומחייך.", "נקודות אצל המאמן."], "effects": { "coachApproval": 4 } } },
+      { "label": "מהקהל שלנו", "success": { "text": ["היציע מאוהב בך.", "חיבור אמיתי."], "effects": { "fanRep": 5 } } },
+      { "label": "מהחבר׳ה שעובדים ביום וכאן בלילה", "success": { "text": ["תשובה שמספרת את הסיפור של הליגות הנמוכות.", "כותרת מרגשת."], "effects": { "fanRep": 3, "followers": 100, "teamMorale": 2 } } }
+    ] },
+  { "key": "pq_heavy_loss", "sport": "both", "scene": "press", "conditions": { "matchResult": ["loss"] },
+    "title": ["ערב קשה", "הפסד כואב"],
+    "text": ["'הפסד מכאיב מול {יריבה}. מי אשם?'", "'מה לא עבד היום ל{קבוצה}?'"],
+    "choices": [
+      { "label": "לוקח אחריות", "success": { "text": ["בגרות. החדר רואה.", "מנהיגות ברגע קשה."], "effects": { "teamMorale": 4, "fanRep": 3, "confidence": -2 } } },
+      { "label": "מבקר את הטקטיקה", "success": { "text": ["המאמן קורא את זה. לא טוב.", "כותרת מסוכנת."], "effects": { "coachApproval": -6, "followers": 80 } } },
+      { "label": "השיפוט", "success": { "text": ["האוהדים איתך, המאמן לא.", "תירוץ ישן."], "effects": { "fanRep": 1, "coachApproval": -2 } } }
+    ] },
+  { "key": "pq_your_performance", "sport": "both", "scene": "press", "conditions": { "matchResult": ["loss"] },
+    "title": ["שאלה עליך", "המשחק האישי שלך"],
+    "text": ["'לא נראית במיטבך היום. משהו מפריע לך?'", "'יש אוהדים שאומרים שהעבודה פוגעת לך בכושר. מה דעתך?'"],
+    "choices": [
+      { "label": "מודה שהיה יום חלש", "success": { "text": ["כנות מכבדת.", "האוהדים סולחים."], "effects": { "fanRep": 3, "confidence": -1 } } },
+      { "label": "מתעצבן על השאלה", "success": { "text": ["הקטע רץ ברשת. לא מחמיא.", "תגובה רגשית."], "effects": { "fanRep": -4, "followers": 120 } } },
+      { "label": "מבטיח תגובה בשבוע הבא", "success": { "text": ["עכשיו צריך לקיים.", "הבטחה פומבית."], "effects": { "confidence": 3, "fanRep": 1 } } }
+    ] },
+  { "key": "pq_relegation", "sport": "both", "scene": "press", "conditions": { "matchResult": ["loss"], "minMatchday": 5 },
+    "title": ["מתחת לקו", "ריח של ירידה"],
+    "text": ["'{קבוצה} מסתבכת. אתם מפחדים מירידה?'", "'עוד הפסד. המצב בטבלה מדאיג?'"],
+    "choices": [
+      { "label": "אין פחד בחדר שלנו", "success": { "text": ["האוהדים נשמים לרווחה.", "ביטחון בזמן משבר."], "effects": { "fanRep": 3, "teamMorale": 2 } } },
+      { "label": "צריך לבדוק את עצמנו", "success": { "text": ["תשובה כנה. המאמן מסכים.", "דרישה מעצמכם."], "effects": { "coachApproval": 3 } } },
+      { "label": "אני כאן כדי להציל את העונה", "success": { "text": ["כותרת נועזת. לחץ על הכתפיים.", "האחריות עליך."], "effects": { "confidence": 3, "followers": 80, "teamMorale": -1 } } }
+    ] },
+  { "key": "pq_coach_future", "sport": "both", "scene": "press", "conditions": { "matchResult": ["loss"] },
+    "title": ["המאמן בסכנה?", "עתיד המאמן"],
+    "text": ["'יש שמועות על החלפת המאמן. אתם עדיין איתו?'", "'ההנהלה לא מרוצה מהמאמן. מה אתה אומר?'"],
+    "choices": [
+      { "label": "כולנו מאחורי המאמן", "success": { "text": ["המאמן לא ישכח את זה.", "נאמנות."], "effects": { "coachApproval": 6, "teamMorale": 2 } } },
+      { "label": "זה לא בידיים שלי", "success": { "text": ["תשובה פושרת. המאמן שם לב.", "בלי להתחייב."], "effects": { "coachApproval": -2 } } },
+      { "label": "אולי צריך שינוי", "success": { "text": ["פצצה תקשורתית.", "המאמן קורא את זה בבוקר."], "effects": { "coachApproval": -10, "followers": 200, "teamMorale": -4 } } }
+    ] },
+  { "key": "pq_draw_mood", "sport": "football", "scene": "press", "conditions": { "matchResult": ["draw"] },
+    "title": ["נקודה אחת", "תיקו"],
+    "text": ["'תיקו מול {יריבה}. נקודה מורווחת או שתיים שהלכו?'", "'אתם יוצאים מרוצים מהתיקו?'"],
+    "choices": [
+      { "label": "שתיים שהלכו", "success": { "text": ["רעב לניצחונות. היציע אוהב.", "דרישה גבוהה."], "effects": { "fanRep": 3, "teamMorale": 1 } } },
+      { "label": "נקודה טובה בתנאים האלה", "success": { "text": ["תשובה שקולה.", "המאמן מסכים."], "effects": { "coachApproval": 2 } } },
+      { "label": "היינו טובים יותר", "success": { "text": ["האוהדים מסכימים, היריבה פחות.", "ביטחון."], "effects": { "confidence": 2, "fanRep": 1 } } }
+    ] },
+  { "key": "pq_draw_ref", "sport": "football", "scene": "press", "conditions": { "matchResult": ["draw"] },
+    "title": ["החלטות שנויות במחלוקת", "על השיפוט"],
+    "text": ["'היו החלטות שיפוט שנויות במחלוקת. מה אתה אומר על {שופט}?'", "'השער שנפסל היה נקי?'"],
+    "choices": [
+      { "label": "אין טעם לבכות", "success": { "text": ["תשובה בוגרת.", "המאמן מרוצה."], "effects": { "coachApproval": 2 } } },
+      { "label": "ההחלטות היו גרועות", "success": { "text": ["האוהדים מסכימים. ההתאחדות פחות.", "קנס בדרך?"], "effects": { "fanRep": 2, "budget": -200 } } },
+      { "label": "עוקץ בהומור", "success": { "text": ["הקטע מצחיק את כולם.", "חוש הומור מנצח."], "effects": { "followers": 100, "fanRep": 2 } } }
+    ] },
+  { "key": "pq_transfer_rumor", "sport": "both", "scene": "press",
+    "title": ["שמועות העברה", "מה עם העתיד?"],
+    "text": ["'מדברים על קבוצה מליגה גבוהה שמתעניינת בך. אתה נשאר?'", "'{סוכן} נראה ביציע היום. משהו מתבשל?'"],
+    "choices": [
+      { "label": "מאושר כאן", "success": { "text": ["האוהדים של {קבוצה} שמחים.", "נאמנות."], "effects": { "fanRep": 5 } } },
+      { "label": "אף פעם אי אפשר לדעת", "success": { "text": ["כותרת שמעוררת סערה.", "השמועות גוברות."], "effects": { "followers": 120, "fanRep": -2, "news": { "category": "rumors", "text": "{שחקן} לא סוגר את הדלת לעזיבה" } } } },
+      { "label": "שאלות כאלה לסוכן", "success": { "text": ["מקצועי.", "בלי דרמה."], "effects": { "coachApproval": 1 } } }
+    ] },
+  { "key": "pq_day_job", "sport": "both", "scene": "press", "conditions": { "requiresJob": true },
+    "title": ["החיים הכפולים", "בין העבודה ל{משטח}"],
+    "text": ["'אתה עובד בבוקר בתור {עבודה} ומשחק בערב. איך זה אפשרי?'", "'הסיפור שלך מעורר השראה. מה קשה יותר: העבודה או המשחקים?'"],
+    "choices": [
+      { "label": "מספר בכנות על הקושי", "success": { "text": ["כתבה מרגשת. אנשים כותבים לך הודעות.", "הסיפור נוגע."], "effects": { "fanRep": 5, "followers": 150 } } },
+      { "label": "אומר שזה רק זמני", "success": { "text": ["אמביציה גלויה.", "הסקאוטים קוראים."], "effects": { "confidence": 3, "followers": 60 } } },
+      { "label": "שולח ד״ש לחבר׳ה מהעבודה", "success": { "text": ["החבר׳ה מהעבודה מתפוצצים מגאווה.", "רגע אנושי."], "effects": { "fanRep": 3, "followers": 80 } } }
+    ] },
+  { "key": "pq_rival_coach", "sport": "both", "scene": "press",
+    "title": ["המאמן של היריבה", "המילים שלו"],
+    "text": ["'המאמן של {יריבה} אמר שאתם קבוצה של בריונים. תגובה?'", "'המאמן של {יריבה} טען שהשופט עזר לכם. מה תגיד לו?'"],
+    "choices": [
+      { "label": "שידבר על המגרש", "success": { "text": ["תשובה חדה שהאוהדים אוהבים.", "כותרת."], "effects": { "fanRep": 3, "followers": 80 } } },
+      { "label": "מכבד אותו", "success": { "text": ["בגרות. לא מוסיפים שמן למדורה.", "מקצועני."], "effects": { "coachApproval": 2 } } },
+      { "label": "עוקץ אותו אישית", "success": { "text": ["סערה ברשתות. ההתאחדות בודקת.", "חריף מדי."], "effects": { "followers": 200, "fanRep": -1, "coachApproval": -3 } } }
+    ] },
+  { "key": "pq_injury_teammate", "sport": "both", "scene": "press",
+    "title": ["החבר הפצוע", "הקדשה"],
+    "text": ["'חבר לקבוצה נפצע היום. מה רצית להגיד לו?'", "'הקבוצה שיחקה בשביל החבר הפצוע. הרגשתם את זה?'"],
+    "choices": [
+      { "label": "מקדיש לו את המשחק", "success": { "text": ["החבר שולח לך הודעה מבית החולים.", "רגע של קבוצה."], "effects": { "teamMorale": 5, "fanRep": 2 } } },
+      { "label": "מבטיח שהוא יחזור חזק", "success": { "text": ["מילים חמות.", "אופטימיות."], "effects": { "teamMorale": 3 } } },
+      { "label": "מתמקד בניתוח המשחק", "success": { "text": ["תשובה מקצועית, קצת קרה.", "בסדר."], "effects": { "coachApproval": 1 } } }
+    ] },
+  { "key": "pq_social_question", "sport": "both", "scene": "phone",
+    "title": ["הרשתות", "הסרטון ברשת"],
+    "text": ["'הסרטון שלך מהמשחק כבר ויראלי. אתה עוקב אחרי מה שכותבים?'", "'יש לך יותר ויותר עוקבים. זה משנה לך משהו?'"],
+    "choices": [
+      { "label": "נהנה מכל תגובה", "success": { "text": ["כנות שאנשים אוהבים.", "העוקבים ממשיכים להגיע."], "effects": { "followers": 150, "confidence": 2 } } },
+      { "label": "לא קורא תגובות", "success": { "text": ["תשובה של מקצוען.", "הראש במשחק."], "effects": { "coachApproval": 2, "confidence": 1 } } },
+      { "label": "מבקש מהאוהדים לבוא ליציע", "success": { "text": ["המשחק הבא אולי יהיה מלא.", "הזמנה פתוחה."], "effects": { "fanRep": 4, "followers": 50 } } }
+    ] },
+  { "key": "pq_national_dream", "sport": "both", "scene": "press",
+    "title": ["החלום הכחול-לבן", "נבחרת?"],
+    "text": ["'עם הכושר הזה, אתה חולם על נבחרת ישראל?'", "'המאמן הלאומי היה ביציע. אתה מרגיש קרוב לזימון?'"],
+    "choices": [
+      { "label": "זה החלום שלי", "success": { "text": ["כנות. האוהדים מתחברים.", "כותרת מרגשת."], "effects": { "fanRep": 3, "followers": 100, "confidence": 2 } } },
+      { "label": "קודם {קבוצה}", "success": { "text": ["תשובה נכונה. המועדון מרוצה.", "צניעות."], "effects": { "coachApproval": 3, "fanRep": 2 } } },
+      { "label": "אני מוכן כבר עכשיו", "success": { "text": ["ביטחון גבוה. גם לחץ.", "המאמן הלאומי קרא."], "effects": { "confidence": 4, "followers": 80 } } }
+    ] },
+  { "key": "pq_fans_chant", "sport": "both", "scene": "fans", "conditions": { "matchResult": ["win", "draw"] },
+    "title": ["שיר חדש עליך", "היציע שר"],
+    "text": ["'האוהדים המציאו שיר עליך היום. שמעת?'", "'כל היציע שר את השם שלך בסיום. איך זה מרגיש?'"],
+    "choices": [
+      { "label": "מצלם את היציע ומשתף", "success": { "text": ["הסרטון מקבל אלפי צפיות.", "האוהדים במסך שלך."], "effects": { "followers": 180, "fanRep": 3 } } },
+      { "label": "אומר שזה הכי מרגש", "success": { "text": ["מילים שהאוהדים יזכרו.", "רגש אמיתי."], "effects": { "fanRep": 5 } } },
+      { "label": "מבקש שישירו לכל הקבוצה", "success": { "text": ["צניעות שהחדר אוהב.", "כולם בשיר."], "effects": { "teamMorale": 4, "fanRep": 2 } } }
+    ] },
+  { "key": "pq_bench", "sport": "both", "scene": "press", "conditions": { "matchResult": ["win", "loss", "draw"] },
+    "title": ["דקות משחק", "על התפקיד שלך"],
+    "text": ["'אתה מקבל מספיק דקות? היו משחקים שישבת יותר.'", "'איך אתה מסתדר עם ההחלטות של המאמן לגבי הדקות?'"],
+    "choices": [
+      { "label": "המאמן מחליט, אני עובד", "success": { "text": ["המאמן מעריך מאוד.", "שחקן של קבוצה."], "effects": { "coachApproval": 5 } } },
+      { "label": "מגיע לי יותר", "success": { "text": ["כותרת נפיצה. המאמן לא מבסוט.", "האוהדים מתחלקים."], "effects": { "coachApproval": -6, "followers": 120, "confidence": 2 } } },
+      { "label": "אני מוכן בכל רגע", "success": { "text": ["תשובה בוגרת.", "מסר נכון."], "effects": { "coachApproval": 2, "confidence": 1 } } }
+    ] }
+]

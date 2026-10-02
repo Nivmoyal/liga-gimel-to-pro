@@ -1,0 +1,57 @@
+{
+  "inGameFootball": [
+    { "id": "early", "range": [4, 18], "text": "{תוצאה}, המשחק עוד מחפש את הקצב.", "tip": "בתחילת משחק השוער עוד לא חם." },
+    { "id": "first_half", "range": [22, 40], "text": "{תוצאה}, לקראת סוף המחצית הראשונה." },
+    { "id": "second_half", "range": [50, 66], "text": "{תוצאה}, המחצית השנייה בעיצומה." },
+    { "id": "late", "range": [72, 87], "text": "{תוצאה}, הרגליים כבדות בדקות האחרונות.", "mod": { "physical": 4, "mental": 2 }, "tip": "בסוף המשחק ההגנה של היריבה מאבדת ריכוז." },
+    { "id": "rain", "range": [10, 85], "text": "{תוצאה}. הגשם הופך את הדשא לחלקלק.", "mod": { "technique": 5, "attack": 2 }, "conditions": { "weather": ["rain"] }, "tip": "בגשם כדור נמוך ומהיר מסוכן במיוחד." },
+    { "id": "wind", "range": [10, 85], "text": "{תוצאה}. רוח חזקה נושבת לאורך המגרש.", "mod": { "attack": 4, "playmaking": 3 }, "conditions": { "weather": ["wind"] }, "tip": "ברוח, כדורים גבוהים מתעופפים לכל כיוון. עדיף נמוך." },
+    { "id": "heat", "range": [10, 85], "text": "{תוצאה}. החום כבד והשחקנים מתנשמים.", "mod": { "physical": 5 }, "conditions": { "weather": ["hot"] } },
+    { "id": "cold", "range": [10, 85], "text": "{תוצאה}. קור עז, הכדור מרגיש כמו אבן.", "mod": { "technique": 3 }, "conditions": { "weather": ["cold"] } },
+    { "id": "derby", "range": [15, 85], "text": "זה הדרבי, {תוצאה}, והיציע רותח.", "mod": { "mental": 4 }, "bonus": { "fanRep": 2 }, "conditions": { "derby": true } },
+    { "id": "tired_job", "range": [55, 85], "text": "{תוצאה}. אחרי שבוע ארוך בעבודה בתור {עבודה}, הרגליים מרגישות כמו בטון.", "mod": { "physical": 5, "all": 1 }, "conditions": { "requiresJob": true } },
+    { "id": "bad_pitch", "range": [10, 85], "text": "{תוצאה}. המגרש בליגות הנמוכות מלא בורות.", "mod": { "technique": 4 }, "conditions": { "maxDivision": 1 } },
+    { "id": "big_crowd", "range": [15, 85], "text": "{תוצאה}, ואלפי אוהדים נושמים כל מגע שלך.", "mod": { "mental": 3 }, "bonus": { "followers": 60 }, "conditions": { "minDivision": 3 } },
+    { "id": "marked", "range": [25, 80], "text": "{תוצאה}. המאמן של {יריבה} שם עליך שומר צמוד כל המשחק.", "mod": { "all": 2 } },
+    { "id": "captain", "range": [20, 85], "text": "{תוצאה}. עם סרט הקפטן על הזרוע, כולם מסתכלים עליך.", "mod": { "mental": -2 }, "bonus": { "teamMorale": 2 }, "conditions": { "requiresCaptain": true } }
+  ],
+  "inGameBasketball": [
+    { "id": "q1", "range": [1, 9], "text": "{תוצאה}, הרבע הראשון עוד מתחמם.", "tip": "בתחילת משחק ההגנה של היריבה עוד לא מתואמת." },
+    { "id": "q2", "range": [11, 19], "text": "{תוצאה}, לקראת המחצית." },
+    { "id": "q3", "range": [21, 29], "text": "{תוצאה}, הרבע השלישי, רבע האלופות." },
+    { "id": "q4", "range": [31, 38], "text": "{תוצאה}, הרבע האחרון והלחץ עולה.", "mod": { "mental": 3, "physical": 2 } },
+    { "id": "hall_cold", "range": [3, 37], "text": "{תוצאה}. האולם קר והידיים לא מתחממות.", "mod": { "attack": 4, "technique": 2 }, "conditions": { "weather": ["hall_cold"] } },
+    { "id": "hall_loud", "range": [3, 37], "text": "{תוצאה}. האולם מלא ורועש, אי אפשר לשמוע את המאמן.", "mod": { "mental": 4, "playmaking": 2 }, "bonus": { "followers": 50 }, "conditions": { "weather": ["hall_loud"] } },
+    { "id": "derby", "range": [5, 37], "text": "זה הדרבי, {תוצאה}, וכל העיר באולם.", "mod": { "mental": 4 }, "bonus": { "fanRep": 2 }, "conditions": { "derby": true } },
+    { "id": "tired_job", "range": [22, 38], "text": "{תוצאה}. אחרי משמרת ארוכה בתור {עבודה} הרגליים כבדות.", "mod": { "physical": 5, "all": 1 }, "conditions": { "requiresJob": true } },
+    { "id": "foul_trouble", "range": [24, 38], "text": "{תוצאה}. יש לך כבר ארבע עבירות.", "mod": { "defense": 6, "physical": 2 }, "tip": "עם ארבע עבירות, כל מגע מסוכן." },
+    { "id": "hot_hand", "range": [12, 36], "text": "{תוצאה}. היד שלך חמה הערב.", "mod": { "attack": -4 } },
+    { "id": "big_crowd", "range": [5, 37], "text": "{תוצאה}, ואלפים בארנה עוקבים אחרי כל מהלך.", "mod": { "mental": 3 }, "bonus": { "followers": 60 }, "conditions": { "minDivision": 2 } },
+    { "id": "marked", "range": [10, 36], "text": "{תוצאה}. {יריבה} שמה עליך את השומר הכי טוב שלה.", "mod": { "all": 2 } },
+    { "id": "captain", "range": [10, 38], "text": "{תוצאה}. כקפטן, הכדור מגיע אליך ברגעים החשובים.", "mod": { "mental": -2 }, "bonus": { "teamMorale": 2 }, "conditions": { "requiresCaptain": true } }
+  ],
+  "preMatchFootball": [
+    { "id": "base", "text": "" },
+    { "id": "bad_weather", "text": "בחוץ מזג אוויר קשה, והמגרש נראה כמו שדה קרב.", "conditions": { "weather": ["rain", "wind", "cold"] } },
+    { "id": "heat", "text": "חום כבד, אפילו בחדר ההלבשה המזגן לא עוזר.", "conditions": { "weather": ["hot"] } },
+    { "id": "derby", "text": "זה שבוע הדרבי. כל העיר מדברת רק על המשחק.", "bonus": { "fanRep": 1 }, "conditions": { "derby": true } },
+    { "id": "job_tired", "text": "הגעת ישר מהעבודה בתור {עבודה}, עם תיק על הגב.", "conditions": { "requiresJob": true } },
+    { "id": "big_stage", "text": "מחוץ לחדר ההלבשה שומעים אלפי אוהדים מחממים את היציעים.", "conditions": { "contract": ["pro"] } }
+  ],
+  "preMatchBasketball": [
+    { "id": "base", "text": "" },
+    { "id": "cold_hall", "text": "האולם קר, והמחממים לא עובדים שוב.", "conditions": { "weather": ["hall_cold"] } },
+    { "id": "loud_hall", "text": "האולם כבר מלא שעה לפני המשחק.", "conditions": { "weather": ["hall_loud"] } },
+    { "id": "derby", "text": "זה שבוע הדרבי. כל העיר מדברת רק על המשחק.", "bonus": { "fanRep": 1 }, "conditions": { "derby": true } },
+    { "id": "job_tired", "text": "הגעת ישר מהעבודה בתור {עבודה}, עם תיק על הגב.", "conditions": { "requiresJob": true } },
+    { "id": "big_stage", "text": "המצלמות של ערוץ הספורט כבר מוצבות סביב הפרקט.", "conditions": { "contract": ["pro"] } }
+  ],
+  "postMatch": [
+    { "id": "radio", "speaker": "הרדיו האזורי", "text": "כתב הרדיו האזורי מושיט מיקרופון:", "reach": 1 },
+    { "id": "tv", "speaker": "ערוץ הספורט", "text": "מצלמת ערוץ הספורט מחכה בצד:", "reach": 2, "conditions": { "minDivision": 2 } },
+    { "id": "paper", "speaker": "העיתון הארצי", "text": "כתב העיתון הארצי רושם בפנקס:", "reach": 1.5 },
+    { "id": "podcast", "speaker": "פודקאסט ספורט", "text": "מגיש פודקאסט ספורט מקליט בטלפון:", "reach": 1.2 },
+    { "id": "club", "speaker": "ערוץ המועדון", "text": "ערוץ היוטיוב של המועדון מצלם לאוהדים:", "reach": 1 },
+    { "id": "fans_site", "speaker": "אתר האוהדים", "text": "עורך אתר האוהדים עוצר אותך ביציאה:", "reach": 0.8 }
+  ]
+}

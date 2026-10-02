@@ -19,6 +19,7 @@ import { PostMatchInterview } from './components/PostMatchInterview';
 import { TransferWindowModal } from './components/TransferWindowModal';
 import { SeasonEndModal } from './components/SeasonEndModal';
 import { CallUpModal } from './components/CallUpModal';
+import { LiveMatchScreen } from './components/LiveMatchScreen';
 import { TitleScreen } from './components/TitleScreen';
 import { IntroStory } from './components/IntroStory';
 import { CreditsScreen } from './components/CreditsScreen';
@@ -138,6 +139,9 @@ export default function App() {
 
       {/* Matchday flow */}
       {state.phase === 'preMatch' && <PreMatchModal state={state} dispatch={dispatch} />}
+      {(state.phase === 'live' || state.phase === 'inGame') && state.currentMatch && (
+        <LiveMatchScreen state={state} dispatch={dispatch} paused={state.phase !== 'live'} />
+      )}
       {state.phase === 'inGame' && <InGameEventModal state={state} dispatch={dispatch} />}
       {state.phase === 'matchSummary' && <MatchSummaryModal state={state} dispatch={dispatch} />}
       {state.phase === 'postMatch' && <PostMatchInterview state={state} dispatch={dispatch} />}

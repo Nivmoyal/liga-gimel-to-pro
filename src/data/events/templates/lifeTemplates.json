@@ -1,0 +1,378 @@
+[
+  { "key": "lt_boss_overtime", "sport": "both", "scene": "work", "speaker": "הבוס מהעבודה", "conditions": { "requiresJob": true },
+    "vars": { "when": ["ביום רביעי בלילה", "בשישי בבוקר", "אחרי האימון", "בערב לפני המשחק", "בחג"] },
+    "title": ["שעות נוספות"], "text": ["הבוס שלך בעבודה בתור {עבודה} מבקש שתישאר {$when}. 'אני צריך אותך, אחי.'"],
+    "choices": [
+      { "label": "נשאר בשביל הכסף", "success": { "text": ["עוד כמה מאות שקלים, ועוד כמה שעות שינה פחות."], "effects": { "budget": 450, "energy": -15 } } },
+      { "label": "מסביר שיש לך אימון", "stat": "mental", "difficulty": 46, "success": { "text": ["הבוס מבין. 'רק תביא לי כרטיס למשחק.'"], "effects": { "energy": 2 } }, "fail": { "text": ["הבוס רוטן: 'אם אתה לא פה, אולי לא תהיה פה בכלל.'"], "effects": { "confidence": -3 } } },
+      { "label": "מציע חבר במקומך", "success": { "text": ["החבר מקבל עבודה, הבוס מרוצה, ואתה ישן."], "effects": { "energy": 3, "fanRep": 1 } } }
+    ] },
+  { "key": "lt_late_to_work", "sport": "both", "scene": "work", "speaker": "הבוס מהעבודה", "conditions": { "requiresJob": true },
+    "vars": { "why": ["אחרי משחק חוץ", "בגלל פקקים בכביש 6", "אחרי אימון לילה", "בגלל טיפול פיזיו", "כי לא שמעת את השעון"] },
+    "title": ["איחור לעבודה"], "text": ["הגעת באיחור של שעה לעבודה {$why}. הבוס מחכה לך בכניסה."],
+    "choices": [
+      { "label": "מתנצל ומשלים בסוף היום", "success": { "text": ["השלמת את השעות. הבוס נרגע."], "effects": { "energy": -8 } } },
+      { "label": "מסביר שהקריירה חשובה לך", "stat": "mental", "difficulty": 52, "success": { "text": ["הבוס אוהד בסתר. 'רק שתעלה ליגה.'"], "effects": { "confidence": 2 } }, "fail": { "text": ["הבוס מוריד לך מהמשכורת."], "effects": { "budget": -250 } } },
+      { "label": "מביא לו חולצה חתומה", "success": { "text": ["הבוס תולה את החולצה במשרד. סלחנות מלאה."], "effects": { "fanRep": 1 } } }
+    ] },
+  { "key": "lt_coworker_tickets", "sport": "both", "scene": "work", "speaker": "עמית לעבודה", "conditions": { "requiresJob": true },
+    "vars": { "who": ["העמית מהמשמרת", "המנהלת של הסניף", "הנהג הוותיק", "הסטודנטית החדשה", "השומר של הלילה"] },
+    "title": ["כרטיסים למשחק"], "text": ["{$who} בעבודה מבקש/ת כרטיסים למשחק הבא של {קבוצה} בשביל כל המשפחה."],
+    "choices": [
+      { "label": "קונה מכספך", "success": { "text": ["חמישה כרטיסים, וחמישה אוהדים חדשים."], "effects": { "budget": -200, "fanRep": 3 } } },
+      { "label": "מבקש מהמועדון", "stat": "mental", "difficulty": 44, "success": { "text": ["המועדון שולח כרטיסים מתנה."], "effects": { "fanRep": 2 } }, "fail": { "text": ["המועדון מסרב. מביך."], "effects": { "confidence": -1 } } },
+      { "label": "מסביר שאין", "success": { "text": ["האכזבה ניכרת, אבל זה עובר."], "effects": {} } }
+    ] },
+  { "key": "lt_customer_fan", "sport": "both", "scene": "work", "speaker": "לקוח", "conditions": { "requiresJob": true },
+    "vars": { "who": ["ילד בן עשר", "אוהד ותיק", "אמא עם עגלה", "חבורת נערים", "קשיש עם צעיף של המועדון"] },
+    "title": ["זיהו אותך בעבודה"], "text": ["באמצע המשמרת, {$who} מזהה אותך: 'אתה {שחקן} מ{קבוצה}!'"],
+    "choices": [
+      { "label": "מצטלם ומדבר", "success": { "text": ["תמונה שכבר בכל הקבוצות בווטסאפ."], "effects": { "fanRep": 3, "followers": 40 } } },
+      { "label": "חותם על קבלה", "success": { "text": ["חתימה על קבלה. מזכרת מוזרה ומושלמת."], "effects": { "fanRep": 2 } } },
+      { "label": "מבקש להמשיך לעבוד", "success": { "text": ["הבוס מסתכל. אין זמן לפרסום."], "effects": { "fanRep": -1 } } }
+    ] },
+  { "key": "lt_better_job", "sport": "both", "scene": "office", "speaker": "מעסיק אחר", "conditions": { "requiresJob": true },
+    "vars": { "place": ["חברת הייטק קטנה", "מוסך גדול", "רשת חדרי כושר", "מתנ״ס עירוני", "חברת הובלות"] },
+    "title": ["הצעת עבודה"], "text": ["{$place} מציע/ה לך עבודה בשעות גמישות, אבל פחות כסף."],
+    "choices": [
+      { "label": "שואל על שעות ומשכורת", "stat": "mental", "difficulty": 50, "success": { "text": ["סגרת על בונוס חתימה קטן ושעות נוחות לבינתיים."], "effects": { "budget": 400, "energy": 4 } }, "fail": { "text": ["ההצעה לא כוללת שום דבר שאתה צריך."], "effects": {} } },
+      { "label": "נשאר בעבודה הנוכחית", "success": { "text": ["יציבות לפני הכל."], "effects": { "confidence": 1 } } },
+      { "label": "שומר את המספר להמשך", "success": { "text": ["קשר טוב שווה זהב."], "effects": {} } }
+    ] },
+  { "key": "lt_family_event", "sport": "both", "scene": "party", "speaker": "המשפחה",
+    "vars": { "event": ["בר מצווה של בן הדוד", "חתונה של אחותך", "ברית לאחיין", "חינה של בת הדודה", "יום הולדת 80 לסבא"] },
+    "title": ["אירוע משפחתי"], "text": ["ה{$event} נופל/ת על הערב שלפני המשחק."],
+    "choices": [
+      { "label": "בא ורוקד", "success": { "text": ["המשפחה מאושרת. הרגליים פחות."], "effects": { "confidence": 4, "energy": -12, "budget": -300 } } },
+      { "label": "בא לשעה ועוזב", "success": { "text": ["נשיקות, מתנה, הביתה."], "effects": { "confidence": 2, "budget": -300, "energy": -3 } } },
+      { "label": "מוותר ושולח מתנה", "success": { "text": ["חלק מהמשפחה לא מבין."], "effects": { "confidence": -3, "budget": -250 } } }
+    ] },
+  { "key": "lt_parent_sick", "sport": "both", "scene": "home", "speaker": "המשפחה",
+    "vars": { "who": ["אבא", "אמא", "סבא", "סבתא", "האח הקטן"] },
+    "title": ["דאגה בבית"], "text": ["{$who} אושפז/ה לבדיקות. המשפחה מבקשת שתבוא לבית החולים."],
+    "choices": [
+      { "label": "נוסע מיד", "success": { "text": ["היית שם כשצריך. הכל בסדר, בסוף."], "effects": { "energy": -10, "confidence": 2, "coachApproval": -1 } } },
+      { "label": "מגיע אחרי האימון", "success": { "text": ["הגעת בערב. מחבקים בלי מילים."], "effects": { "energy": -6 } } },
+      { "label": "מבקש מהמאמן יום חופש", "stat": "mental", "difficulty": 40, "success": { "text": ["המאמן מבין לגמרי. משפחה לפני הכל."], "effects": { "coachApproval": 2, "energy": 4 } }, "fail": { "text": ["המאמן מאשר, אבל לא מרוצה."], "effects": { "coachApproval": -2 } } }
+    ] },
+  { "key": "lt_sibling_money", "sport": "both", "scene": "home", "speaker": "המשפחה",
+    "vars": { "who": ["אחותך הגדולה", "האח הקטן", "בן הדוד", "אחיך מהצבא", "בת הדודה הסטודנטית"] },
+    "title": ["בקשה כספית"], "text": ["{$who} צריך/ה 600 ש״ח בדחיפות ומבקש/ת ממך."],
+    "choices": [
+      { "label": "נותן הכל", "success": { "text": ["משפחה זה משפחה."], "effects": { "budget": -600, "confidence": 2 } } },
+      { "label": "נותן חצי", "success": { "text": ["עזרת כמה שיכולת."], "effects": { "budget": -300 } } },
+      { "label": "מסביר שגם לך קשה", "success": { "text": ["הם מבינים. בערך."], "effects": { "confidence": -2 } } }
+    ] },
+  { "key": "lt_partner_trip", "sport": "both", "scene": "home", "speaker": "{$who}",
+    "vars": { "who": ["החברה שלך", "החבר שלך", "החברה שלך", "החבר שלך", "החברה שלך"], "place": ["אילת", "צימר בגליל", "כנרת", "מכתש רמון", "ים המלח"] },
+    "title": ["חופשה זוגית"], "text": ["{$who} מתכנן/ת סוף שבוע ב{$place}, בדיוק בשבוע של משחק חשוב."],
+    "choices": [
+      { "label": "דוחה לפגרה", "success": { "text": ["קצת אכזבה, אבל מבינים."], "effects": { "confidence": -1 } } },
+      { "label": "יום אחד בלבד", "success": { "text": ["יום של שקט. הגוף והראש מודים."], "effects": { "energy": 10, "budget": -400, "confidence": 3 } } },
+      { "label": "נוסע לכל הסופ״ש", "success": { "text": ["חופשה מושלמת. המאמן פחות."], "effects": { "energy": 15, "budget": -800, "coachApproval": -4, "confidence": 4 } } }
+    ] },
+  { "key": "lt_neighbor_kid", "sport": "both", "scene": "street", "speaker": "ילד מהשכונה",
+    "vars": { "name": ["יואב", "נור", "עמית", "מוחמד", "אליה"] },
+    "title": ["הילד מהשכונה"], "text": ["{$name}, ילד בן 11 מהשכונה, מחכה לך כל יום ליד הבניין עם כדור."],
+    "choices": [
+      { "label": "משחק איתו חצי שעה", "success": { "text": ["הוא מספר לכל הכיתה. גם אתה נהנית."], "effects": { "fanRep": 3, "energy": -4, "confidence": 2 } } },
+      { "label": "נותן לו חולצה שלך", "success": { "text": ["הוא ישן איתה. אמא שלו שולחת תמונה."], "effects": { "fanRep": 4 } } },
+      { "label": "מבטיח מחר", "success": { "text": ["הוא מחכה גם מחר."], "effects": {} } }
+    ] },
+  { "key": "lt_school_visit", "sport": "both", "scene": "street", "speaker": "המנהלת",
+    "vars": { "school": ["בית הספר היסודי שלך", "חטיבת הביניים בעיר", "התיכון המקצועי", "בית הספר לחינוך מיוחד", "בית הספר בכפר הסמוך"] },
+    "title": ["הרצאה לתלמידים"], "text": ["{$school} מזמין אותך לדבר עם התלמידים על חלומות ועבודה קשה."],
+    "choices": [
+      { "label": "מגיע ומספר את הסיפור שלך", "success": { "text": ["מאות ילדים מוחאים כפיים."], "effects": { "fanRep": 5, "followers": 50, "energy": -5 } } },
+      { "label": "מגיע עם חברים מהקבוצה", "success": { "text": ["אירוע ענק, המועדון משתף."], "effects": { "fanRep": 4, "teamMorale": 3, "energy": -5 } } },
+      { "label": "דוחה בנימוס", "success": { "text": ["אולי בפעם הבאה."], "effects": { "fanRep": -1 } } }
+    ] },
+  { "key": "lt_charity_match", "sport": "both", "scene": "field", "speaker": "עמותה",
+    "vars": { "cause": ["ילדים חולי סרטן", "נפגעי פעולות איבה", "בעלי חיים נטושים", "קשישים בודדים", "משפחות במצוקה"] },
+    "title": ["משחק צדקה"], "text": ["עמותה למען {$cause} מארגנת משחק צדקה ומבקשת שתשתתף."],
+    "choices": [
+      { "label": "משתתף ותורם", "success": { "text": ["ערב מרגש. כולם מדברים על זה."], "effects": { "fanRep": 6, "budget": -200, "energy": -6 } } },
+      { "label": "משתתף בלי לשחק", "success": { "text": ["חתמת, הצטלמת, עזרת."], "effects": { "fanRep": 3 } } },
+      { "label": "תורם ולא מגיע", "success": { "text": ["תרומה שקטה."], "effects": { "budget": -300, "fanRep": 1 } } }
+    ] },
+  { "key": "lt_hospital", "sport": "both", "scene": "medical", "speaker": "המועדון",
+    "vars": { "place": ["מחלקת הילדים ברמב״ם", "בית חולים שניידר", "סורוקה", "הדסה", "בית חולים זיו"] },
+    "title": ["ביקור בבית החולים"], "text": ["{קבוצה} מארגנת ביקור ב{$place}, ומבקשת שתבוא."],
+    "choices": [
+      { "label": "בא עם מתנות", "success": { "text": ["חיוכים של ילדים. אין רגע יפה מזה."], "effects": { "fanRep": 5, "budget": -150, "confidence": 3 } } },
+      { "label": "בא עם חולצות חתומות", "success": { "text": ["הילדים מתלבשים בחולצות שלך."], "effects": { "fanRep": 4 } } },
+      { "label": "מבקש לדלג", "success": { "text": ["המועדון מאוכזב."], "effects": { "coachApproval": -2 } } }
+    ] },
+  { "key": "lt_reserve_duty", "sport": "both", "scene": "phone", "speaker": "צו מילואים",
+    "vars": { "days": ["שלושה ימים", "שבוע", "חמישה ימים", "ארבעה ימים", "יומיים"] },
+    "title": ["צו מילואים"], "text": ["קיבלת צו מילואים ל{$days}, בדיוק בשבוע של משחק."],
+    "choices": [
+      { "label": "מתייצב", "success": { "text": ["המדינה קודם. המועדון מבין, והאוהדים מצדיעים."], "effects": { "energy": -15, "fanRep": 4, "coachApproval": -1 } } },
+      { "label": "מבקש דחייה", "stat": "mental", "difficulty": 50, "success": { "text": ["הדחייה אושרה לפגרה."], "effects": { "confidence": 1 } }, "fail": { "text": ["הדחייה נדחתה. מתייצבים."], "effects": { "energy": -15, "coachApproval": -2 } } },
+      { "label": "מבקש מהמועדון מכתב", "success": { "text": ["המועדון שולח מכתב, ומתקבלת דחייה חלקית."], "effects": { "energy": -6 } } }
+    ] },
+  { "key": "lt_exam", "sport": "both", "scene": "home", "speaker": "האוניברסיטה הפתוחה",
+    "vars": { "subject": ["מבוא לכלכלה", "סטטיסטיקה", "פסיכולוגיה", "חשבון אינפיניטסימלי", "מבוא למדעי המחשב"] },
+    "title": ["מבחן בלימודים"], "text": ["יש לך מבחן ב{$subject} ביום ראשון, ולא פתחת את החומר."],
+    "choices": [
+      { "label": "לילה לבן של לימודים", "stat": "mental", "difficulty": 52, "success": { "text": ["עברת בציון יפה!"], "effects": { "energy": -12, "confidence": 4, "attributes": { "mental": 1 } } }, "fail": { "text": ["נכשלת, ועוד עייף."], "effects": { "energy": -12, "confidence": -3 } } },
+      { "label": "דוחה למועד ב׳", "success": { "text": ["דחייה. הראש נשאר בספורט."], "effects": { "budget": -150 } } },
+      { "label": "לומד בהפסקות באימון", "success": { "text": ["ממוצע. גם המאמן ראה אותך עם ספר."], "effects": { "coachApproval": -1, "attributes": { "mental": 1 } } } }
+    ] },
+  { "key": "lt_car", "sport": "both", "scene": "work", "speaker": "המוסך",
+    "vars": { "car": ["הסובארו הישנה", "הקטנוע", "הטויוטה של אבא", "הקיה המשומשת", "האופניים החשמליים"] },
+    "title": ["התקלה ברכב"], "text": ["{$car} הפסיק/ה לעבוד בדרך לאימון. המוסכניק אומר 900 ש״ח."],
+    "choices": [
+      { "label": "משלם ומתקן", "success": { "text": ["חוזר לכביש."], "effects": { "budget": -900 } } },
+      { "label": "מבקש הנחה של שחקן", "stat": "mental", "difficulty": 48, "success": { "text": ["המוסכניק אוהד! 400 ש״ח בלבד."], "effects": { "budget": -400, "fanRep": 1 } }, "fail": { "text": ["אין הנחות."], "effects": { "budget": -900 } } },
+      { "label": "תחבורה ציבורית בינתיים", "success": { "text": ["שעה וחצי לכל אימון. מעייף."], "effects": { "energy": -10 } } }
+    ] },
+  { "key": "lt_phone", "sport": "both", "scene": "phone", "speaker": "הטלפון",
+    "vars": { "how": ["נפל באימון", "נשאר בגשם", "נדרך במשמרת", "נפל לשירותים", "נשבר בתיק"] },
+    "title": ["הטלפון התקלקל"], "text": ["הטלפון שלך {$how}. בלי טלפון אין רשתות, ואין קשר עם המאמן."],
+    "choices": [
+      { "label": "קונה חדש", "success": { "text": ["טלפון חדש ונוצץ."], "effects": { "budget": -1200, "followers": 20 } } },
+      { "label": "מתקן במעבדה", "success": { "text": ["עובד, פחות או יותר."], "effects": { "budget": -350 } } },
+      { "label": "שבוע בלי טלפון", "success": { "text": ["שבוע של שקט. הראש נקי."], "effects": { "confidence": 3, "followers": -30 } } }
+    ] },
+  { "key": "lt_roommate", "sport": "both", "scene": "home", "speaker": "השותף לדירה",
+    "vars": { "issue": ["עושה מסיבות כל לילה", "לא משלם חשבונות", "אימץ שני כלבים", "עובר לגור עם החברה שלו", "מנגן תופים בבוקר"] },
+    "title": ["שותף בעייתי"], "text": ["השותף שלך לדירה {$issue}, והשינה שלך נפגעת."],
+    "choices": [
+      { "label": "שיחה רצינית", "stat": "mental", "difficulty": 48, "success": { "text": ["סיכמתם על כללים. שקט."], "effects": { "energy": 6 } }, "fail": { "text": ["ריב. עכשיו אתם לא מדברים."], "effects": { "confidence": -3 } } },
+      { "label": "מחפש דירה אחרת", "success": { "text": ["דירה חדשה, דמי תיווך."], "effects": { "budget": -1000, "energy": 8 } } },
+      { "label": "אטמי אוזניים", "success": { "text": ["חצי פתרון."], "effects": { "energy": -4 } } }
+    ] },
+  { "key": "lt_loan", "sport": "both", "scene": "office", "speaker": "הבנק",
+    "vars": { "amount": ["5,000", "8,000", "3,000", "10,000", "6,000"] },
+    "title": ["הלוואה מהבנק"], "text": ["הבנק מציע לך הלוואה של {$amount} ש״ח בריבית גבוהה, 'בגלל שאתה ספורטאי'."],
+    "choices": [
+      { "label": "לוקח את ההלוואה", "success": { "text": ["כסף עכשיו, תשלומים לחודשים."], "effects": { "budget": 3000, "confidence": -2 } } },
+      { "label": "מסרב", "success": { "text": ["בלי חובות. שקט."], "effects": { "confidence": 1 } } },
+      { "label": "מתייעץ עם אבא", "success": { "text": ["אבא אומר לא. אבא צודק."], "effects": {} } }
+    ] },
+  { "key": "lt_betting", "sport": "both", "scene": "phone", "speaker": "מכר מהשכונה",
+    "vars": { "who": ["מכר מהשכונה", "חבר של חבר", "בחור מהמכון", "לקוח קבוע מהעבודה", "בן דוד רחוק"] },
+    "title": ["הימורים"], "text": ["{$who} מציע לך להמר על משחקים בליגה שלך. 'כולם עושים את זה.'"],
+    "choices": [
+      { "label": "מסרב בתוקף", "success": { "text": ["נקי. בדיוק ככה."], "effects": { "confidence": 2 } } },
+      { "label": "מדווח למועדון", "success": { "text": ["המועדון מודה לך, וההתאחדות פותחת בדיקה."], "effects": { "coachApproval": 3, "fanRep": 2 } } },
+      { "label": "מהמר קצת", "stat": "mental", "difficulty": 70, "success": { "text": ["ניצחת 500 ש״ח. אבל הבטן מתהפכת."], "effects": { "budget": 500, "confidence": -4 } }, "fail": { "text": ["נחשפת. קנס מההתאחדות וכותרות."], "effects": { "budget": -2000, "fanRep": -15, "coachApproval": -15 } } }
+    ] },
+  { "key": "lt_fixing", "sport": "both", "scene": "phone", "speaker": "מספר חסוי", "conditions": { "maxDivision": 2 },
+    "vars": { "sum": ["5,000", "10,000", "7,000", "15,000", "8,000"] },
+    "title": ["הצעה מסוכנת"], "text": ["מספר חסוי מציע לך {$sum} ש״ח כדי ש{קבוצה} תפסיד במשחק הבא."],
+    "choices": [
+      { "label": "מנתק ומדווח למשטרה", "success": { "text": ["חקירה נפתחת. אתה גיבור בכותרות."], "effects": { "fanRep": 10, "followers": 300, "coachApproval": 5, "news": { "category": "league", "text": "{שחקן} מ{קבוצה} דיווח על ניסיון להטות משחק" } } } },
+      { "label": "מנתק ושוכח", "success": { "text": ["נקי, אבל בלי לעזור לאחרים."], "effects": { "confidence": -1 } } },
+      { "label": "מקשיב להצעה", "stat": "mental", "difficulty": 75, "success": { "text": ["סירבת בסוף, אבל השיחה מוקלטת אצל מישהו."], "effects": { "confidence": -6 } }, "fail": { "text": ["נקלעת לחקירה. השם שלך בכל מקום."], "effects": { "fanRep": -25, "coachApproval": -25, "budget": -1500 } } }
+    ] },
+  { "key": "lt_supplement", "sport": "both", "scene": "gym", "speaker": "מאמן בחדר הכושר",
+    "vars": { "product": ["אבקה מאמריקה", "כדורים 'טבעיים'", "זריקות ויטמינים", "משקה אנרגיה מיוחד", "טבליות מתאילנד"] },
+    "title": ["תוסף חשוד"], "text": ["מאמן בחדר הכושר מציע לך {$product} 'שיעשו אותך מכונה תוך חודש'."],
+    "choices": [
+      { "label": "מסרב", "success": { "text": ["חכם. בדיקות סמים לא סולחות."], "effects": { "confidence": 1 } } },
+      { "label": "בודק עם רופא הקבוצה", "success": { "text": ["הרופא מגלה חומר אסור. הצלת את הקריירה."], "effects": { "coachApproval": 3 } } },
+      { "label": "מנסה", "stat": "mental", "difficulty": 70, "success": { "text": ["הרגשת חזק, ופחדת כל השבוע מבדיקה."], "effects": { "attributes": { "physical": 1 }, "confidence": -4 } }, "fail": { "text": ["בדיקת סמים חיובית. הרחקה."], "effects": { "injuryWeeks": 3, "fanRep": -20, "coachApproval": -20 } } }
+    ] },
+  { "key": "lt_tattoo", "sport": "both", "scene": "shop", "speaker": "מקעקע",
+    "vars": { "design": ["הסמל של {קבוצה}", "תאריך הבכורה שלך", "השם של אמא", "מספר החולצה", "אריה על הכתף"] },
+    "title": ["קעקוע חדש"], "text": ["אתה שוקל קעקוע של {$design}."],
+    "choices": [
+      { "label": "עושה אותו", "success": { "text": ["האוהדים משוגעים על זה."], "effects": { "budget": -600, "fanRep": 2, "followers": 80 } } },
+      { "label": "מחכה לעונה הבאה", "success": { "text": ["אין לחץ."], "effects": {} } },
+      { "label": "שואל את העוקבים", "success": { "text": ["סקר ויראלי. אלפי הצבעות."], "effects": { "followers": 120 } } }
+    ] },
+  { "key": "lt_viral", "sport": "both", "scene": "phone", "speaker": "הרשת",
+    "vars": { "challenge": ["אתגר כדור על הראש", "אתגר בעיטה לפח", "ריקוד ויראלי", "אתגר זריקה מעל הגג", "אתגר 100 קפיצות"] },
+    "title": ["אתגר ויראלי"], "text": ["העוקבים מתייגים אותך ב{$challenge}."],
+    "choices": [
+      { "label": "עושה את האתגר", "stat": "technique", "difficulty": 45, "success": { "text": ["הצלחת בניסיון הראשון. ויראלי!"], "effects": { "followers": 250, "fanRep": 2 } }, "fail": { "text": ["נכשלת מול המצלמה. גם זה ויראלי."], "effects": { "followers": 120 } } },
+      { "label": "מאתגר את החבר׳ה מהקבוצה", "success": { "text": ["כל הקבוצה בסרטון."], "effects": { "followers": 150, "teamMorale": 3 } } },
+      { "label": "מתעלם", "success": { "text": ["הפוקוס על המגרש."], "effects": {} } }
+    ] },
+  { "key": "lt_influencer", "sport": "both", "scene": "phone", "speaker": "{$who}",
+    "vars": { "who": ["יוטיובר כדורגל", "טיקטוקרית ספורט", "פודקאסטר מצחיק", "שף מפורסם", "ראפר מהעיר"] },
+    "title": ["שיתוף פעולה"], "text": ["{$who} רוצה לצלם איתך סרטון משותף."],
+    "choices": [
+      { "label": "מסכים", "success": { "text": ["הסרטון מגיע למאות אלפים."], "effects": { "followers": 400, "energy": -5 } } },
+      { "label": "מבקש תשלום", "stat": "mental", "difficulty": 52, "success": { "text": ["סגרת על 600 ש״ח."], "effects": { "budget": 600, "followers": 250 } }, "fail": { "text": ["הם הלכו לשחקן אחר."], "effects": {} } },
+      { "label": "מסרב", "success": { "text": ["לא כל דבר צריך להיות ברשת."], "effects": {} } }
+    ] },
+  { "key": "lt_hate_dm", "sport": "both", "scene": "phone", "speaker": "הודעה פרטית",
+    "vars": { "source": ["אוהד של {יריבה}", "חשבון אנונימי", "אוהד של {קבוצה}", "פרופיל פיקטיבי", "מישהו מהשכונה"] },
+    "title": ["הודעה מכוערת"], "text": ["{$source} שולח לך הודעות פוגעניות ומאיימות אחרי המשחק."],
+    "choices": [
+      { "label": "חוסם ומדווח", "success": { "text": ["חסום. ממשיכים."], "effects": { "confidence": 1 } } },
+      { "label": "מפרסם צילום מסך", "success": { "text": ["תמיכה ענקית מהאוהדים."], "effects": { "fanRep": 4, "followers": 100 } } },
+      { "label": "עונה לו", "success": { "text": ["הוויכוח מתפשט. לא חכם."], "effects": { "fanRep": -3, "confidence": -2 } } }
+    ] },
+  { "key": "lt_fan_gift", "sport": "both", "scene": "fans", "speaker": "אוהדת",
+    "vars": { "gift": ["ציור שלך", "צעיף סרוג בעבודת יד", "עוגה עם המספר שלך", "אלבום תמונות מהעונה", "מכתב מרגש"] },
+    "title": ["מתנה מאוהדת"], "text": ["אוהדת מבוגרת מחכה לך אחרי האימון עם {$gift}."],
+    "choices": [
+      { "label": "מחבק ומצטלם", "success": { "text": ["התמונה מרגשת את כל הרשת."], "effects": { "fanRep": 4, "followers": 60 } } },
+      { "label": "מזמין אותה למשחק", "success": { "text": ["היא תשב בשורה הראשונה."], "effects": { "fanRep": 5 } } },
+      { "label": "תודה קצרה", "success": { "text": ["היא שמחה בכל מקרה."], "effects": { "fanRep": 1 } } }
+    ] },
+  { "key": "lt_youth_coach", "sport": "both", "scene": "street", "speaker": "המחלקה לנוער",
+    "vars": { "team": ["קבוצת הילדים של המועדון", "קבוצת הנערות", "חוג אחר הצהריים", "בית הספר לספורט", "קבוצת הנוער של הכפר"] },
+    "title": ["לאמן ילדים"], "text": ["{$team} מחפש/ת מאמן לפעמיים בשבוע, בתשלום."],
+    "choices": [
+      { "label": "לוקח את התפקיד", "success": { "text": ["כסף נוסף וילדים שמעריצים אותך."], "effects": { "budget": 500, "energy": -8, "fanRep": 3 } } },
+      { "label": "פעם בשבוע בלבד", "success": { "text": ["איזון טוב."], "effects": { "budget": 250, "energy": -4, "fanRep": 1 } } },
+      { "label": "מסרב", "success": { "text": ["אין זמן."], "effects": {} } }
+    ] },
+  { "key": "lt_tapping_up", "sport": "both", "scene": "office", "speaker": "מנהל ספורטיבי",
+    "vars": { "level": ["ליגה גבוהה יותר", "קבוצה יריבה בעיר", "מועדון מהמרכז", "קבוצה מהצפון", "מועדון מהדרום"] },
+    "title": ["פנייה לא רשמית"], "text": ["מנהל ספורטיבי של מועדון מ{$level} מזמין אותך לקפה, בלי ידיעת {קבוצה}."],
+    "choices": [
+      { "label": "נפגש בשקט", "success": { "text": ["הוא מתרשם. כנראה תשמע ממנו בחלון ההעברות."], "effects": { "confidence": 3, "coachApproval": -2 } } },
+      { "label": "מפנה אותו לסוכן", "success": { "text": ["מקצועני."], "effects": { "confidence": 1 } } },
+      { "label": "מספר למועדון", "success": { "text": ["המועדון מעריך את הנאמנות."], "effects": { "coachApproval": 3, "fanRep": 2 } } }
+    ] },
+  { "key": "lt_teammate_conflict", "sport": "both", "scene": "locker", "speaker": "חבר לקבוצה",
+    "vars": { "issue": ["לוקח לך את המקום בהרכב", "צוחק עליך מול כולם", "לא מוסר לך כדורים", "מדבר עליך עם המאמן", "קיבל משכורת גבוהה ממך"] },
+    "title": ["מתח בחדר"], "text": ["חבר לקבוצה {$issue}, והמתח בא לידי ביטוי באימונים."],
+    "choices": [
+      { "label": "מדבר איתו בארבע עיניים", "stat": "mental", "difficulty": 48, "success": { "text": ["ניקיתם את האוויר."], "effects": { "teamMorale": 4 } }, "fail": { "text": ["השיחה מתפוצצת."], "effects": { "teamMorale": -4 } } },
+      { "label": "עונה לו על המגרש באימון", "success": { "text": ["המאמן רואה תחרות בריאה."], "effects": { "coachApproval": 2, "energy": -4 } } },
+      { "label": "מתעלם", "success": { "text": ["זה ימשיך לבעבע."], "effects": { "teamMorale": -2 } } }
+    ] },
+  { "key": "lt_team_night", "sport": "both", "scene": "party", "speaker": "הקפטן",
+    "vars": { "place": ["מסעדת בשרים", "באולינג", "אסקייפ רום", "קריוקי", "חוף הים"] },
+    "title": ["ערב קבוצתי"], "text": ["הקבוצה יוצאת ל{$place} ביום שלישי בערב."],
+    "choices": [
+      { "label": "מגיע ראשון", "success": { "text": ["ערב מגבש."], "effects": { "teamMorale": 6, "budget": -150, "energy": -4 } } },
+      { "label": "מגיע לשעה", "success": { "text": ["נוכחות."], "effects": { "teamMorale": 3, "budget": -150 } } },
+      { "label": "נשאר בבית", "success": { "text": ["החבר׳ה שואלים איפה היית."], "effects": { "teamMorale": -3, "energy": 4 } } }
+    ] },
+  { "key": "lt_coach_extra", "sport": "both", "scene": "field", "speaker": "המאמן",
+    "vars": { "focus": ["סיומת מול השער", "משחק בראש", "רגל חלשה", "קריאת משחק", "יציאה מלחץ"] },
+    "title": ["אימון אישי עם המאמן"], "text": ["המאמן מציע אימון אישי על {$focus} בשבת בבוקר."],
+    "choices": [
+      { "label": "מגיע בשבע בבוקר", "success": { "text": ["המאמן רואה שאתה רציני."], "effects": { "coachApproval": 5, "energy": -10, "attributes": { "technique": 1 } } } },
+      { "label": "מבקש להזיז לשעה מאוחרת", "success": { "text": ["המאמן מסכים בחצי פה."], "effects": { "coachApproval": 1, "energy": -6 } } },
+      { "label": "מסרב, יש משמרת", "success": { "text": ["המאמן מבין, אבל זוכר."], "effects": { "coachApproval": -2 } } }
+    ] },
+  { "key": "lt_coach_criticism", "sport": "both", "scene": "field", "speaker": "המאמן",
+    "vars": { "what": ["על חוסר מאמץ", "על איבודי כדור", "על איחור לאימון", "על הקשב בווידאו", "על שפת גוף"] },
+    "title": ["ביקורת מול כולם"], "text": ["המאמן נוזף בך מול כל הקבוצה {$what}."],
+    "choices": [
+      { "label": "מקבל ומשתפר", "success": { "text": ["באימון הבא אתה הראשון בכל תרגיל."], "effects": { "coachApproval": 4, "confidence": -1 } } },
+      { "label": "מתווכח", "success": { "text": ["הקבוצה בשקט. המאמן לא שוכח."], "effects": { "coachApproval": -6, "confidence": 2 } } },
+      { "label": "שותק ומבקש שיחה אחר כך", "success": { "text": ["בשיחה האישית הוא מסביר. נקי."], "effects": { "coachApproval": 2 } } }
+    ] },
+  { "key": "lt_overtraining", "sport": "both", "scene": "medical", "speaker": "הפיזיותרפיסט",
+    "vars": { "pain": ["בגיד אכילס", "בברך", "בגב התחתון", "בירך האחורית", "בכתף"] },
+    "title": ["הגוף מאותת"], "text": ["הפיזיו מזהיר: יש לך עומס {$pain}. אם תמשיך ככה, תיפצע."],
+    "choices": [
+      { "label": "מוריד עומס השבוע", "success": { "text": ["הגוף מתאושש."], "effects": { "energy": 12, "coachApproval": -1 } } },
+      { "label": "טיפולים יומיים", "success": { "text": ["כסף על טיפולים, גוף בריא."], "effects": { "budget": -400, "energy": 8 } } },
+      { "label": "ממשיך כרגיל", "stat": "physical", "difficulty": 55, "success": { "text": ["הגוף עמד בזה. הפעם."], "effects": { "confidence": 2 } }, "fail": { "text": ["נקרע משהו. שבועיים בחוץ."], "effects": { "injuryWeeks": 2 } } }
+    ] },
+  { "key": "lt_sleep", "sport": "both", "scene": "home", "speaker": "הגוף שלך",
+    "vars": { "why": ["לחץ לפני המשחק", "משמרות לילה", "התינוק של השכנים", "המחשבות על העתיד", "יותר מדי קפה"] },
+    "title": ["לילות בלי שינה"], "text": ["כבר שלושה לילות שאתה לא ישן טוב בגלל {$why}."],
+    "choices": [
+      { "label": "שגרת שינה קבועה", "success": { "text": ["אחרי יומיים, שינה עמוקה."], "effects": { "energy": 10 } } },
+      { "label": "מדבר עם פסיכולוג ספורט", "success": { "text": ["שיחה שעושה סדר בראש."], "effects": { "budget": -250, "confidence": 4, "energy": 6 } } },
+      { "label": "ממשיך ככה", "success": { "text": ["העייפות מצטברת."], "effects": { "energy": -10 } } }
+    ] },
+  { "key": "lt_diet", "sport": "both", "scene": "home", "speaker": "התזונאית",
+    "vars": { "plan": ["טבעוני לחודש", "בלי סוכר", "צום לסירוגין", "חלבונים בלבד", "דיאטה ים תיכונית"] },
+    "title": ["אתגר תזונה"], "text": ["התזונאית מציעה לך לנסות {$plan}."],
+    "choices": [
+      { "label": "מתחייב לגמרי", "stat": "mental", "difficulty": 50, "success": { "text": ["הגוף קל ומהיר יותר."], "effects": { "attributes": { "physical": 1 }, "energy": 5 } }, "fail": { "text": ["נשברת אחרי שלושה ימים מול שווארמה."], "effects": { "confidence": -2 } } },
+      { "label": "מנסה בחצי", "success": { "text": ["שיפור קטן."], "effects": { "energy": 3 } } },
+      { "label": "מוותר", "success": { "text": ["האוכל של אמא מנצח."], "effects": { "confidence": 1 } } }
+    ] },
+  { "key": "lt_holiday", "sport": "both", "scene": "home", "speaker": "המשפחה",
+    "vars": { "holiday": ["ארוחת ראש השנה", "ליל הסדר", "ארוחת איפטאר ברמדאן", "הדלקת נרות בחנוכה", "ארוחת חג המולד"] },
+    "title": ["ארוחת חג"], "text": ["כל המשפחה מתכנסת ל{$holiday}, ערב לפני אימון בוקר."],
+    "choices": [
+      { "label": "אוכל ונהנה מכל רגע", "success": { "text": ["המשפחה שמחה. הבוקר יהיה קשה."], "effects": { "confidence": 4, "energy": -6 } } },
+      { "label": "אוכל בריא ועוזב מוקדם", "success": { "text": ["איזון."], "effects": { "confidence": 2 } } },
+      { "label": "מביא חבר מהקבוצה", "success": { "text": ["החבר מתרגש להיות חלק מהמשפחה."], "effects": { "teamMorale": 3, "confidence": 2 } } }
+    ] },
+  { "key": "lt_old_coach", "sport": "both", "scene": "phone", "speaker": "המאמן מהנוער",
+    "vars": { "advice": ["אל תשכח מאיפה באת", "תעבוד על הרגל החלשה", "תקשיב למאמן גם כשקשה", "תיזהר מסוכנים", "אל תוותר על הלימודים"] },
+    "title": ["שיחה מהמאמן הראשון"], "text": ["המאמן הראשון שלך מהנוער מתקשר: '{$advice}.'"],
+    "choices": [
+      { "label": "מודה לו ומבקש לבוא לאימון", "success": { "text": ["הוא מתרגש. אתה חוזר לשורשים."], "effects": { "confidence": 4, "fanRep": 1 } } },
+      { "label": "מקשיב ומבטיח", "success": { "text": ["מילים שנשארות."], "effects": { "confidence": 2, "attributes": { "mental": 1 } } } },
+      { "label": "משאיר לו הודעה מאוחר יותר", "success": { "text": ["הוא מבין שאתה עסוק."], "effects": {} } }
+    ] },
+  { "key": "lt_scout_dm", "sport": "both", "scene": "phone", "speaker": "סקאוט",
+    "vars": { "from": ["קבוצה בליגה הלאומית", "מועדון מקפריסין", "קבוצה מאירופה", "אקדמיה מהמרכז", "מכללה באמריקה"] },
+    "title": ["הודעה מסקאוט"], "text": ["סקאוט של {$from} שולח לך הודעה: 'אנחנו עוקבים אחריך. שלח לי וידאו.'"],
+    "choices": [
+      { "label": "שולח תקציר מקצועי", "stat": "mental", "difficulty": 50, "success": { "text": ["הסקאוט מתרשם ומוסיף אותך לרשימה."], "effects": { "confidence": 4, "followers": 40 } }, "fail": { "text": ["הוידאו לא מספיק טוב."], "effects": { "confidence": -1 } } },
+      { "label": "מעביר לסוכן", "success": { "text": ["הסוכן יטפל."], "effects": { "confidence": 1 } } },
+      { "label": "מתעלם, נשמע כמו עוקץ", "success": { "text": ["אולי צדקת."], "effects": {} } }
+    ] },
+  { "key": "lt_ticket_flood", "sport": "both", "scene": "phone", "speaker": "וואטסאפ",
+    "vars": { "count": ["עשרים", "שלושים", "חמישים", "ארבעים", "שישים"] },
+    "title": ["כולם רוצים כרטיסים"], "text": ["קיבלת {$count} הודעות מחברים שרוצים כרטיסים חינם למשחק הבית."],
+    "choices": [
+      { "label": "קונה לכולם", "success": { "text": ["יציע שלם של חברים. יקר."], "effects": { "budget": -700, "fanRep": 4 } } },
+      { "label": "מעביר אותם לקופות", "success": { "text": ["חלק נעלבו."], "effects": { "fanRep": -1 } } },
+      { "label": "מבקש מהמועדון הנחה קבוצתית", "stat": "mental", "difficulty": 44, "success": { "text": ["המועדון נותן מחיר מיוחד."], "effects": { "fanRep": 3 } }, "fail": { "text": ["אין הנחות."], "effects": {} } }
+    ] },
+  { "key": "lt_auction", "sport": "both", "scene": "fans", "speaker": "עמותה",
+    "vars": { "item": ["החולצה מהמשחק האחרון", "הנעליים שלך", "כדור חתום", "כרטיס VIP לאימון", "ארוחה איתך"] },
+    "title": ["מכירה פומבית"], "text": ["עמותה מבקשת לתרום {$item} למכירה פומבית."],
+    "choices": [
+      { "label": "תורם בשמחה", "success": { "text": ["נמכר ב-2,000 ש״ח לטובת העמותה."], "effects": { "fanRep": 5, "followers": 80 } } },
+      { "label": "תורם ומוסיף חתימות של הקבוצה", "success": { "text": ["הפריט הכי מבוקש במכירה."], "effects": { "fanRep": 6, "teamMorale": 2 } } },
+      { "label": "מסרב", "success": { "text": ["העמותה מאוכזבת."], "effects": { "fanRep": -2 } } }
+    ] },
+  { "key": "lt_heatwave", "sport": "football", "scene": "field", "speaker": "המאמן",
+    "vars": { "temp": ["38", "40", "36", "41", "39"] },
+    "title": ["שרב באימון"], "text": ["{$temp} מעלות באימון הצהריים, והמאמן רוצה להמשיך כרגיל."],
+    "choices": [
+      { "label": "מבקש להזיז לערב", "stat": "mental", "difficulty": 46, "success": { "text": ["המאמן מסכים. כולם מודים לך."], "effects": { "teamMorale": 4, "energy": 4 } }, "fail": { "text": ["המאמן: 'גם במשחק יהיה חם.'"], "effects": { "energy": -6 } } },
+      { "label": "מתאמן במלוא הכוח", "success": { "text": ["המאמן מתרשם, הגוף פחות."], "effects": { "coachApproval": 3, "energy": -12 } } },
+      { "label": "שותה הרבה ושומר על קצב", "success": { "text": ["חכם."], "effects": { "energy": -4 } } }
+    ] },
+  { "key": "lt_gym_closed", "sport": "basketball", "scene": "field_basketball", "speaker": "המנהלה",
+    "vars": { "why": ["הצפה באולם", "שיפוץ פרקט", "אירוע עירוני", "תקלת חשמל", "חוב לעירייה"] },
+    "title": ["האולם סגור"], "text": ["האולם של {קבוצה} סגור השבוע בגלל {$why}."],
+    "choices": [
+      { "label": "מתאמן במגרש פתוח", "success": { "text": ["כדורסל רחוב. קצת אחרת."], "effects": { "energy": -6, "attributes": { "technique": 1 } } } },
+      { "label": "שוכר אולם עם החבר׳ה", "success": { "text": ["כל אחד שילם 80 ש״ח. האימון התקיים."], "effects": { "budget": -80, "teamMorale": 3 } } },
+      { "label": "מנצל למנוחה", "success": { "text": ["הגוף מודה."], "effects": { "energy": 10, "coachApproval": -1 } } }
+    ] },
+  { "key": "lt_kit_deal", "sport": "both", "scene": "shop", "speaker": "חנות ספורט",
+    "vars": { "store": ["חנות הספורט בקניון", "רשת חנויות ספורט", "חנות משפחתית בעיר", "אתר מכירות אונליין", "חנות נעליים ותיקה"] },
+    "title": ["הצעה מחנות"], "text": ["{$store} מציע/ה ציוד חינם בתמורה לתמונה ברשת."],
+    "choices": [
+      { "label": "מסכים", "success": { "text": ["ציוד חדש ותמונה יפה."], "effects": { "followers": 40, "attributes": { "technique": 1 } } } },
+      { "label": "מבקש גם כסף", "stat": "mental", "difficulty": 54, "success": { "text": ["הוסיפו 300 ש״ח."], "effects": { "budget": 300, "followers": 40 } }, "fail": { "text": ["ההצעה בוטלה."], "effects": {} } },
+      { "label": "מסרב", "success": { "text": ["אין צורך."], "effects": {} } }
+    ] },
+  { "key": "lt_city_mayor", "sport": "both", "scene": "office", "speaker": "ראש העיר",
+    "vars": { "event": ["טקס הדלקת משואה", "פתיחת מגרש חדש", "יום הספורט העירוני", "הפנינג לילדים", "כנס צעירים"] },
+    "title": ["הזמנה מהעירייה"], "text": ["ראש העיר מזמין אותך ל{$event} כ'גאוות העיר'."],
+    "choices": [
+      { "label": "מגיע ונואם", "stat": "mental", "difficulty": 48, "success": { "text": ["נאום מרגש. כל העיר מדברת עליך."], "effects": { "fanRep": 6, "followers": 100 } }, "fail": { "text": ["התבלבלת במילים, אבל קיבלת מחיאות כפיים."], "effects": { "fanRep": 2 } } },
+      { "label": "מגיע ומצטלם", "success": { "text": ["תמונה בעיתון המקומי."], "effects": { "fanRep": 3 } } },
+      { "label": "מסרב", "success": { "text": ["העירייה מאוכזבת."], "effects": { "fanRep": -2 } } }
+    ] },
+  { "key": "lt_documentary", "sport": "both", "scene": "press", "speaker": "במאית",
+    "vars": { "channel": ["כאן 11", "ערוץ הספורט", "יוטיוב", "פסטיבל סרטים סטודנטיאלי", "פלטפורמת סטרימינג"] },
+    "title": ["סרט תיעודי"], "text": ["במאית רוצה לעקוב אחריך חודש לסרט תיעודי ל{$channel} על החיים בליגות הנמוכות."],
+    "choices": [
+      { "label": "מסכים לכל", "success": { "text": ["מצלמה בכל מקום. חשיפה ענקית."], "effects": { "followers": 500, "fanRep": 4, "energy": -6 } } },
+      { "label": "מסכים בתנאים", "success": { "text": ["בלי מצלמות בבית. הסכם הוגן."], "effects": { "followers": 250, "fanRep": 2 } } },
+      { "label": "מסרב", "success": { "text": ["פרטיות לפני הכל."], "effects": {} } }
+    ] },
+  { "key": "lt_veteran_retire", "sport": "both", "scene": "locker", "speaker": "הוותיק",
+    "vars": { "years": ["15", "18", "12", "20", "16"] },
+    "title": ["הוותיק פורש"], "text": ["השחקן הוותיק של {קבוצה} מודיע שזו העונה האחרונה שלו אחרי {$years} שנים."],
+    "choices": [
+      { "label": "מארגן לו מחווה", "success": { "text": ["חולצה חתומה מכל הקבוצה. דמעות בחדר."], "effects": { "teamMorale": 6, "fanRep": 2 } } },
+      { "label": "מבקש ממנו עצות לפני שהולך", "success": { "text": ["הוא מלמד אותך טריקים של עשרים שנה."], "effects": { "attributes": { "mental": 1 }, "teamMorale": 2 } } },
+      { "label": "מאחל בהצלחה", "success": { "text": ["הוא מחייך."], "effects": { "teamMorale": 1 } } }
+    ] }
+]

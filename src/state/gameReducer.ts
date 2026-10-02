@@ -24,6 +24,7 @@ export type GameAction =
   | { type: 'START_MATCHDAY' }
   | { type: 'PRE_CHOICE'; index: number }
   | { type: 'PRE_CONTINUE' }
+  | { type: 'LIVE_ADVANCE' }
   | { type: 'INGAME_CHOICE'; index: number }
   | { type: 'INGAME_CONTINUE' }
   | { type: 'SUMMARY_CONTINUE' }
@@ -79,6 +80,8 @@ export function gameReducer(state: GameState | null, action: GameAction): GameSt
       return logic.choosePreMatch(state, action.index);
     case 'PRE_CONTINUE':
       return logic.continuePreMatch(state);
+    case 'LIVE_ADVANCE':
+      return logic.advanceLive(state);
     case 'INGAME_CHOICE':
       return logic.chooseInGame(state, action.index);
     case 'INGAME_CONTINUE':

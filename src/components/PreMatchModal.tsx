@@ -7,6 +7,7 @@ import { ChoiceButton } from './ui/ChoiceButton';
 import { OutcomeBox } from './ui/OutcomeBox';
 import { GoldButton } from './ui/GoldButton';
 import { MatchHeader } from './MatchHeader';
+import { SceneBanner } from './art/SceneBanner';
 
 interface Props {
   state: GameState;
@@ -34,10 +35,11 @@ export function PreMatchModal({ state, dispatch }: Props) {
       }
     >
       <MatchHeader state={state} />
+      <SceneBanner state={state} scene={event.scene} />
       <div className="mb-4">
-        <div className="text-xs font-bold text-gold">{event.speaker}</div>
+        <div className="text-xs font-bold text-brand">{event.speaker}</div>
         <h3 className="mb-1 text-xl font-black">{event.title}</h3>
-        <p className="leading-relaxed text-white/90">{event.text}</p>
+        <p className="leading-relaxed text-ink/80">{event.text}</p>
       </div>
       {outcome ? (
         <OutcomeBox outcome={outcome} sport={state.player.sport} />

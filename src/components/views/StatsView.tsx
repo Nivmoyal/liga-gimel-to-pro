@@ -32,7 +32,7 @@ export function StatsGrid({ stats, sport }: { stats: SeasonStats; sport: SportTy
     <div className="grid grid-cols-3 gap-2">
       {statCells(stats, sport).map((c) => (
         <div key={c.label} className="rounded-xl border border-line bg-card p-2.5 text-center">
-          <div className="text-xl font-black tabular-nums text-gold">{c.value}</div>
+          <div className="text-xl font-black tabular-nums text-brand">{c.value}</div>
           <div className="text-[11px] text-muted">{c.label}</div>
         </div>
       ))}
@@ -54,7 +54,7 @@ export function StatsView({ state }: { state: GameState }) {
     <div className="space-y-4">
       <section>
         <h2 className="mb-2 flex items-center gap-2 font-extrabold">
-          <ChartColumn size={18} className="text-gold" />
+          <ChartColumn size={18} className="text-brand" />
           טבלת {divisionName(player.sport, league.division)}
         </h2>
         <LeagueTable teams={table} sport={player.sport} canPromote={canPromote} canRelegate={canRelegate} />
@@ -73,7 +73,7 @@ export function StatsView({ state }: { state: GameState }) {
       </section>
       <section>
         <h2 className="mb-2 flex items-center gap-2 font-extrabold">
-          <Target size={18} className="text-gold" />
+          <Target size={18} className="text-brand" />
           העונה שלי
         </h2>
         <StatsGrid stats={stats} sport={player.sport} />
@@ -84,7 +84,7 @@ export function StatsView({ state }: { state: GameState }) {
       </section>
       <section>
         <h2 className="mb-2 flex items-center gap-2 font-extrabold">
-          <Medal size={18} className="text-gold" />
+          <Medal size={18} className="text-brand" />
           קריירה
         </h2>
         <StatsGrid stats={player.careerStats} sport={player.sport} />

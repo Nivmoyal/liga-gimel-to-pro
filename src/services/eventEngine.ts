@@ -22,6 +22,7 @@ import type {
 import { SPORT_LABEL, SURFACE_LABEL } from '../data/sports';
 import { getJob } from '../data/jobs';
 import { getAgent } from '../data/agents';
+import { NATIONAL_TEAM_NAME } from '../data/national';
 import { calcOvr, clamp, shuffle } from './playerUtils';
 
 export const EVENT_POOLS: Record<EventType, GameEvent[]> = {
@@ -79,7 +80,7 @@ export function buildContext(state: Pick<GameState, 'player' | 'currentMatch'>, 
   const { player } = state;
   return {
     playerName: player.name,
-    club: player.club,
+    club: state.currentMatch?.national ? NATIONAL_TEAM_NAME[state.currentMatch.national] : player.club,
     opponent: opponentOverride ?? state.currentMatch?.opponent ?? 'היריבה',
     job: getJob(player.jobId)?.name ?? 'מובטל',
     agent: getAgent(player.agentId)?.name ?? 'הסוכן',
@@ -184,6 +185,13 @@ export function pickInGameEvents(player: Player, seen: string[], count: number):
     picked.push(event);
   }
   return [...picked.filter((e) => !e.clutch), ...picked.filter((e) => e.clutch)];
+}
+
+/** Random eligible event among those sharing a trigger (e.g. national team scenes). */
+export function pickTriggeredEvent(trigger: string, player: Player, seen: string[]): GameEvent | null {
+  const pool = getAllEvents().filter((e) => e.trigger === trigger && isEligible(e, player));
+  const fresh = pool.filter((e) => !seen.includes(e.id));
+  return weightedPick(fresh.length > 0 ? fresh : pool);
 }
 
 export function getTriggeredEvent(trigger: string): GameEvent | null {

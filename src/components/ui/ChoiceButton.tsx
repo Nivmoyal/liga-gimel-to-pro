@@ -14,19 +14,19 @@ interface ChoiceButtonProps {
 export function ChoiceButton({ choice, index, player, onChoose }: ChoiceButtonProps) {
   const isCheck = Boolean(choice.stat && choice.fail);
   const chance = isCheck ? successChance(choice, player) : 100;
-  const chanceColor = chance >= 65 ? 'text-emerald-400' : chance >= 40 ? 'text-amber-400' : 'text-rose-400';
-  const barColor = chance >= 65 ? 'bg-emerald-500' : chance >= 40 ? 'bg-amber-500' : 'bg-rose-500';
+  const chanceColor = chance >= 65 ? 'text-emerald-600' : chance >= 40 ? 'text-amber-600' : 'text-rose-600';
+  const barColor = chance >= 65 ? 'bg-emerald-500' : chance >= 40 ? 'bg-brand' : 'bg-rose-500';
   return (
     <button
       onClick={() => onChoose(index)}
-      className="group w-full rounded-2xl border border-line bg-card p-3.5 text-right transition hover:border-amber-500/60 hover:bg-card-2 active:scale-[0.99]"
+      className="group w-full rounded-2xl border border-line bg-card p-3.5 text-right transition hover:border-brand/50 hover:bg-card-2 active:scale-[0.99]"
     >
       <div className="flex items-center gap-3">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-sm font-black text-gold">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-sm font-black text-brand">
           {index + 1}
         </span>
         <span className="flex-1 font-semibold leading-snug">{choice.label}</span>
-        <ChevronLeft size={18} className="shrink-0 text-muted transition group-hover:text-gold" />
+        <ChevronLeft size={18} className="shrink-0 text-muted transition group-hover:text-brand" />
       </div>
       {isCheck && choice.stat && (
         <div className="mt-2.5 pr-10">

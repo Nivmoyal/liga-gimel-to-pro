@@ -30,6 +30,7 @@ export function teamStrength(clubStrength: number, player: Player, role: MatchRo
 export function createMatchState(opponent: string, opponentStrength: number, home: boolean, role: MatchRole): MatchState {
   return {
     opponent,
+    national: null,
     opponentStrength,
     home,
     role,

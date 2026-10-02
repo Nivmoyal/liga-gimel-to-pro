@@ -10,10 +10,10 @@ interface OutcomeBoxProps {
 export function OutcomeBox({ outcome, sport }: OutcomeBoxProps) {
   const effects = describeEffects(outcome.effects, sport);
   const tone = !outcome.skillCheck
-    ? { border: 'border-line', icon: <MessageSquare size={18} className="text-gold" />, label: 'התוצאה' }
+    ? { border: 'border-line', icon: <MessageSquare size={18} className="text-brand" />, label: 'התוצאה' }
     : outcome.success
-      ? { border: 'border-emerald-500/50', icon: <CircleCheck size={18} className="text-emerald-400" />, label: 'הצלחה' }
-      : { border: 'border-rose-500/50', icon: <CircleX size={18} className="text-rose-400" />, label: 'כישלון' };
+      ? { border: 'border-emerald-500/50', icon: <CircleCheck size={18} className="text-emerald-600" />, label: 'הצלחה' }
+      : { border: 'border-rose-500/50', icon: <CircleX size={18} className="text-rose-600" />, label: 'כישלון' };
   return (
     <div className={`animate-sheet rounded-2xl border ${tone.border} bg-card p-4`}>
       <div className="mb-2 flex items-center gap-2 text-sm font-bold">
@@ -26,7 +26,7 @@ export function OutcomeBox({ outcome, sport }: OutcomeBoxProps) {
           {effects.map((e) => (
             <span
               key={e.label}
-              className={`rounded-lg px-2 py-1 text-xs font-semibold ${e.positive ? 'bg-emerald-500/15 text-emerald-300' : 'bg-rose-500/15 text-rose-300'}`}
+              className={`rounded-lg px-2 py-1 text-xs font-semibold ${e.positive ? 'bg-emerald-500/15 text-emerald-600' : 'bg-rose-500/15 text-rose-600'}`}
             >
               {e.label} <span dir="ltr">{e.value}</span>
             </span>

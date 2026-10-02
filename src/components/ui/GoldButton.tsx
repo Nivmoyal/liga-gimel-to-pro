@@ -8,8 +8,8 @@ interface GoldButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export function GoldButton({ children, variant = 'gold', className = '', ...rest }: GoldButtonProps) {
   const base =
     variant === 'gold'
-      ? 'bg-amber-500 hover:bg-amber-400 text-black font-bold disabled:bg-amber-500/30 disabled:text-black/50'
-      : 'bg-card border border-line text-white hover:border-amber-500/50 font-semibold disabled:opacity-40';
+      ? 'bg-brand hover:bg-brand-600 text-white font-bold disabled:bg-slate-200 disabled:text-slate-400'
+      : 'bg-card border border-line text-ink hover:border-brand/50 font-semibold disabled:opacity-40';
   return (
     <button
       {...rest}

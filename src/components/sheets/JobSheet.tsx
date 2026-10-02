@@ -29,11 +29,11 @@ export function JobSheet({ state, dispatch, onClose }: Props) {
     return (
       <Sheet title="עבודה אזרחית" icon={Briefcase} onClose={onClose}>
         <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4">
-          <div className="mb-1 flex items-center gap-2 font-extrabold text-emerald-300">
+          <div className="mb-1 flex items-center gap-2 font-extrabold text-emerald-600">
             <Car size={18} />
             שחקן מקצוען במשרה מלאה
           </div>
-          <p className="text-sm leading-relaxed text-white/85">
+          <p className="text-sm leading-relaxed text-ink/80">
             עם חוזה מקצועני מלא אין צורך יותר בעבודה אזרחית. כל הזמן שלך מוקדש לאימונים ולמשחקים.
           </p>
         </div>
@@ -55,7 +55,7 @@ export function JobSheet({ state, dispatch, onClose }: Props) {
     <Sheet title="העבודה שלי" subtitle="כסף בכיס, פחות כוח ברגליים" icon={Briefcase} onClose={onClose}>
       <div className="mb-3 rounded-2xl border border-line bg-card p-4">
         <div className="mb-2 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/15 text-gold">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand/10 text-brand">
             <Icon size={22} />
           </div>
           <div>
@@ -66,11 +66,11 @@ export function JobSheet({ state, dispatch, onClose }: Props) {
         <div className="grid grid-cols-3 gap-2 text-center text-sm">
           <div className="rounded-xl bg-pitch p-2">
             <div className="text-[11px] text-muted">למשמרת</div>
-            <div className="font-bold text-gold">{formatMoney(pay)}</div>
+            <div className="font-bold text-brand">{formatMoney(pay)}</div>
           </div>
           <div className="rounded-xl bg-pitch p-2">
             <div className="text-[11px] text-muted">אנרגיה</div>
-            <div className="font-bold text-rose-300">-{job.energyCost}%</div>
+            <div className="font-bold text-rose-600">-{job.energyCost}%</div>
           </div>
           <div className="rounded-xl bg-pitch p-2">
             <div className="text-[11px] text-muted">השבוע</div>
@@ -81,7 +81,7 @@ export function JobSheet({ state, dispatch, onClose }: Props) {
       </div>
 
       {flags.shiftsThisWeek === 0 && (
-        <div className="mb-3 flex items-start gap-2 rounded-xl bg-amber-500/10 p-3 text-xs text-amber-200">
+        <div className="mb-3 flex items-start gap-2 rounded-xl bg-brand/10 p-3 text-xs text-amber-700">
           <TriangleAlert size={16} className="shrink-0" />
           <span>
             הבוס מצפה למשמרת אחת לפחות בכל שבוע.
@@ -125,10 +125,10 @@ export function JobPicker({ onPick, selected }: { onPick: (id: JobId) => void; s
             key={job.id}
             onClick={() => onPick(job.id)}
             className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-right transition ${
-              active ? 'border-amber-500 bg-amber-500/10' : 'border-line bg-card hover:border-amber-500/60'
+              active ? 'border-brand bg-brand/10' : 'border-line bg-card hover:border-brand/50'
             }`}
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-gold">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
               <Icon size={20} />
             </div>
             <div className="min-w-0 flex-1">
@@ -136,8 +136,8 @@ export function JobPicker({ onPick, selected }: { onPick: (id: JobId) => void; s
               <div className="text-xs leading-snug text-muted">{job.description}</div>
             </div>
             <div className="shrink-0 text-left text-xs">
-              <div className="font-bold text-gold">{formatMoney(job.payPerShift)}</div>
-              <div className="text-rose-300">-{job.energyCost}%</div>
+              <div className="font-bold text-brand">{formatMoney(job.payPerShift)}</div>
+              <div className="text-rose-600">-{job.energyCost}%</div>
             </div>
           </button>
         );

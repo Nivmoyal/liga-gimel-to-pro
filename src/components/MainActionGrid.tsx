@@ -4,6 +4,7 @@ import type { GameState } from '../types/game';
 import { getJob } from '../data/jobs';
 import { getAgent, AGENT_UNLOCK } from '../data/agents';
 import { formatFollowers } from '../services/playerUtils';
+import { availableSponsorCount } from '../state/gameLogic';
 
 export type ActionSheetId = 'training' | 'job' | 'agent' | 'lifestyle' | 'social' | 'stats';
 
@@ -46,7 +47,13 @@ export function MainActionGrid({ state, onOpen }: MainActionGridProps) {
       alert: !agent && flags.agentDiscovered,
     },
     { id: 'lifestyle', title: 'סגנון חיים', subtitle: 'מנוחה והתאוששות', icon: Sofa },
-    { id: 'social', title: 'מדיה ורשתות', subtitle: `${formatFollowers(player.followers)} עוקבים`, icon: Smartphone },
+    {
+      id: 'social',
+      title: 'מדיה ורשתות',
+      subtitle: availableSponsorCount(player) > 0 ? 'ספונסר מחכה לך' : `${formatFollowers(player.followers)} עוקבים`,
+      icon: Smartphone,
+      alert: availableSponsorCount(player) > 0,
+    },
     { id: 'stats', title: 'סטטיסטיקות', subtitle: 'טבלה ונתונים', icon: ChartNoAxesColumn },
   ];
 
@@ -59,13 +66,13 @@ export function MainActionGrid({ state, onOpen }: MainActionGridProps) {
             key={item.id}
             onClick={() => onOpen(item.id)}
             className={`relative flex items-center gap-3 rounded-2xl border p-3 text-right transition active:scale-[0.98] ${
-              item.locked ? 'border-line bg-card/50 text-muted' : 'border-line bg-card hover:border-amber-500/60'
+              item.locked ? 'border-line bg-card/50 text-muted' : 'border-line bg-card hover:border-brand/50'
             }`}
           >
             {item.alert && <span className="absolute left-2.5 top-2.5 h-2 w-2 rounded-full bg-rose-500" />}
             <div
               className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-                item.locked ? 'bg-line text-muted' : 'bg-amber-500/15 text-gold'
+                item.locked ? 'bg-line text-muted' : 'bg-brand/10 text-brand'
               }`}
             >
               <Icon size={20} />

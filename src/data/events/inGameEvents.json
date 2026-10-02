@@ -3,33 +3,81 @@
     "id": "ig_fb_001",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_1v1",
     "speaker": "על כר הדשא",
     "title": "אחד על אחד מול השוער",
     "clock": "דקה 34",
     "text": "כדור עומק מושלם משחרר אותך מאחורי ההגנה של {יריבה}. רק אתה והשוער, הבלם רודף מאחור.",
     "tip": "השוער של {יריבה} יוצא מוקדם ונוטה להשכיב את עצמו. בעיטה מעל או עקיפה עובדות טוב מולו.",
-    "conditions": { "positions": ["striker", "midfielder"] },
+    "conditions": {
+      "positions": [
+        "striker",
+        "midfielder"
+      ]
+    },
     "choices": [
       {
         "label": "בעיטה חזקה לפינה הרחוקה",
         "stat": "attack",
         "difficulty": 52,
-        "success": { "text": "הכדור נכנס צמוד לקורה! שער ל{קבוצה} ו{שחקן} רץ לחגוג עם הספסל.", "effects": { "playerGoals": 1, "rating": 1.0, "confidence": 4 } },
-        "fail": { "text": "השוער פורש יד ומציל. הזדמנות ענקית ירדה לטמיון.", "effects": { "rating": -0.3, "confidence": -2 } }
+        "success": {
+          "text": "הכדור נכנס צמוד לקורה! שער ל{קבוצה} ו{שחקן} רץ לחגוג עם הספסל.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.0,
+            "confidence": 4
+          }
+        },
+        "fail": {
+          "text": "השוער פורש יד ומציל. הזדמנות ענקית ירדה לטמיון.",
+          "effects": {
+            "rating": -0.3,
+            "confidence": -2
+          }
+        }
       },
       {
         "label": "עקיפת השוער",
         "stat": "technique",
         "difficulty": 58,
-        "success": { "text": "הטעיה אחת, עקיפה, ושער לרשת ריקה. היציע קם על הרגליים.", "effects": { "playerGoals": 1, "rating": 1.2, "fanRep": 2, "confidence": 5 } },
-        "fail": { "text": "לקחת את הכדור רחוק מדי והשוער אסף. הבלם מאחוריך צועק משהו לא נעים.", "effects": { "rating": -0.4, "confidence": -3 } }
+        "success": {
+          "text": "הטעיה אחת, עקיפה, ושער לרשת ריקה. היציע קם על הרגליים.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.2,
+            "fanRep": 2,
+            "confidence": 5
+          }
+        },
+        "fail": {
+          "text": "לקחת את הכדור רחוק מדי והשוער אסף. הבלם מאחוריך צועק משהו לא נעים.",
+          "effects": {
+            "rating": -0.4,
+            "confidence": -3
+          }
+        }
       },
       {
         "label": "הרמה רכה מעל השוער",
         "stat": "technique",
         "difficulty": 64,
-        "success": { "text": "צ׳יפ מושלם מעל השוער! שער שיופיע בתקצירים של כל השבוע.", "effects": { "playerGoals": 1, "rating": 1.4, "fanRep": 4, "followers": 150, "confidence": 6 } },
-        "fail": { "text": "ההרמה חלשה מדי והשוער תופס בקלות. המאמן מחזיק את הראש.", "effects": { "rating": -0.5, "coachApproval": -3 } }
+        "success": {
+          "text": "צ׳יפ מושלם מעל השוער! שער שיופיע בתקצירים של כל השבוע.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.4,
+            "fanRep": 4,
+            "followers": 150,
+            "confidence": 6
+          }
+        },
+        "fail": {
+          "text": "ההרמה חלשה מדי והשוער תופס בקלות. המאמן מחזיק את הראש.",
+          "effects": {
+            "rating": -0.5,
+            "coachApproval": -3
+          }
+        }
       }
     ]
   },
@@ -37,34 +85,78 @@
     "id": "ig_fb_002",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_counter",
     "speaker": "על כר הדשא",
     "title": "הזדמנות בתוספת הזמן",
     "clock": "דקה 90+2",
     "clutch": true,
     "text": "התוצאה שוויונית. כדור חוזר מהרחבה מתגלגל אליך, ושלושה שחקני {יריבה} רצים לחסום.",
     "tip": "השחקנים של {יריבה} עייפים. מסירה קצרה תמצא שחקן חופשי, אבל בעיטה מהירה תפתיע את השוער.",
-    "conditions": { "positions": ["striker", "midfielder", "fullBack"] },
+    "conditions": {
+      "positions": [
+        "striker",
+        "midfielder",
+        "fullBack"
+      ]
+    },
     "choices": [
       {
         "label": "בעיטה מיידית בנגיעה ראשונה",
         "stat": "attack",
         "difficulty": 58,
-        "success": { "text": "הכדור עובר בין רגליים ונכנס! ניצחון בשנייה האחרונה ו{שחקן} קבור מתחת לחברים.", "effects": { "playerGoals": 1, "rating": 1.4, "fanRep": 5, "confidence": 6 } },
-        "fail": { "text": "הבעיטה נחסמת. השופט שורק לסיום. נקודה אחת בלבד.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "הכדור עובר בין רגליים ונכנס! ניצחון בשנייה האחרונה ו{שחקן} קבור מתחת לחברים.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.4,
+            "fanRep": 5,
+            "confidence": 6
+          }
+        },
+        "fail": {
+          "text": "הבעיטה נחסמת. השופט שורק לסיום. נקודה אחת בלבד.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "מסירה קצרה לחבר חופשי",
         "stat": "playmaking",
         "difficulty": 50,
-        "success": { "text": "מסירה חכמה, החלוץ מסיים לרשת! בישול של ניצחון.", "effects": { "playerAssists": 1, "teamScore": 1, "rating": 1.0, "coachApproval": 3 } },
-        "fail": { "text": "המסירה נחתכת. ההזדמנות האחרונה הלכה.", "effects": { "rating": -0.3 } }
+        "success": {
+          "text": "מסירה חכמה, החלוץ מסיים לרשת! בישול של ניצחון.",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 1,
+            "rating": 1.0,
+            "coachApproval": 3
+          }
+        },
+        "fail": {
+          "text": "המסירה נחתכת. ההזדמנות האחרונה הלכה.",
+          "effects": {
+            "rating": -0.3
+          }
+        }
       },
       {
         "label": "מחזיק את הכדור ומחפש עבירה",
         "stat": "physical",
         "difficulty": 55,
-        "success": { "text": "עבירה בקצה הרחבה! מהבעיטה החופשית החבר׳ה נוגחים פנימה.", "effects": { "teamScore": 1, "rating": 0.7 } },
-        "fail": { "text": "השופט מסמן להמשיך ו{יריבה} מנקים. סיום.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "עבירה בקצה הרחבה! מהבעיטה החופשית החבר׳ה נוגחים פנימה.",
+          "effects": {
+            "teamScore": 1,
+            "rating": 0.7
+          }
+        },
+        "fail": {
+          "text": "השופט מסמן להמשיך ו{יריבה} מנקים. סיום.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       }
     ]
   },
@@ -72,6 +164,7 @@
     "id": "ig_fb_003",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_penalty",
     "speaker": "על כר הדשא",
     "title": "פנדל!",
     "clock": "דקה 57",
@@ -82,22 +175,66 @@
         "label": "נמוך וצמוד לקורה השמאלית",
         "stat": "attack",
         "difficulty": 45,
-        "success": { "text": "השוער קופץ לצד הלא נכון. שער!", "effects": { "playerGoals": 1, "rating": 0.8, "confidence": 3 } },
-        "fail": { "text": "השוער ניחש נכון והדף. היציע של {יריבה} חוגג.", "effects": { "rating": -0.6, "confidence": -4 } }
+        "success": {
+          "text": "השוער קופץ לצד הלא נכון. שער!",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 0.8,
+            "confidence": 3
+          }
+        },
+        "fail": {
+          "text": "השוער ניחש נכון והדף. היציע של {יריבה} חוגג.",
+          "effects": {
+            "rating": -0.6,
+            "confidence": -4
+          }
+        }
       },
       {
         "label": "פצצה חזקה לאמצע",
         "stat": "physical",
         "difficulty": 50,
-        "success": { "text": "הכדור עף לגג הרשת. השוער אפילו לא זז.", "effects": { "playerGoals": 1, "rating": 0.9, "confidence": 4 } },
-        "fail": { "text": "מעל המשקוף. מישהו ביציע תופס את הכדור למזכרת.", "effects": { "rating": -0.7, "confidence": -4, "coachApproval": -2 } }
+        "success": {
+          "text": "הכדור עף לגג הרשת. השוער אפילו לא זז.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 0.9,
+            "confidence": 4
+          }
+        },
+        "fail": {
+          "text": "מעל המשקוף. מישהו ביציע תופס את הכדור למזכרת.",
+          "effects": {
+            "rating": -0.7,
+            "confidence": -4,
+            "coachApproval": -2
+          }
+        }
       },
       {
         "label": "פנדל פננקה",
         "stat": "technique",
         "difficulty": 66,
-        "success": { "text": "צ׳יפ רך באמצע בזמן שהשוער שוכב על הדשא. אגדה מקומית נולדה.", "effects": { "playerGoals": 1, "rating": 1.2, "fanRep": 5, "followers": 250, "confidence": 6 } },
-        "fail": { "text": "השוער נשאר במקום ותופס בקלות. המאמן לא יסלח על זה בקרוב.", "effects": { "rating": -1.0, "coachApproval": -7, "fanRep": -4, "confidence": -5 } }
+        "success": {
+          "text": "צ׳יפ רך באמצע בזמן שהשוער שוכב על הדשא. אגדה מקומית נולדה.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.2,
+            "fanRep": 5,
+            "followers": 250,
+            "confidence": 6
+          }
+        },
+        "fail": {
+          "text": "השוער נשאר במקום ותופס בקלות. המאמן לא יסלח על זה בקרוב.",
+          "effects": {
+            "rating": -1.0,
+            "coachApproval": -7,
+            "fanRep": -4,
+            "confidence": -5
+          }
+        }
       }
     ]
   },
@@ -105,6 +242,7 @@
     "id": "ig_fb_004",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_penalty",
     "speaker": "על כר הדשא",
     "title": "פנדל בדקה ה-90",
     "clock": "דקה 90",
@@ -116,22 +254,64 @@
         "label": "נמוך לפינה",
         "stat": "attack",
         "difficulty": 50,
-        "success": { "text": "רשת! ניצחון בדקה האחרונה. כל הספסל רץ אליך.", "effects": { "playerGoals": 1, "rating": 1.3, "fanRep": 5, "confidence": 6 } },
-        "fail": { "text": "השוער מציל. השריקה לסיום מגיעה כמה שניות אחר כך.", "effects": { "rating": -0.8, "confidence": -6, "fanRep": -2 } }
+        "success": {
+          "text": "רשת! ניצחון בדקה האחרונה. כל הספסל רץ אליך.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.3,
+            "fanRep": 5,
+            "confidence": 6
+          }
+        },
+        "fail": {
+          "text": "השוער מציל. השריקה לסיום מגיעה כמה שניות אחר כך.",
+          "effects": {
+            "rating": -0.8,
+            "confidence": -6,
+            "fanRep": -2
+          }
+        }
       },
       {
         "label": "חזק ובטוח לאמצע",
         "stat": "physical",
         "difficulty": 52,
-        "success": { "text": "טיל לאמצע. השוער כבר על הדשא. ניצחון!", "effects": { "playerGoals": 1, "rating": 1.3, "fanRep": 4, "confidence": 6 } },
-        "fail": { "text": "הכדור פוגע במשקוף ויוצא. שקט מוחלט ביציע.", "effects": { "rating": -0.8, "confidence": -6 } }
+        "success": {
+          "text": "טיל לאמצע. השוער כבר על הדשא. ניצחון!",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.3,
+            "fanRep": 4,
+            "confidence": 6
+          }
+        },
+        "fail": {
+          "text": "הכדור פוגע במשקוף ויוצא. שקט מוחלט ביציע.",
+          "effects": {
+            "rating": -0.8,
+            "confidence": -6
+          }
+        }
       },
       {
         "label": "מוסר את הבעיטה לקפטן",
         "stat": "mental",
         "difficulty": 40,
-        "success": { "text": "הקפטן מבקיע. הקבוצה זוכרת שידעת לוותר על האגו.", "effects": { "teamScore": 1, "teamMorale": 5, "coachApproval": 2 } },
-        "fail": { "text": "הקפטן מחטיא. אף אחד לא מאשים אותך בקול, אבל כולם חושבים.", "effects": { "fanRep": -3, "confidence": -3 } }
+        "success": {
+          "text": "הקפטן מבקיע. הקבוצה זוכרת שידעת לוותר על האגו.",
+          "effects": {
+            "teamScore": 1,
+            "teamMorale": 5,
+            "coachApproval": 2
+          }
+        },
+        "fail": {
+          "text": "הקפטן מחטיא. אף אחד לא מאשים אותך בקול, אבל כולם חושבים.",
+          "effects": {
+            "fanRep": -3,
+            "confidence": -3
+          }
+        }
       }
     ]
   },
@@ -139,33 +319,77 @@
     "id": "ig_fb_005",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_cross",
     "speaker": "על כר הדשא",
     "title": "הגבהה מהאגף",
     "clock": "דקה 41",
     "text": "אתה מגיע לקו הרוחב אחרי ריצה ארוכה. ברחבה יש חלוץ גבוה בנקודה הראשונה וקשר שמגיע מאחור.",
     "tip": "הבלמים של {יריבה} נמוכים יחסית. כדור גבוה לקורה הרחוקה הוא הסיכוי הכי טוב.",
-    "conditions": { "positions": ["fullBack", "midfielder", "striker"] },
+    "conditions": {
+      "positions": [
+        "fullBack",
+        "midfielder",
+        "striker"
+      ]
+    },
     "choices": [
       {
         "label": "הגבהה לקורה הרחוקה",
         "stat": "playmaking",
         "difficulty": 50,
-        "success": { "text": "הכדור מגיע בדיוק לראש של החלוץ. שער! בישול מושלם.", "effects": { "playerAssists": 1, "teamScore": 1, "rating": 0.8 } },
-        "fail": { "text": "ההגבהה ארוכה מדי ויוצאת לחוץ.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "הכדור מגיע בדיוק לראש של החלוץ. שער! בישול מושלם.",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 1,
+            "rating": 0.8
+          }
+        },
+        "fail": {
+          "text": "ההגבהה ארוכה מדי ויוצאת לחוץ.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "מסירה נמוכה לאחור",
         "stat": "technique",
         "difficulty": 46,
-        "success": { "text": "הקשר מגיע בריצה ומסיים בנגיעה. בישול!", "effects": { "playerAssists": 1, "teamScore": 1, "rating": 0.7 } },
-        "fail": { "text": "הבלם חותך ומרחיק.", "effects": { "rating": -0.1 } }
+        "success": {
+          "text": "הקשר מגיע בריצה ומסיים בנגיעה. בישול!",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 1,
+            "rating": 0.7
+          }
+        },
+        "fail": {
+          "text": "הבלם חותך ומרחיק.",
+          "effects": {
+            "rating": -0.1
+          }
+        }
       },
       {
         "label": "חותך פנימה ובועט בעצמי",
         "stat": "attack",
         "difficulty": 62,
-        "success": { "text": "מזווית בלתי אפשרית, הכדור נכנס! אף אחד לא האמין.", "effects": { "playerGoals": 1, "rating": 1.2, "confidence": 5 } },
-        "fail": { "text": "הבעיטה עפה ליציע. החלוץ ברחבה מרים ידיים בתסכול.", "effects": { "rating": -0.4, "teamMorale": -2 } }
+        "success": {
+          "text": "מזווית בלתי אפשרית, הכדור נכנס! אף אחד לא האמין.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.2,
+            "confidence": 5
+          }
+        },
+        "fail": {
+          "text": "הבעיטה עפה ליציע. החלוץ ברחבה מרים ידיים בתסכול.",
+          "effects": {
+            "rating": -0.4,
+            "teamMorale": -2
+          }
+        }
       }
     ]
   },
@@ -173,33 +397,79 @@
     "id": "ig_fb_006",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_header",
     "speaker": "על כר הדשא",
     "title": "כדור גובה ברחבה",
     "clock": "דקה 66",
     "text": "הגבהה מהאגף נוחתת בדיוק בינך לבין הבלם של {יריבה}. הוא גדול ממך בחצי ראש.",
     "tip": "הבלם של {יריבה} קופץ מאוחר. תזמון נכון חשוב יותר מגובה.",
-    "conditions": { "positions": ["striker", "centerBack"] },
+    "conditions": {
+      "positions": [
+        "striker",
+        "centerBack"
+      ]
+    },
     "choices": [
       {
         "label": "נגיחה חזקה למטה",
         "stat": "physical",
         "difficulty": 54,
-        "success": { "text": "נגיחה מושלמת שמקפצת לפני השוער ונכנסת!", "effects": { "playerGoals": 1, "rating": 1.0, "confidence": 4 } },
-        "fail": { "text": "הבלם מנצח בדו-קרב והכדור מורחק.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "נגיחה מושלמת שמקפצת לפני השוער ונכנסת!",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.0,
+            "confidence": 4
+          }
+        },
+        "fail": {
+          "text": "הבלם מנצח בדו-קרב והכדור מורחק.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "נגיעה בראש לחבר שמגיע",
         "stat": "playmaking",
         "difficulty": 48,
-        "success": { "text": "הורדה עדינה, החבר בועט פנימה. בישול חכם!", "effects": { "playerAssists": 1, "teamScore": 1, "rating": 0.7 } },
-        "fail": { "text": "ההורדה נופלת בדיוק לרגליים של המגן שלהם.", "effects": { "rating": -0.1 } }
+        "success": {
+          "text": "הורדה עדינה, החבר בועט פנימה. בישול חכם!",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 1,
+            "rating": 0.7
+          }
+        },
+        "fail": {
+          "text": "ההורדה נופלת בדיוק לרגליים של המגן שלהם.",
+          "effects": {
+            "rating": -0.1
+          }
+        }
       },
       {
         "label": "מספרת אוויר",
         "stat": "technique",
         "difficulty": 70,
-        "success": { "text": "מספרת! הכדור מתפוצץ ברשת. זה הולך להיות השער של העונה.", "effects": { "playerGoals": 1, "rating": 1.6, "fanRep": 6, "followers": 400, "confidence": 7 } },
-        "fail": { "text": "פספסת את הכדור לגמרי ונחתת על הגב. היציע של {יריבה} לא מפסיק לצחוק.", "effects": { "rating": -0.5, "confidence": -4, "followers": 50 } }
+        "success": {
+          "text": "מספרת! הכדור מתפוצץ ברשת. זה הולך להיות השער של העונה.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.6,
+            "fanRep": 6,
+            "followers": 400,
+            "confidence": 7
+          }
+        },
+        "fail": {
+          "text": "פספסת את הכדור לגמרי ונחתת על הגב. היציע של {יריבה} לא מפסיק לצחוק.",
+          "effects": {
+            "rating": -0.5,
+            "confidence": -4,
+            "followers": 50
+          }
+        }
       }
     ]
   },
@@ -207,33 +477,79 @@
     "id": "ig_fb_007",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_tackle",
     "speaker": "על כר הדשא",
     "title": "תיקול מאוחר?",
     "clock": "דקה 72",
     "text": "החלוץ של {יריבה} פורץ לכיוון הרחבה. אתה האחרון לפני השוער ויש לך כבר כרטיס צהוב.",
     "tip": "החלוץ של {יריבה} תמיד מנסה לחתוך לרגל ימין. לא חייבים להיכנס לתיקול כדי לעצור אותו.",
-    "conditions": { "positions": ["centerBack", "fullBack", "midfielder"] },
+    "conditions": {
+      "positions": [
+        "centerBack",
+        "fullBack",
+        "midfielder"
+      ]
+    },
     "choices": [
       {
         "label": "תיקול גלישה נקי",
         "stat": "defense",
         "difficulty": 58,
-        "success": { "text": "תיקול מושלם, נקי לגמרי. הכדור לאוט והיציע מריע.", "effects": { "rating": 0.8, "coachApproval": 3, "fanRep": 2 } },
-        "fail": { "text": "איחרת בחצי שנייה. כרטיס צהוב שני ואדום! {קבוצה} בעשרה, וגם ספגה מהבעיטה החופשית.", "effects": { "rating": -1.2, "oppScore": 1, "coachApproval": -8, "teamMorale": -4 } }
+        "success": {
+          "text": "תיקול מושלם, נקי לגמרי. הכדור לאוט והיציע מריע.",
+          "effects": {
+            "rating": 0.8,
+            "coachApproval": 3,
+            "fanRep": 2
+          }
+        },
+        "fail": {
+          "text": "איחרת בחצי שנייה. כרטיס צהוב שני ואדום! {קבוצה} בעשרה, וגם ספגה מהבעיטה החופשית.",
+          "effects": {
+            "rating": -1.2,
+            "oppScore": 1,
+            "coachApproval": -8,
+            "teamMorale": -4
+          }
+        }
       },
       {
         "label": "דחיפה עם הכתף",
         "stat": "physical",
         "difficulty": 52,
-        "success": { "text": "כתף מול כתף, החלוץ מאבד שיווי משקל. כדור שלך.", "effects": { "rating": 0.6, "coachApproval": 2 } },
-        "fail": { "text": "הוא חזק יותר ממה שחשבת. עובר אותך ומבקיע.", "effects": { "rating": -0.6, "oppScore": 1 } }
+        "success": {
+          "text": "כתף מול כתף, החלוץ מאבד שיווי משקל. כדור שלך.",
+          "effects": {
+            "rating": 0.6,
+            "coachApproval": 2
+          }
+        },
+        "fail": {
+          "text": "הוא חזק יותר ממה שחשבת. עובר אותך ומבקיע.",
+          "effects": {
+            "rating": -0.6,
+            "oppScore": 1
+          }
+        }
       },
       {
         "label": "נסוג וסוגר את זווית הבעיטה",
         "stat": "mental",
         "difficulty": 46,
-        "success": { "text": "סבלנות. הוא נאלץ לבעוט מזווית קשה והשוער אוסף.", "effects": { "rating": 0.5, "coachApproval": 3 } },
-        "fail": { "text": "נתת לו יותר מדי מקום. בעיטה לפינה ושער.", "effects": { "rating": -0.6, "oppScore": 1 } }
+        "success": {
+          "text": "סבלנות. הוא נאלץ לבעוט מזווית קשה והשוער אוסף.",
+          "effects": {
+            "rating": 0.5,
+            "coachApproval": 3
+          }
+        },
+        "fail": {
+          "text": "נתת לו יותר מדי מקום. בעיטה לפינה ושער.",
+          "effects": {
+            "rating": -0.6,
+            "oppScore": 1
+          }
+        }
       }
     ]
   },
@@ -241,31 +557,69 @@
     "id": "ig_fb_008",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_defense",
     "speaker": "על כר הדשא",
     "title": "מתקפה מתפרצת אחרונה",
     "clock": "דקה 89",
     "clutch": true,
     "text": "{קבוצה} עלתה בכל הכוח לשער הניצחון, ועכשיו שני שחקנים של {יריבה} רצים לבד מולך במתפרצת.",
     "tip": "החלוץ של {יריבה} עם הכדור חלש ברגל שמאל. לכוון אותו החוצה יקנה זמן לחברים.",
-    "conditions": { "positions": ["centerBack", "fullBack"] },
+    "conditions": {
+      "positions": [
+        "centerBack",
+        "fullBack"
+      ]
+    },
     "choices": [
       {
         "label": "הולך על הכדור",
         "stat": "defense",
         "difficulty": 58,
-        "success": { "text": "חטיפה נקייה! ומהכדור שלך יוצאת התקפה שמסתיימת בשער ניצחון.", "effects": { "teamScore": 1, "rating": 1.2, "coachApproval": 4, "fanRep": 3 } },
-        "fail": { "text": "הוא עבר אותך ומסר. שער של {יריבה} בדקה ה-89.", "effects": { "oppScore": 1, "rating": -0.8 } }
+        "success": {
+          "text": "חטיפה נקייה! ומהכדור שלך יוצאת התקפה שמסתיימת בשער ניצחון.",
+          "effects": {
+            "teamScore": 1,
+            "rating": 1.2,
+            "coachApproval": 4,
+            "fanRep": 3
+          }
+        },
+        "fail": {
+          "text": "הוא עבר אותך ומסר. שער של {יריבה} בדקה ה-89.",
+          "effects": {
+            "oppScore": 1,
+            "rating": -0.8
+          }
+        }
       },
       {
         "label": "חוסם את המסירה ומעכב",
         "stat": "mental",
         "difficulty": 50,
-        "success": { "text": "עיכבת מספיק זמן, החברים חזרו וההתקפה נעצרה. תיקו נשמר.", "effects": { "rating": 0.6, "coachApproval": 3 } },
-        "fail": { "text": "מסירה מהירה מעליך ושער. כואב.", "effects": { "oppScore": 1, "rating": -0.6 } }
+        "success": {
+          "text": "עיכבת מספיק זמן, החברים חזרו וההתקפה נעצרה. תיקו נשמר.",
+          "effects": {
+            "rating": 0.6,
+            "coachApproval": 3
+          }
+        },
+        "fail": {
+          "text": "מסירה מהירה מעליך ושער. כואב.",
+          "effects": {
+            "oppScore": 1,
+            "rating": -0.6
+          }
+        }
       },
       {
         "label": "עבירה טקטית",
-        "success": { "text": "כרטיס צהוב, אבל המתפרצת נעצרה. המשחק ייגמר בתיקו.", "effects": { "rating": 0.1, "coachApproval": 1 } }
+        "success": {
+          "text": "כרטיס צהוב, אבל המתפרצת נעצרה. המשחק ייגמר בתיקו.",
+          "effects": {
+            "rating": 0.1,
+            "coachApproval": 1
+          }
+        }
       }
     ]
   },
@@ -273,6 +627,7 @@
     "id": "ig_fb_009",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_freekick",
     "speaker": "על כר הדשא",
     "title": "בעיטה חופשית מ-25 מטר",
     "clock": "דקה 23",
@@ -283,22 +638,60 @@
         "label": "מעל החומה לחיבור",
         "stat": "technique",
         "difficulty": 62,
-        "success": { "text": "הכדור מסתובב מעל החומה ונכנס לחיבור. אין לשוער סיכוי!", "effects": { "playerGoals": 1, "rating": 1.2, "fanRep": 3, "followers": 120 } },
-        "fail": { "text": "הכדור פוגע בחומה וחוזר.", "effects": { "rating": -0.1 } }
+        "success": {
+          "text": "הכדור מסתובב מעל החומה ונכנס לחיבור. אין לשוער סיכוי!",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.2,
+            "fanRep": 3,
+            "followers": 120
+          }
+        },
+        "fail": {
+          "text": "הכדור פוגע בחומה וחוזר.",
+          "effects": {
+            "rating": -0.1
+          }
+        }
       },
       {
         "label": "נמוך מתחת לחומה",
         "stat": "attack",
         "difficulty": 56,
-        "success": { "text": "החומה קפצה, הכדור זחל מתחת ונכנס! שער חכם.", "effects": { "playerGoals": 1, "rating": 1.0 } },
-        "fail": { "text": "השוער קרא את זה ותפס בקלות.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "החומה קפצה, הכדור זחל מתחת ונכנס! שער חכם.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.0
+          }
+        },
+        "fail": {
+          "text": "השוער קרא את זה ותפס בקלות.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "מסירה מתוכננת לחבר",
         "stat": "playmaking",
         "difficulty": 50,
-        "success": { "text": "התרגיל מהאימון עובד! החבר מבקיע מקרוב.", "effects": { "playerAssists": 1, "teamScore": 1, "rating": 0.8, "coachApproval": 3 } },
-        "fail": { "text": "התרגיל נכשל לגמרי ו{יריבה} יוצאים למתפרצת.", "effects": { "rating": -0.3, "coachApproval": -2 } }
+        "success": {
+          "text": "התרגיל מהאימון עובד! החבר מבקיע מקרוב.",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 1,
+            "rating": 0.8,
+            "coachApproval": 3
+          }
+        },
+        "fail": {
+          "text": "התרגיל נכשל לגמרי ו{יריבה} יוצאים למתפרצת.",
+          "effects": {
+            "rating": -0.3,
+            "coachApproval": -2
+          }
+        }
       }
     ]
   },
@@ -306,33 +699,73 @@
     "id": "ig_fb_010",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_header",
     "speaker": "על כר הדשא",
     "title": "קרן בדקה ה-80",
     "clock": "דקה 80",
     "text": "קרן ל{קבוצה}. אתה עולה לרחבה, והשומר שלך מחזיק לך את החולצה.",
     "tip": "השומר שלך מסתכל על הכדור ולא עליך. ריצה מאוחרת לנקודה הראשונה תשחרר אותך.",
-    "conditions": { "positions": ["centerBack", "striker"] },
+    "conditions": {
+      "positions": [
+        "centerBack",
+        "striker"
+      ]
+    },
     "choices": [
       {
         "label": "ריצה מאוחרת לנקודה הראשונה",
         "stat": "mental",
         "difficulty": 52,
-        "success": { "text": "השומר מאבד אותך, ואתה נוגח בחופשיות לרשת!", "effects": { "playerGoals": 1, "rating": 1.0 } },
-        "fail": { "text": "השוער יוצא באגרוף לפניך.", "effects": { "rating": -0.1 } }
+        "success": {
+          "text": "השומר מאבד אותך, ואתה נוגח בחופשיות לרשת!",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.0
+          }
+        },
+        "fail": {
+          "text": "השוער יוצא באגרוף לפניך.",
+          "effects": {
+            "rating": -0.1
+          }
+        }
       },
       {
         "label": "מאבק כוח על המיקום",
         "stat": "physical",
         "difficulty": 55,
-        "success": { "text": "דחפת אותו הצידה בחוקיות גבולית ונגחת פנימה!", "effects": { "playerGoals": 1, "rating": 1.0 } },
-        "fail": { "text": "השופט שורק עבירה עליך. הזדמנות הלכה.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "דחפת אותו הצידה בחוקיות גבולית ונגחת פנימה!",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.0
+          }
+        },
+        "fail": {
+          "text": "השופט שורק עבירה עליך. הזדמנות הלכה.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "חוסם את השוער בשביל החבר",
         "stat": "defense",
         "difficulty": 45,
-        "success": { "text": "חסימה מושלמת, החבר נוגח פנימה. עבודה שחורה שווה זהב.", "effects": { "teamScore": 1, "rating": 0.6, "coachApproval": 3 } },
-        "fail": { "text": "השופט שורק עבירת התקפה.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "חסימה מושלמת, החבר נוגח פנימה. עבודה שחורה שווה זהב.",
+          "effects": {
+            "teamScore": 1,
+            "rating": 0.6,
+            "coachApproval": 3
+          }
+        },
+        "fail": {
+          "text": "השופט שורק עבירת התקפה.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       }
     ]
   },
@@ -340,33 +773,76 @@
     "id": "ig_fb_011",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_counter",
     "speaker": "על כר הדשא",
     "title": "מתפרצת שלושה על שניים",
     "clock": "דקה 52",
     "text": "{קבוצה} חוטפת כדור במרכז ויוצאת למתפרצת. אתה עם הכדור, שני חברים רצים לצדדים ושני מגינים של {יריבה} נסוגים.",
     "tip": "המגינים של {יריבה} נסוגים לאט. מסירה לצד ימין תפתח את כל ההגנה.",
-    "conditions": { "positions": ["midfielder", "striker", "fullBack"] },
+    "conditions": {
+      "positions": [
+        "midfielder",
+        "striker",
+        "fullBack"
+      ]
+    },
     "choices": [
       {
         "label": "מסירה לחבר בצד ימין",
         "stat": "playmaking",
         "difficulty": 48,
-        "success": { "text": "מסירה בזמן המושלם, החבר מסיים לרשת. בישול!", "effects": { "playerAssists": 1, "teamScore": 1, "rating": 0.8 } },
-        "fail": { "text": "המסירה איטית מדי והמגן חותך.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "מסירה בזמן המושלם, החבר מסיים לרשת. בישול!",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 1,
+            "rating": 0.8
+          }
+        },
+        "fail": {
+          "text": "המסירה איטית מדי והמגן חותך.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "דריבל מול המגן הראשון",
         "stat": "technique",
         "difficulty": 56,
-        "success": { "text": "הטעיה, עקיפה, בעיטה ושער! מהלך של שחקן מליגה אחרת.", "effects": { "playerGoals": 1, "rating": 1.1, "confidence": 4 } },
-        "fail": { "text": "המגן קורא את הדריבל וחוטף.", "effects": { "rating": -0.3 } }
+        "success": {
+          "text": "הטעיה, עקיפה, בעיטה ושער! מהלך של שחקן מליגה אחרת.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.1,
+            "confidence": 4
+          }
+        },
+        "fail": {
+          "text": "המגן קורא את הדריבל וחוטף.",
+          "effects": {
+            "rating": -0.3
+          }
+        }
       },
       {
         "label": "בעיטה מרחוק",
         "stat": "attack",
         "difficulty": 60,
-        "success": { "text": "בעיטה מ-22 מטר נכנסת לפינה. השוער רק מסתכל.", "effects": { "playerGoals": 1, "rating": 1.1 } },
-        "fail": { "text": "הבעיטה רחוקה מהשער. החברים מרימים ידיים.", "effects": { "rating": -0.4, "teamMorale": -2 } }
+        "success": {
+          "text": "בעיטה מ-22 מטר נכנסת לפינה. השוער רק מסתכל.",
+          "effects": {
+            "playerGoals": 1,
+            "rating": 1.1
+          }
+        },
+        "fail": {
+          "text": "הבעיטה רחוקה מהשער. החברים מרימים ידיים.",
+          "effects": {
+            "rating": -0.4,
+            "teamMorale": -2
+          }
+        }
       }
     ]
   },
@@ -374,33 +850,75 @@
     "id": "ig_fb_012",
     "type": "inGame",
     "sport": "football",
+    "scene": "fb_defense",
     "speaker": "על כר הדשא",
     "title": "מלכודת נבדל",
     "clock": "דקה 61",
     "text": "הקשר של {יריבה} מרים את הראש ומחפש כדור עומק לחלוץ המהיר שלהם. אתה מוביל את קו ההגנה.",
     "tip": "החלוץ של {יריבה} מתחיל ריצות מוקדם מדי. עלייה מתואמת של הקו תתפוס אותו.",
-    "conditions": { "positions": ["centerBack", "fullBack"] },
+    "conditions": {
+      "positions": [
+        "centerBack",
+        "fullBack"
+      ]
+    },
     "choices": [
       {
         "label": "מעלה את הקו למלכודת נבדל",
         "stat": "mental",
         "difficulty": 54,
-        "success": { "text": "הדגל של הקוון עולה. נבדל! המאמן מוחא כפיים.", "effects": { "rating": 0.6, "coachApproval": 4 } },
-        "fail": { "text": "מגן אחד נשאר מאחור. החלוץ לבד מול השוער, שער.", "effects": { "oppScore": 1, "rating": -0.7, "coachApproval": -3 } }
+        "success": {
+          "text": "הדגל של הקוון עולה. נבדל! המאמן מוחא כפיים.",
+          "effects": {
+            "rating": 0.6,
+            "coachApproval": 4
+          }
+        },
+        "fail": {
+          "text": "מגן אחד נשאר מאחור. החלוץ לבד מול השוער, שער.",
+          "effects": {
+            "oppScore": 1,
+            "rating": -0.7,
+            "coachApproval": -3
+          }
+        }
       },
       {
         "label": "נסוג ורץ איתו",
         "stat": "physical",
         "difficulty": 55,
-        "success": { "text": "אתה מנצח אותו בספרינט ומרחיק לקרן.", "effects": { "rating": 0.6 } },
-        "fail": { "text": "הוא מהיר מדי. בעיטה ושער.", "effects": { "oppScore": 1, "rating": -0.6 } }
+        "success": {
+          "text": "אתה מנצח אותו בספרינט ומרחיק לקרן.",
+          "effects": {
+            "rating": 0.6
+          }
+        },
+        "fail": {
+          "text": "הוא מהיר מדי. בעיטה ושער.",
+          "effects": {
+            "oppScore": 1,
+            "rating": -0.6
+          }
+        }
       },
       {
         "label": "לוחץ על הקשר שלהם",
         "stat": "defense",
         "difficulty": 50,
-        "success": { "text": "לחץ מהיר, הקשר מאבד את הכדור. חטיפה!", "effects": { "rating": 0.7, "coachApproval": 2 } },
-        "fail": { "text": "הוא מוסר רגע לפני שאתה מגיע, והחלוץ חופשי לגמרי. שער.", "effects": { "oppScore": 1, "rating": -0.6 } }
+        "success": {
+          "text": "לחץ מהיר, הקשר מאבד את הכדור. חטיפה!",
+          "effects": {
+            "rating": 0.7,
+            "coachApproval": 2
+          }
+        },
+        "fail": {
+          "text": "הוא מוסר רגע לפני שאתה מגיע, והחלוץ חופשי לגמרי. שער.",
+          "effects": {
+            "oppScore": 1,
+            "rating": -0.6
+          }
+        }
       }
     ]
   },
@@ -408,33 +926,76 @@
     "id": "ig_bb_001",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_three",
     "speaker": "על הפרקט",
     "title": "שלשה עם הבאזר של הרבע",
     "clock": "רבע שלישי, 0:03",
     "text": "שלוש שניות לסיום הרבע. הכדור אצלך מאחורי הקשת, והשומר של {יריבה} רץ אליך עם יד מורמת.",
     "tip": "השומר של {יריבה} קופץ על כל הטעיה. הטעיית זריקה וצעד הצידה ישאירו לך זריקה פנויה.",
-    "conditions": { "positions": ["PG", "SG", "SF"] },
+    "conditions": {
+      "positions": [
+        "PG",
+        "SG",
+        "SF"
+      ]
+    },
     "choices": [
       {
         "label": "זריקה מיידית מעל היד",
         "stat": "attack",
         "difficulty": 58,
-        "success": { "text": "רשת! שלשה עם הבאזר והספסל של {קבוצה} קופץ לפרקט.", "effects": { "playerPoints": 3, "rating": 1.0, "confidence": 4 } },
-        "fail": { "text": "הכדור פוגע בטבעת ויוצא. סוף הרבע.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "רשת! שלשה עם הבאזר והספסל של {קבוצה} קופץ לפרקט.",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 1.0,
+            "confidence": 4
+          }
+        },
+        "fail": {
+          "text": "הכדור פוגע בטבעת ויוצא. סוף הרבע.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "הטעיה, צעד הצידה וזריקה",
         "stat": "technique",
         "difficulty": 56,
-        "success": { "text": "השומר עף ליד שלך, ואתה זורק בשקט. שלוש נקודות!", "effects": { "playerPoints": 3, "rating": 1.1, "fanRep": 2 } },
-        "fail": { "text": "לקחת יותר מדי זמן. הבאזר נשמע לפני שהכדור עזב את היד.", "effects": { "rating": -0.3 } }
+        "success": {
+          "text": "השומר עף ליד שלך, ואתה זורק בשקט. שלוש נקודות!",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 1.1,
+            "fanRep": 2
+          }
+        },
+        "fail": {
+          "text": "לקחת יותר מדי זמן. הבאזר נשמע לפני שהכדור עזב את היד.",
+          "effects": {
+            "rating": -0.3
+          }
+        }
       },
       {
         "label": "חדירה לסל",
         "stat": "physical",
         "difficulty": 52,
-        "success": { "text": "חדירה חזקה, לייאפ פלוס עבירה! שלוש נקודות בדרך הקשה.", "effects": { "playerPoints": 3, "rating": 0.9 } },
-        "fail": { "text": "הסנטר שלהם חוסם אותך בחזרה לפרצוף.", "effects": { "rating": -0.3, "confidence": -2 } }
+        "success": {
+          "text": "חדירה חזקה, לייאפ פלוס עבירה! שלוש נקודות בדרך הקשה.",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 0.9
+          }
+        },
+        "fail": {
+          "text": "הסנטר שלהם חוסם אותך בחזרה לפרצוף.",
+          "effects": {
+            "rating": -0.3,
+            "confidence": -2
+          }
+        }
       }
     ]
   },
@@ -442,6 +1003,7 @@
     "id": "ig_bb_002",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_three",
     "speaker": "על הפרקט",
     "title": "ההתקפה האחרונה",
     "clock": "רבע רביעי, 0:06",
@@ -453,22 +1015,65 @@
         "label": "שלשה לניצחון",
         "stat": "attack",
         "difficulty": 62,
-        "success": { "text": "הכדור באוויר... רשת! שלשה לניצחון והאולם מתפוצץ.", "effects": { "playerPoints": 3, "rating": 1.5, "fanRep": 6, "followers": 300, "confidence": 7 } },
-        "fail": { "text": "קצרה מדי. הבאזר נשמע ו{יריבה} חוגגים.", "effects": { "rating": -0.6, "confidence": -5 } }
+        "success": {
+          "text": "הכדור באוויר... רשת! שלשה לניצחון והאולם מתפוצץ.",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 1.5,
+            "fanRep": 6,
+            "followers": 300,
+            "confidence": 7
+          }
+        },
+        "fail": {
+          "text": "קצרה מדי. הבאזר נשמע ו{יריבה} חוגגים.",
+          "effects": {
+            "rating": -0.6,
+            "confidence": -5
+          }
+        }
       },
       {
         "label": "חדירה מול הגבוה האיטי",
         "stat": "technique",
         "difficulty": 55,
-        "success": { "text": "עברת אותו בצעד ראשון, לייאפ עם הבאזר. ניצחון!", "effects": { "playerPoints": 2, "rating": 1.3, "fanRep": 5, "confidence": 6 } },
-        "fail": { "text": "העזרה הגיעה והכדור נחסם. הפסד מכאיב.", "effects": { "rating": -0.5, "confidence": -4 } }
+        "success": {
+          "text": "עברת אותו בצעד ראשון, לייאפ עם הבאזר. ניצחון!",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 1.3,
+            "fanRep": 5,
+            "confidence": 6
+          }
+        },
+        "fail": {
+          "text": "העזרה הגיעה והכדור נחסם. הפסד מכאיב.",
+          "effects": {
+            "rating": -0.5,
+            "confidence": -4
+          }
+        }
       },
       {
         "label": "מסירה לחבר החופשי בפינה",
         "stat": "playmaking",
         "difficulty": 50,
-        "success": { "text": "משכת שני שומרים ומסרת לפינה. שלשה! ניצחון קבוצתי.", "effects": { "playerAssists": 1, "teamScore": 3, "rating": 1.1, "teamMorale": 5 } },
-        "fail": { "text": "המסירה נחטפת. נגמר.", "effects": { "rating": -0.6, "coachApproval": -2 } }
+        "success": {
+          "text": "משכת שני שומרים ומסרת לפינה. שלשה! ניצחון קבוצתי.",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 3,
+            "rating": 1.1,
+            "teamMorale": 5
+          }
+        },
+        "fail": {
+          "text": "המסירה נחטפת. נגמר.",
+          "effects": {
+            "rating": -0.6,
+            "coachApproval": -2
+          }
+        }
       }
     ]
   },
@@ -476,6 +1081,7 @@
     "id": "ig_bb_003",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_freethrow",
     "speaker": "על הפרקט",
     "title": "קווי עונשין בלחץ",
     "clock": "רבע רביעי, 0:02",
@@ -487,22 +1093,65 @@
         "label": "השגרה הקבועה: שלוש כדרורים ונשימה",
         "stat": "mental",
         "difficulty": 52,
-        "success": { "text": "אחת. שתיים. שתיהן נקיות. {קבוצה} מנצחת!", "effects": { "playerPoints": 2, "rating": 1.2, "fanRep": 4, "confidence": 5 } },
-        "fail": { "text": "הראשונה נכנסת, השנייה מסתובבת על הטבעת ויוצאת. הולכים להארכה.", "effects": { "playerPoints": 1, "rating": -0.2 } }
+        "success": {
+          "text": "אחת. שתיים. שתיהן נקיות. {קבוצה} מנצחת!",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 1.2,
+            "fanRep": 4,
+            "confidence": 5
+          }
+        },
+        "fail": {
+          "text": "הראשונה נכנסת, השנייה מסתובבת על הטבעת ויוצאת. הולכים להארכה.",
+          "effects": {
+            "playerPoints": 1,
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "זורק מהר בלי לחשוב",
         "stat": "attack",
         "difficulty": 55,
-        "success": { "text": "לא נתת ללחץ לתפוס אותך. שתי נקודות וניצחון!", "effects": { "playerPoints": 2, "rating": 1.2, "confidence": 5 } },
-        "fail": { "text": "שתי החטאות. היציע של {יריבה} חוגג כאילו זכו באליפות.", "effects": { "rating": -1.0, "confidence": -7, "fanRep": -3 } }
+        "success": {
+          "text": "לא נתת ללחץ לתפוס אותך. שתי נקודות וניצחון!",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 1.2,
+            "confidence": 5
+          }
+        },
+        "fail": {
+          "text": "שתי החטאות. היציע של {יריבה} חוגג כאילו זכו באליפות.",
+          "effects": {
+            "rating": -1.0,
+            "confidence": -7,
+            "fanRep": -3
+          }
+        }
       },
       {
         "label": "מסתכל לקהל של {יריבה} ומחייך",
         "stat": "mental",
         "difficulty": 62,
-        "success": { "text": "חיוך, שתי קליעות, ואצבע על השפתיים. רגע של כוכב.", "effects": { "playerPoints": 2, "rating": 1.4, "fanRep": 6, "followers": 250 } },
-        "fail": { "text": "החיוך נמחק אחרי ההחטאה הראשונה. השנייה נכנסת, הולכים להארכה.", "effects": { "playerPoints": 1, "rating": -0.4, "confidence": -3 } }
+        "success": {
+          "text": "חיוך, שתי קליעות, ואצבע על השפתיים. רגע של כוכב.",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 1.4,
+            "fanRep": 6,
+            "followers": 250
+          }
+        },
+        "fail": {
+          "text": "החיוך נמחק אחרי ההחטאה הראשונה. השנייה נכנסת, הולכים להארכה.",
+          "effects": {
+            "playerPoints": 1,
+            "rating": -0.4,
+            "confidence": -3
+          }
+        }
       }
     ]
   },
@@ -510,6 +1159,7 @@
     "id": "ig_bb_004",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_freethrow",
     "speaker": "על הפרקט",
     "title": "שלוש זריקות עונשין",
     "clock": "רבע שני, 2:40",
@@ -520,22 +1170,58 @@
         "label": "זריקות עם קשת גבוהה",
         "stat": "attack",
         "difficulty": 48,
-        "success": { "text": "שלוש מתוך שלוש. בטוח ונקי.", "effects": { "playerPoints": 3, "rating": 0.6 } },
-        "fail": { "text": "רק אחת נכנסת. הסל הזה באמת קשוח.", "effects": { "playerPoints": 1, "rating": -0.2 } }
+        "success": {
+          "text": "שלוש מתוך שלוש. בטוח ונקי.",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 0.6
+          }
+        },
+        "fail": {
+          "text": "רק אחת נכנסת. הסל הזה באמת קשוח.",
+          "effects": {
+            "playerPoints": 1,
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "שגרה רגילה",
         "stat": "mental",
         "difficulty": 45,
-        "success": { "text": "שלוש מתוך שלוש. אף אחד לא יכול להזיז אותך מהקו.", "effects": { "playerPoints": 3, "rating": 0.6 } },
-        "fail": { "text": "שתיים מתוך שלוש. לא רע.", "effects": { "playerPoints": 2, "rating": 0.1 } }
+        "success": {
+          "text": "שלוש מתוך שלוש. אף אחד לא יכול להזיז אותך מהקו.",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 0.6
+          }
+        },
+        "fail": {
+          "text": "שתיים מתוך שלוש. לא רע.",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 0.1
+          }
+        }
       },
       {
         "label": "זורק מהר כדי לא לחשוב",
         "stat": "technique",
         "difficulty": 52,
-        "success": { "text": "שלוש מתוך שלוש תוך עשר שניות. השופט בקושי הספיק להחזיר את הכדור.", "effects": { "playerPoints": 3, "rating": 0.6 } },
-        "fail": { "text": "אחת מתוך שלוש. מהר זה לא תמיד טוב.", "effects": { "playerPoints": 1, "rating": -0.3 } }
+        "success": {
+          "text": "שלוש מתוך שלוש תוך עשר שניות. השופט בקושי הספיק להחזיר את הכדור.",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 0.6
+          }
+        },
+        "fail": {
+          "text": "אחת מתוך שלוש. מהר זה לא תמיד טוב.",
+          "effects": {
+            "playerPoints": 1,
+            "rating": -0.3
+          }
+        }
       }
     ]
   },
@@ -543,33 +1229,77 @@
     "id": "ig_bb_005",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_pnr",
     "speaker": "על הפרקט",
     "title": "פיק אנד רול",
     "clock": "רבע שני, 5:12",
     "text": "הסנטר של {קבוצה} מגיע לחסום לך. השומר שלך נתקע בחסימה והגבוה של {יריבה} יוצא אליך.",
     "tip": "הגבוה של {יריבה} יוצא גבוה מדי על החסימה. מסירה מעל הראש לגולל תשאיר לו סל קל.",
-    "conditions": { "positions": ["PG", "SG", "SF"] },
+    "conditions": {
+      "positions": [
+        "PG",
+        "SG",
+        "SF"
+      ]
+    },
     "choices": [
       {
         "label": "מסירה לגולל לסל",
         "stat": "playmaking",
         "difficulty": 50,
-        "success": { "text": "מסירה מעל הראש, הסנטר מטביע! אסיסט יפה.", "effects": { "playerAssists": 1, "teamScore": 2, "rating": 0.7 } },
-        "fail": { "text": "המסירה נחטפת במעבר. איבוד כדור.", "effects": { "rating": -0.3, "oppScore": 2 } }
+        "success": {
+          "text": "מסירה מעל הראש, הסנטר מטביע! אסיסט יפה.",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 2,
+            "rating": 0.7
+          }
+        },
+        "fail": {
+          "text": "המסירה נחטפת במעבר. איבוד כדור.",
+          "effects": {
+            "rating": -0.3,
+            "oppScore": 2
+          }
+        }
       },
       {
         "label": "זריקה מחצי מרחק",
         "stat": "attack",
         "difficulty": 52,
-        "success": { "text": "עצירה, קפיצה, רשת. שתי נקודות.", "effects": { "playerPoints": 2, "rating": 0.6 } },
-        "fail": { "text": "קצרה. ריבאונד ל{יריבה}.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "עצירה, קפיצה, רשת. שתי נקודות.",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 0.6
+          }
+        },
+        "fail": {
+          "text": "קצרה. ריבאונד ל{יריבה}.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "חדירה בין שני השומרים",
         "stat": "technique",
         "difficulty": 60,
-        "success": { "text": "חדירה מבריקה בין שניים, לייאפ ועבירה. שלוש נקודות!", "effects": { "playerPoints": 3, "rating": 1.0, "fanRep": 2 } },
-        "fail": { "text": "נסגרו עליך ואיבדת את הכדור. מתפרצת ל{יריבה}.", "effects": { "rating": -0.5, "oppScore": 2 } }
+        "success": {
+          "text": "חדירה מבריקה בין שניים, לייאפ ועבירה. שלוש נקודות!",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 1.0,
+            "fanRep": 2
+          }
+        },
+        "fail": {
+          "text": "נסגרו עליך ואיבדת את הכדור. מתפרצת ל{יריבה}.",
+          "effects": {
+            "rating": -0.5,
+            "oppScore": 2
+          }
+        }
       }
     ]
   },
@@ -577,33 +1307,76 @@
     "id": "ig_bb_006",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_pnr",
     "speaker": "על הפרקט",
     "title": "חסימה וגלגול",
     "clock": "רבע שלישי, 7:30",
     "text": "אתה מציב חסימה לרכז של {קבוצה} ומתגלגל לסל. ההגנה של {יריבה} מתבלבלת.",
     "tip": "השומרים של {יריבה} מחליפים מאוחר. הגלגול המהיר לסל הוא הנשק שלך.",
-    "conditions": { "positions": ["PF", "C"] },
+    "conditions": {
+      "positions": [
+        "PF",
+        "C"
+      ]
+    },
     "choices": [
       {
         "label": "גלגול מהיר לסל",
         "stat": "physical",
         "difficulty": 50,
-        "success": { "text": "קיבלת את הכדור באוויר והטבעת בעוצמה! הספסל קם.", "effects": { "playerPoints": 2, "rating": 0.8, "fanRep": 2 } },
-        "fail": { "text": "המסירה מגיעה, אבל ההטבעה פוגעת בטבעת ויוצאת.", "effects": { "rating": -0.3 } }
+        "success": {
+          "text": "קיבלת את הכדור באוויר והטבעת בעוצמה! הספסל קם.",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 0.8,
+            "fanRep": 2
+          }
+        },
+        "fail": {
+          "text": "המסירה מגיעה, אבל ההטבעה פוגעת בטבעת ויוצאת.",
+          "effects": {
+            "rating": -0.3
+          }
+        }
       },
       {
         "label": "פתיחה לזריקה מבחוץ",
         "stat": "attack",
         "difficulty": 58,
-        "success": { "text": "פתחת החוצה והכנסת זריקה מחצי מרחק. מפתיע את כולם.", "effects": { "playerPoints": 2, "rating": 0.7 } },
-        "fail": { "text": "הזריקה עפה רחוק. המאמן מסמן לך לחזור לצבע.", "effects": { "rating": -0.3, "coachApproval": -2 } }
+        "success": {
+          "text": "פתחת החוצה והכנסת זריקה מחצי מרחק. מפתיע את כולם.",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 0.7
+          }
+        },
+        "fail": {
+          "text": "הזריקה עפה רחוק. המאמן מסמן לך לחזור לצבע.",
+          "effects": {
+            "rating": -0.3,
+            "coachApproval": -2
+          }
+        }
       },
       {
         "label": "מסירה לפינה מהצבע",
         "stat": "playmaking",
         "difficulty": 54,
-        "success": { "text": "שתי ידיים מושכות אליך, ואתה מוסר לפינה. שלשה! אסיסט של גבוה חכם.", "effects": { "playerAssists": 1, "teamScore": 3, "rating": 0.8, "coachApproval": 2 } },
-        "fail": { "text": "המסירה עפה ליציע. איבוד כדור.", "effects": { "rating": -0.3 } }
+        "success": {
+          "text": "שתי ידיים מושכות אליך, ואתה מוסר לפינה. שלשה! אסיסט של גבוה חכם.",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 3,
+            "rating": 0.8,
+            "coachApproval": 2
+          }
+        },
+        "fail": {
+          "text": "המסירה עפה ליציע. איבוד כדור.",
+          "effects": {
+            "rating": -0.3
+          }
+        }
       }
     ]
   },
@@ -611,6 +1384,7 @@
     "id": "ig_bb_007",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_fastbreak",
     "speaker": "על הפרקט",
     "title": "מתפרצת שניים על אחד",
     "clock": "רבע ראשון, 4:05",
@@ -621,22 +1395,59 @@
         "label": "הטעיית מסירה והטבעה",
         "stat": "physical",
         "difficulty": 54,
-        "success": { "text": "ההטעיה עבדה והטבעת בשתי ידיים! האולם רועד.", "effects": { "playerPoints": 2, "rating": 0.9, "fanRep": 3, "followers": 100 } },
-        "fail": { "text": "השומר לא קנה את ההטעיה ולקח עבירת התקפה.", "effects": { "rating": -0.4 } }
+        "success": {
+          "text": "ההטעיה עבדה והטבעת בשתי ידיים! האולם רועד.",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 0.9,
+            "fanRep": 3,
+            "followers": 100
+          }
+        },
+        "fail": {
+          "text": "השומר לא קנה את ההטעיה ולקח עבירת התקפה.",
+          "effects": {
+            "rating": -0.4
+          }
+        }
       },
       {
         "label": "מסירה לחבר ברגע הנכון",
         "stat": "playmaking",
         "difficulty": 46,
-        "success": { "text": "מסירה מושלמת לחבר, לייאפ קל. אסיסט!", "effects": { "playerAssists": 1, "teamScore": 2, "rating": 0.6 } },
-        "fail": { "text": "המסירה מאוחרת מדי והשומר חוטף.", "effects": { "rating": -0.3 } }
+        "success": {
+          "text": "מסירה מושלמת לחבר, לייאפ קל. אסיסט!",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 2,
+            "rating": 0.6
+          }
+        },
+        "fail": {
+          "text": "המסירה מאוחרת מדי והשומר חוטף.",
+          "effects": {
+            "rating": -0.3
+          }
+        }
       },
       {
         "label": "עוצר לשלשה במעבר",
         "stat": "attack",
         "difficulty": 60,
-        "success": { "text": "עצירה פתאומית ושלשה. אף אחד לא ציפה לזה.", "effects": { "playerPoints": 3, "rating": 0.8 } },
-        "fail": { "text": "המאמן מחזיק את הראש: שתיים על אחד וזרקת שלשה מוחטאת?", "effects": { "rating": -0.5, "coachApproval": -3 } }
+        "success": {
+          "text": "עצירה פתאומית ושלשה. אף אחד לא ציפה לזה.",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 0.8
+          }
+        },
+        "fail": {
+          "text": "המאמן מחזיק את הראש: שתיים על אחד וזרקת שלשה מוחטאת?",
+          "effects": {
+            "rating": -0.5,
+            "coachApproval": -3
+          }
+        }
       }
     ]
   },
@@ -644,6 +1455,7 @@
     "id": "ig_bb_008",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_block",
     "speaker": "על הפרקט",
     "title": "אחד נגד שניים בהגנה",
     "clock": "רבע שני, 1:15",
@@ -654,19 +1466,50 @@
         "label": "מסתכן בחטיפת המסירה",
         "stat": "defense",
         "difficulty": 56,
-        "success": { "text": "חטיפה! וממנה מתפרצת שלכם.", "effects": { "rating": 0.8, "teamScore": 2, "coachApproval": 3 } },
-        "fail": { "text": "פספסת את החטיפה, לייאפ קל ל{יריבה}.", "effects": { "oppScore": 2, "rating": -0.4 } }
+        "success": {
+          "text": "חטיפה! וממנה מתפרצת שלכם.",
+          "effects": {
+            "rating": 0.8,
+            "teamScore": 2,
+            "coachApproval": 3
+          }
+        },
+        "fail": {
+          "text": "פספסת את החטיפה, לייאפ קל ל{יריבה}.",
+          "effects": {
+            "oppScore": 2,
+            "rating": -0.4
+          }
+        }
       },
       {
         "label": "נסוג לצבע ומחכה לחסימה",
         "stat": "physical",
         "difficulty": 55,
-        "success": { "text": "בלוק ענק על הלוח! הקהל קם.", "effects": { "rating": 0.9, "fanRep": 2, "playerRebounds": 1 } },
-        "fail": { "text": "קפצת מוקדם. סל ועבירה.", "effects": { "oppScore": 3, "rating": -0.6 } }
+        "success": {
+          "text": "בלוק ענק על הלוח! הקהל קם.",
+          "effects": {
+            "rating": 0.9,
+            "fanRep": 2,
+            "playerRebounds": 1
+          }
+        },
+        "fail": {
+          "text": "קפצת מוקדם. סל ועבירה.",
+          "effects": {
+            "oppScore": 3,
+            "rating": -0.6
+          }
+        }
       },
       {
         "label": "עבירה טקטית",
-        "success": { "text": "עבירה שקטה במרכז המגרש. המתפרצת נעצרה.", "effects": { "rating": 0.1 } }
+        "success": {
+          "text": "עבירה שקטה במרכז המגרש. המתפרצת נעצרה.",
+          "effects": {
+            "rating": 0.1
+          }
+        }
       }
     ]
   },
@@ -674,33 +1517,74 @@
     "id": "ig_bb_009",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_post",
     "speaker": "על הפרקט",
     "title": "משחק גב לסל",
     "clock": "רבע שלישי, 3:48",
     "text": "קיבלת את הכדור בגב לסל בצבע. השומר של {יריבה} נמוך ממך אבל חזק.",
     "tip": "השומר שלך לוחץ חזק מימין. סיבוב לבסיס יפתח לך הוק קל.",
-    "conditions": { "positions": ["PF", "C", "SF"] },
+    "conditions": {
+      "positions": [
+        "PF",
+        "C",
+        "SF"
+      ]
+    },
     "choices": [
       {
         "label": "סיבוב לבסיס והוק",
         "stat": "technique",
         "difficulty": 52,
-        "success": { "text": "הוק רך מעל היד. שתי נקודות קלאסיות.", "effects": { "playerPoints": 2, "rating": 0.7 } },
-        "fail": { "text": "ההוק יוצא מהטבעת.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "הוק רך מעל היד. שתי נקודות קלאסיות.",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 0.7
+          }
+        },
+        "fail": {
+          "text": "ההוק יוצא מהטבעת.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "דחיפה פנימה בכוח",
         "stat": "physical",
         "difficulty": 54,
-        "success": { "text": "דחפת אותו עד מתחת לסל, סל ועבירה!", "effects": { "playerPoints": 3, "rating": 0.9 } },
-        "fail": { "text": "עבירת התקפה. השופט לא קנה את זה.", "effects": { "rating": -0.4 } }
+        "success": {
+          "text": "דחפת אותו עד מתחת לסל, סל ועבירה!",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 0.9
+          }
+        },
+        "fail": {
+          "text": "עבירת התקפה. השופט לא קנה את זה.",
+          "effects": {
+            "rating": -0.4
+          }
+        }
       },
       {
         "label": "מסירה החוצה לשלשה",
         "stat": "playmaking",
         "difficulty": 50,
-        "success": { "text": "כפילה מגיעה, אתה מוסר החוצה והקלעי מכניס שלשה.", "effects": { "playerAssists": 1, "teamScore": 3, "rating": 0.7 } },
-        "fail": { "text": "המסירה נחטפת.", "effects": { "rating": -0.3 } }
+        "success": {
+          "text": "כפילה מגיעה, אתה מוסר החוצה והקלעי מכניס שלשה.",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 3,
+            "rating": 0.7
+          }
+        },
+        "fail": {
+          "text": "המסירה נחטפת.",
+          "effects": {
+            "rating": -0.3
+          }
+        }
       }
     ]
   },
@@ -708,6 +1592,7 @@
     "id": "ig_bb_010",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_block",
     "speaker": "על הפרקט",
     "title": "עבירת התקפה או בלוק?",
     "clock": "רבע רביעי, 4:20",
@@ -718,22 +1603,61 @@
         "label": "עומד במקום ולוקח עבירת התקפה",
         "stat": "mental",
         "difficulty": 52,
-        "success": { "text": "שריקה! עבירת התקפה. הספסל של {קבוצה} קם להריע.", "effects": { "rating": 0.8, "coachApproval": 4, "teamMorale": 2 } },
-        "fail": { "text": "השופט שורק עבירת הגנה. סל ועבירה.", "effects": { "oppScore": 3, "rating": -0.5 } }
+        "success": {
+          "text": "שריקה! עבירת התקפה. הספסל של {קבוצה} קם להריע.",
+          "effects": {
+            "rating": 0.8,
+            "coachApproval": 4,
+            "teamMorale": 2
+          }
+        },
+        "fail": {
+          "text": "השופט שורק עבירת הגנה. סל ועבירה.",
+          "effects": {
+            "oppScore": 3,
+            "rating": -0.5
+          }
+        }
       },
       {
         "label": "קופץ לבלוק",
         "stat": "physical",
         "difficulty": 56,
-        "success": { "text": "בלוק אדיר עד השורה השלישית! הקהל מטורף.", "effects": { "rating": 1.0, "fanRep": 3, "followers": 120 } },
-        "fail": { "text": "הוא הטעה אותך. סל קל ועבירה.", "effects": { "oppScore": 3, "rating": -0.6 } }
+        "success": {
+          "text": "בלוק אדיר עד השורה השלישית! הקהל מטורף.",
+          "effects": {
+            "rating": 1.0,
+            "fanRep": 3,
+            "followers": 120
+          }
+        },
+        "fail": {
+          "text": "הוא הטעה אותך. סל קל ועבירה.",
+          "effects": {
+            "oppScore": 3,
+            "rating": -0.6
+          }
+        }
       },
       {
         "label": "נותן לו לעבור ומחכה לריבאונד",
         "stat": "defense",
         "difficulty": 45,
-        "success": { "text": "הוא מחטיא ואתה לוקח את הריבאונד.", "effects": { "playerRebounds": 1, "rating": 0.3 } },
-        "fail": { "text": "סל קל. המאמן לא מבסוט.", "effects": { "oppScore": 2, "rating": -0.3, "coachApproval": -2 } }
+        "success": {
+          "text": "הוא מחטיא ואתה לוקח את הריבאונד.",
+          "effects": {
+            "playerRebounds": 1,
+            "rating": 0.3
+          }
+        },
+        "fail": {
+          "text": "סל קל. המאמן לא מבסוט.",
+          "effects": {
+            "oppScore": 2,
+            "rating": -0.3,
+            "coachApproval": -2
+          }
+        }
       }
     ]
   },
@@ -741,33 +1665,79 @@
     "id": "ig_bb_011",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_post",
     "speaker": "על הפרקט",
     "title": "ריבאונד התקפה",
     "clock": "רבע ראשון, 6:55",
     "text": "זריקה מוחטאת של חבר עפה מהטבעת. אתה והסנטר של {יריבה} קופצים יחד.",
     "tip": "הסנטר של {יריבה} לא עושה בוקס-אאוט. מיקום טוב ינצח אותו.",
-    "conditions": { "positions": ["PF", "C", "SF"] },
+    "conditions": {
+      "positions": [
+        "PF",
+        "C",
+        "SF"
+      ]
+    },
     "choices": [
       {
         "label": "טיפ-אין מיידי",
         "stat": "technique",
         "difficulty": 55,
-        "success": { "text": "נגיעה אחת והכדור בפנים. שתי נקודות זריזות.", "effects": { "playerPoints": 2, "playerRebounds": 1, "rating": 0.7 } },
-        "fail": { "text": "הכדור מקפץ החוצה ו{יריבה} אוספים.", "effects": { "rating": -0.1 } }
+        "success": {
+          "text": "נגיעה אחת והכדור בפנים. שתי נקודות זריזות.",
+          "effects": {
+            "playerPoints": 2,
+            "playerRebounds": 1,
+            "rating": 0.7
+          }
+        },
+        "fail": {
+          "text": "הכדור מקפץ החוצה ו{יריבה} אוספים.",
+          "effects": {
+            "rating": -0.1
+          }
+        }
       },
       {
         "label": "תופס ומחזיר החוצה",
         "stat": "physical",
         "difficulty": 48,
-        "success": { "text": "ריבאונד חזק ומסירה לפינה, שלשה! עבודה שחורה מושלמת.", "effects": { "playerRebounds": 1, "playerAssists": 1, "teamScore": 3, "rating": 0.8 } },
-        "fail": { "text": "הכדור נחטף מהידיים שלך.", "effects": { "rating": -0.2 } }
+        "success": {
+          "text": "ריבאונד חזק ומסירה לפינה, שלשה! עבודה שחורה מושלמת.",
+          "effects": {
+            "playerRebounds": 1,
+            "playerAssists": 1,
+            "teamScore": 3,
+            "rating": 0.8
+          }
+        },
+        "fail": {
+          "text": "הכדור נחטף מהידיים שלך.",
+          "effects": {
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "מטביע בכוח",
         "stat": "physical",
         "difficulty": 60,
-        "success": { "text": "פוטבק דאנק! האולם מתפוצץ.", "effects": { "playerPoints": 2, "playerRebounds": 1, "rating": 1.0, "fanRep": 3, "followers": 150 } },
-        "fail": { "text": "ההטבעה נחסמת בכוח.", "effects": { "rating": -0.3 } }
+        "success": {
+          "text": "פוטבק דאנק! האולם מתפוצץ.",
+          "effects": {
+            "playerPoints": 2,
+            "playerRebounds": 1,
+            "rating": 1.0,
+            "fanRep": 3,
+            "followers": 150
+          }
+        },
+        "fail": {
+          "text": "ההטבעה נחסמת בכוח.",
+          "effects": {
+            "rating": -0.3
+          }
+        }
       }
     ]
   },
@@ -775,33 +1745,78 @@
     "id": "ig_bb_012",
     "type": "inGame",
     "sport": "basketball",
+    "scene": "bb_drive",
     "speaker": "על הפרקט",
     "title": "אחד על אחד מול הכוכב שלהם",
     "clock": "רבע רביעי, 2:30",
     "text": "{יריבה} שמים עליך את השומר הכי טוב שלהם. המאמן מפנה לך את הצד.",
     "tip": "השומר של {יריבה} חזק ביד ימין. חדירה לשמאל תשאיר אותו מאחור.",
-    "conditions": { "positions": ["SG", "SF", "PG"] },
+    "conditions": {
+      "positions": [
+        "SG",
+        "SF",
+        "PG"
+      ]
+    },
     "choices": [
       {
         "label": "חדירה שמאלה",
         "stat": "technique",
         "difficulty": 56,
-        "success": { "text": "צעד ראשון מהיר, לייאפ בשמאל. השומר נשאר מאחור.", "effects": { "playerPoints": 2, "rating": 0.8 } },
-        "fail": { "text": "הוא קרא אותך וחטף מהכדרור.", "effects": { "rating": -0.4, "oppScore": 2 } }
+        "success": {
+          "text": "צעד ראשון מהיר, לייאפ בשמאל. השומר נשאר מאחור.",
+          "effects": {
+            "playerPoints": 2,
+            "rating": 0.8
+          }
+        },
+        "fail": {
+          "text": "הוא קרא אותך וחטף מהכדרור.",
+          "effects": {
+            "rating": -0.4,
+            "oppScore": 2
+          }
+        }
       },
       {
         "label": "סטפ-בק לשלשה",
         "stat": "attack",
         "difficulty": 64,
-        "success": { "text": "סטפ-בק מושלם, רשת! השומר מסתכל על הספסל שלו בייאוש.", "effects": { "playerPoints": 3, "rating": 1.1, "fanRep": 3, "followers": 150 } },
-        "fail": { "text": "אוויר. האוהדים של {יריבה} שרים לך.", "effects": { "rating": -0.5, "confidence": -3 } }
+        "success": {
+          "text": "סטפ-בק מושלם, רשת! השומר מסתכל על הספסל שלו בייאוש.",
+          "effects": {
+            "playerPoints": 3,
+            "rating": 1.1,
+            "fanRep": 3,
+            "followers": 150
+          }
+        },
+        "fail": {
+          "text": "אוויר. האוהדים של {יריבה} שרים לך.",
+          "effects": {
+            "rating": -0.5,
+            "confidence": -3
+          }
+        }
       },
       {
         "label": "מושך עזרה ומוסר",
         "stat": "playmaking",
         "difficulty": 50,
-        "success": { "text": "כפילה מגיעה ואתה מוצא את הגבוה מתחת לסל. סל קל!", "effects": { "playerAssists": 1, "teamScore": 2, "rating": 0.7 } },
-        "fail": { "text": "המסירה עפה לאוט.", "effects": { "rating": -0.3 } }
+        "success": {
+          "text": "כפילה מגיעה ואתה מוצא את הגבוה מתחת לסל. סל קל!",
+          "effects": {
+            "playerAssists": 1,
+            "teamScore": 2,
+            "rating": 0.7
+          }
+        },
+        "fail": {
+          "text": "המסירה עפה לאוט.",
+          "effects": {
+            "rating": -0.3
+          }
+        }
       }
     ]
   }

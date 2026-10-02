@@ -3,21 +3,44 @@
     "id": "pre_both_001",
     "type": "preMatch",
     "sport": "both",
+    "scene": "coach_board",
     "speaker": "המאמן",
     "title": "שיחה לפני השריקה",
     "text": "המאמן קורא לך לצד לפני המשחק מול {יריבה}: 'אני צריך ממך היום משמעת טקטית. אל תנסה להיות גיבור.' איך אתה עונה?",
     "choices": [
       {
         "label": "מקבל את ההוראות בלי ויכוח",
-        "success": { "text": "המאמן מהנהן: 'ככה אני אוהב.' אתה עולה ל{משטח} עם תפקיד ברור.", "effects": { "coachApproval": 5, "confidence": -2 } }
+        "success": {
+          "text": "המאמן מהנהן: 'ככה אני אוהב.' אתה עולה ל{משטח} עם תפקיד ברור.",
+          "effects": {
+            "coachApproval": 5,
+            "confidence": -2
+          }
+        }
       },
       {
         "label": "מבקש חופש להתקפה",
-        "success": { "text": "המאמן מרים גבה, אבל נותן לך קצת חופש. עכשיו תצטרך להוכיח שזה היה שווה.", "effects": { "coachApproval": -3, "confidence": 6, "rating": 0.2 } }
+        "success": {
+          "text": "המאמן מרים גבה, אבל נותן לך קצת חופש. עכשיו תצטרך להוכיח שזה היה שווה.",
+          "effects": {
+            "coachApproval": -3,
+            "confidence": 6,
+            "rating": 0.2
+          }
+        }
       },
       {
         "label": "שואל על נקודות התורפה של {יריבה}",
-        "success": { "text": "המאמן מתלהב מהשאלה ומראה לך בטלפון קטע וידאו קצר על ההגנה של {יריבה}.", "effects": { "coachApproval": 3, "confidence": 2, "attributes": { "mental": 1 } } }
+        "success": {
+          "text": "המאמן מתלהב מהשאלה ומראה לך בטלפון קטע וידאו קצר על ההגנה של {יריבה}.",
+          "effects": {
+            "coachApproval": 3,
+            "confidence": 2,
+            "attributes": {
+              "mental": 1
+            }
+          }
+        }
       }
     ]
   },
@@ -25,21 +48,41 @@
     "id": "pre_both_002",
     "type": "preMatch",
     "sport": "both",
+    "scene": "locker",
     "speaker": "הקפטן",
     "title": "נאום בחדר ההלבשה",
     "text": "הקפטן מסמן לך לעמוד במרכז חדר ההלבשה: 'תגיד משהו לחבר׳ה, הם מקשיבים לך.' כל העיניים עליך.",
     "choices": [
       {
         "label": "נאום אש: היום לוקחים את זה",
-        "success": { "text": "החדר מתפוצץ. שחקנים דופקים על הלוקרים ויוצאים ל{משטח} בטירוף.", "effects": { "teamMorale": 8, "confidence": 3 } }
+        "success": {
+          "text": "החדר מתפוצץ. שחקנים דופקים על הלוקרים ויוצאים ל{משטח} בטירוף.",
+          "effects": {
+            "teamMorale": 8,
+            "confidence": 3
+          }
+        }
       },
       {
         "label": "בדיחה כדי לשחרר את הלחץ",
-        "success": { "text": "כולם צוחקים, גם המאמן בקושי מסתיר חיוך. האווירה משתחררת.", "effects": { "teamMorale": 5, "confidence": 2, "coachApproval": -1 } }
+        "success": {
+          "text": "כולם צוחקים, גם המאמן בקושי מסתיר חיוך. האווירה משתחררת.",
+          "effects": {
+            "teamMorale": 5,
+            "confidence": 2,
+            "coachApproval": -1
+          }
+        }
       },
       {
         "label": "מעביר את רשות הדיבור לוותיק",
-        "success": { "text": "הוותיק אומר שני משפטים קצרים. מכובד, אבל פספסת רגע להוביל.", "effects": { "teamMorale": 1, "confidence": -3 } }
+        "success": {
+          "text": "הוותיק אומר שני משפטים קצרים. מכובד, אבל פספסת רגע להוביל.",
+          "effects": {
+            "teamMorale": 1,
+            "confidence": -3
+          }
+        }
       }
     ]
   },
@@ -47,21 +90,40 @@
     "id": "pre_both_003",
     "type": "preMatch",
     "sport": "both",
+    "scene": "office",
     "speaker": "ההנהלה",
     "title": "היו״ר מבטיח בונוס",
     "text": "יו״ר {קבוצה} נכנס לחדר ההלבשה ומבטיח בונוס של 500 ש״ח לכל שחקן אם מנצחים היום את {יריבה}.",
     "choices": [
       {
         "label": "מודה לו ומבטיח לתת הכל",
-        "success": { "text": "היו״ר טופח לך על הכתף. האנרגיה בחדר עולה.", "effects": { "teamMorale": 6, "confidence": 2 } }
+        "success": {
+          "text": "היו״ר טופח לך על הכתף. האנרגיה בחדר עולה.",
+          "effects": {
+            "teamMorale": 6,
+            "confidence": 2
+          }
+        }
       },
       {
         "label": "שואל למה דמי הנסיעות מאחרים",
-        "success": { "text": "היו״ר מחוויר. השחקנים מחייכים אליך בהערכה, אבל ההנהלה תזכור את זה.", "effects": { "teamMorale": 4, "coachApproval": -2, "fanRep": 1 } }
+        "success": {
+          "text": "היו״ר מחוויר. השחקנים מחייכים אליך בהערכה, אבל ההנהלה תזכור את זה.",
+          "effects": {
+            "teamMorale": 4,
+            "coachApproval": -2,
+            "fanRep": 1
+          }
+        }
       },
       {
         "label": "מתעלם ומתרכז במשחק",
-        "success": { "text": "אוזניות, עיניים סגורות, נשימות. כסף זה אחר כך.", "effects": { "confidence": 3 } }
+        "success": {
+          "text": "אוזניות, עיניים סגורות, נשימות. כסף זה אחר כך.",
+          "effects": {
+            "confidence": 3
+          }
+        }
       }
     ]
   },
@@ -69,22 +131,43 @@
     "id": "pre_both_004",
     "type": "preMatch",
     "sport": "both",
+    "scene": "gym",
     "speaker": "הגוף שלך",
     "title": "רגליים כבדות",
     "text": "אחרי משמרת לילה בתור {עבודה} אתה מרגיש את הרגליים כבדות כבר בחימום.",
-    "conditions": { "requiresJob": true },
+    "conditions": {
+      "requiresJob": true
+    },
     "choices": [
       {
         "label": "קפה כפול ומתמודדים",
-        "success": { "text": "הקפאין עושה את שלו. לפחות לחצי הראשון.", "effects": { "energy": 8, "confidence": -1 } }
+        "success": {
+          "text": "הקפאין עושה את שלו. לפחות לחצי הראשון.",
+          "effects": {
+            "energy": 8,
+            "confidence": -1
+          }
+        }
       },
       {
         "label": "מבקש מהפיזיו עיסוי מהיר",
-        "success": { "text": "עשר דקות על המיטה והשרירים משתחררים. המאמן מסתכל על השעון בעצבים.", "effects": { "energy": 12, "coachApproval": -1 } }
+        "success": {
+          "text": "עשר דקות על המיטה והשרירים משתחררים. המאמן מסתכל על השעון בעצבים.",
+          "effects": {
+            "energy": 12,
+            "coachApproval": -1
+          }
+        }
       },
       {
         "label": "מספר למאמן בכנות",
-        "success": { "text": "המאמן מעריך את הכנות ומבטיח לנהל לך את הדקות בחכמה.", "effects": { "energy": 4, "coachApproval": 2 } }
+        "success": {
+          "text": "המאמן מעריך את הכנות ומבטיח לנהל לך את הדקות בחכמה.",
+          "effects": {
+            "energy": 4,
+            "coachApproval": 2
+          }
+        }
       }
     ]
   },
@@ -92,21 +175,40 @@
     "id": "pre_both_005",
     "type": "preMatch",
     "sport": "both",
+    "scene": "fans",
     "speaker": "האוהדים",
     "title": "אוהדים ליד הכניסה",
     "text": "קבוצת אוהדים של {קבוצה} מחכה ליד הכניסה למגרש ומבקשת תמונות וחתימות.",
     "choices": [
       {
         "label": "עוצר לכל אחד ואחת",
-        "success": { "text": "ילד אחד מחבק אותך ולא מוכן לעזוב. התמונות כבר מסתובבות ברשת.", "effects": { "fanRep": 6, "followers": 40, "energy": -3 } }
+        "success": {
+          "text": "ילד אחד מחבק אותך ולא מוכן לעזוב. התמונות כבר מסתובבות ברשת.",
+          "effects": {
+            "fanRep": 6,
+            "followers": 40,
+            "energy": -3
+          }
+        }
       },
       {
         "label": "חתימה מהירה ונכנס",
-        "success": { "text": "כמה חתימות, חיוך, ופנימה. כולם יוצאים מרוצים.", "effects": { "fanRep": 2 } }
+        "success": {
+          "text": "כמה חתימות, חיוך, ופנימה. כולם יוצאים מרוצים.",
+          "effects": {
+            "fanRep": 2
+          }
+        }
       },
       {
         "label": "אוזניות ופוקוס מלא",
-        "success": { "text": "אתה עובר ליד כולם בלי להרים את הראש. חלק מהאוהדים נעלבים.", "effects": { "confidence": 3, "fanRep": -2 } }
+        "success": {
+          "text": "אתה עובר ליד כולם בלי להרים את הראש. חלק מהאוהדים נעלבים.",
+          "effects": {
+            "confidence": 3,
+            "fanRep": -2
+          }
+        }
       }
     ]
   },
@@ -114,22 +216,43 @@
     "id": "pre_both_006",
     "type": "preMatch",
     "sport": "both",
+    "scene": "phone",
     "speaker": "הרשת",
     "title": "עקיצה מהצד השני",
     "text": "שחקן של {יריבה} כתב ברשת שאתה 'שחקן של {עבודה}, לא של {ספורט}'. החבר׳ה בקבוצה מחכים לראות איך תגיב.",
-    "conditions": { "requiresJob": true },
+    "conditions": {
+      "requiresJob": true
+    },
     "choices": [
       {
         "label": "עונה לו ברשת לפני המשחק",
-        "success": { "text": "התגובה שלך מקבלת מאות לייקים. המאמן פחות מתלהב מהדרמה.", "effects": { "followers": 80, "confidence": 4, "coachApproval": -3 } }
+        "success": {
+          "text": "התגובה שלך מקבלת מאות לייקים. המאמן פחות מתלהב מהדרמה.",
+          "effects": {
+            "followers": 80,
+            "confidence": 4,
+            "coachApproval": -3
+          }
+        }
       },
       {
         "label": "שומר את התשובה ל{משטח}",
-        "success": { "text": "אתה צילמת את הפוסט ושמת אותו כרקע בטלפון. היום זה אישי.", "effects": { "confidence": 5, "rating": 0.2 } }
+        "success": {
+          "text": "אתה צילמת את הפוסט ושמת אותו כרקע בטלפון. היום זה אישי.",
+          "effects": {
+            "confidence": 5,
+            "rating": 0.2
+          }
+        }
       },
       {
         "label": "צוחק ומראה לחברים לקבוצה",
-        "success": { "text": "כולם צוחקים עליו ביחד. החדר מאוחד מתמיד.", "effects": { "teamMorale": 4 } }
+        "success": {
+          "text": "כולם צוחקים עליו ביחד. החדר מאוחד מתמיד.",
+          "effects": {
+            "teamMorale": 4
+          }
+        }
       }
     ]
   },
@@ -137,24 +260,48 @@
     "id": "pre_both_007",
     "type": "preMatch",
     "sport": "both",
+    "scene": "locker",
     "speaker": "חדר ההלבשה",
     "title": "סקאוט ביציע",
     "text": "מישהו בחדר ההלבשה לוחש: יש היום ביציע סקאוט מקבוצה בליגה גבוהה יותר. הוא בא לראות דווקא את {שחקן}.",
     "choices": [
       {
         "label": "מתכנן להראות את עצמי",
-        "success": { "text": "אתה עולה עם מוטיבציה בשמיים. רק אל תשכח שיש עוד עשרה חברים ב{משטח}.", "effects": { "confidence": 5, "rating": 0.3, "coachApproval": -2 } }
+        "success": {
+          "text": "אתה עולה עם מוטיבציה בשמיים. רק אל תשכח שיש עוד עשרה חברים ב{משטח}.",
+          "effects": {
+            "confidence": 5,
+            "rating": 0.3,
+            "coachApproval": -2
+          }
+        }
       },
       {
         "label": "משחק בשביל הקבוצה, כמו תמיד",
-        "success": { "text": "המאמן שומע ומחייך. ככה בונים מוניטין של שחקן קבוצתי.", "effects": { "coachApproval": 3, "teamMorale": 2 } }
+        "success": {
+          "text": "המאמן שומע ומחייך. ככה בונים מוניטין של שחקן קבוצתי.",
+          "effects": {
+            "coachApproval": 3,
+            "teamMorale": 2
+          }
+        }
       },
       {
         "label": "מנטרל את הלחץ עם תרגילי נשימה",
         "stat": "mental",
         "difficulty": 50,
-        "success": { "text": "נושם עמוק, מתעלם מהיציע, ונכנס לפוקוס מלא.", "effects": { "confidence": 6 } },
-        "fail": { "text": "הידיים רועדות קצת בחימום. הלחץ עובד עליך.", "effects": { "confidence": -5 } }
+        "success": {
+          "text": "נושם עמוק, מתעלם מהיציע, ונכנס לפוקוס מלא.",
+          "effects": {
+            "confidence": 6
+          }
+        },
+        "fail": {
+          "text": "הידיים רועדות קצת בחימום. הלחץ עובד עליך.",
+          "effects": {
+            "confidence": -5
+          }
+        }
       }
     ]
   },
@@ -162,6 +309,7 @@
     "id": "pre_both_008",
     "type": "preMatch",
     "sport": "both",
+    "scene": "gym",
     "speaker": "הפיזיותרפיסט",
     "title": "משיכה בחימום",
     "text": "בתרגיל האחרון של החימום אתה מרגיש משיכה קלה בירך האחורית.",
@@ -170,16 +318,39 @@
         "label": "ממשיך כרגיל",
         "stat": "physical",
         "difficulty": 45,
-        "success": { "text": "המשיכה נעלמת אחרי כמה דקות ריצה. הגוף שלך חזק.", "effects": { "confidence": 2 } },
-        "fail": { "text": "הכאב לא עובר. אתה משחק, אבל בזהירות.", "effects": { "energy": -10, "rating": -0.3 } }
+        "success": {
+          "text": "המשיכה נעלמת אחרי כמה דקות ריצה. הגוף שלך חזק.",
+          "effects": {
+            "confidence": 2
+          }
+        },
+        "fail": {
+          "text": "הכאב לא עובר. אתה משחק, אבל בזהירות.",
+          "effects": {
+            "energy": -10,
+            "rating": -0.3
+          }
+        }
       },
       {
         "label": "מבקש טייפ מהפיזיו",
-        "success": { "text": "טייפ צמוד, עוד מתיחה אחת, ואתה מוכן.", "effects": { "energy": -2, "confidence": 1 } }
+        "success": {
+          "text": "טייפ צמוד, עוד מתיחה אחת, ואתה מוכן.",
+          "effects": {
+            "energy": -2,
+            "confidence": 1
+          }
+        }
       },
       {
         "label": "מבקש מהמאמן לחסוך אותך",
-        "success": { "text": "המאמן לא מתלהב, אבל מבטיח להוציא אותך מוקדם אם צריך.", "effects": { "coachApproval": -4, "energy": 6 } }
+        "success": {
+          "text": "המאמן לא מתלהב, אבל מבטיח להוציא אותך מוקדם אם צריך.",
+          "effects": {
+            "coachApproval": -4,
+            "energy": 6
+          }
+        }
       }
     ]
   },
@@ -187,21 +358,40 @@
     "id": "pre_fb_001",
     "type": "preMatch",
     "sport": "football",
+    "scene": "coach_board",
     "speaker": "עוזר המאמן",
     "title": "מצבים נייחים",
     "text": "עוזר המאמן מסביר שההגנה של {יריבה} חלשה בכדורי גובה. הוא שואל איפה אתה רוצה לעמוד בקרנות.",
     "choices": [
       {
         "label": "בקורה הראשונה",
-        "success": { "text": "תפקיד לא זוהר, אבל חשוב. עוזר המאמן רושם משהו בפנקס.", "effects": { "coachApproval": 2, "rating": 0.1 } }
+        "success": {
+          "text": "תפקיד לא זוהר, אבל חשוב. עוזר המאמן רושם משהו בפנקס.",
+          "effects": {
+            "coachApproval": 2,
+            "rating": 0.1
+          }
+        }
       },
       {
         "label": "מול השוער ברחבה הקטנה",
-        "success": { "text": "אתה הולך להפריע לשוער כל המשחק. תכין מרפקים.", "effects": { "confidence": 3, "rating": 0.1 } }
+        "success": {
+          "text": "אתה הולך להפריע לשוער כל המשחק. תכין מרפקים.",
+          "effects": {
+            "confidence": 3,
+            "rating": 0.1
+          }
+        }
       },
       {
         "label": "מחוץ לרחבה לכדורים חוזרים",
-        "success": { "text": "חכם. הרבה כדורים נופלים שם בליגות האלה.", "effects": { "coachApproval": 2, "confidence": 1 } }
+        "success": {
+          "text": "חכם. הרבה כדורים נופלים שם בליגות האלה.",
+          "effects": {
+            "coachApproval": 2,
+            "confidence": 1
+          }
+        }
       }
     ]
   },
@@ -209,24 +399,49 @@
     "id": "pre_fb_002",
     "type": "preMatch",
     "sport": "football",
+    "scene": "field",
     "speaker": "המחסנאי",
     "title": "סינתטי מתפרק",
     "text": "הדשא הסינתטי במגרש מלא בורות וגומי. הנעליים שלך לא בדיוק מתאימות למשטח כזה.",
     "choices": [
       {
         "label": "קונה נעלי טורף בחנות ליד המגרש",
-        "success": { "text": "150 ש״ח שהלכו, אבל האחיזה מושלמת.", "effects": { "budget": -150, "confidence": 3, "rating": 0.2 } }
+        "success": {
+          "text": "150 ש״ח שהלכו, אבל האחיזה מושלמת.",
+          "effects": {
+            "budget": -150,
+            "confidence": 3,
+            "rating": 0.2
+          }
+        }
       },
       {
         "label": "משחק עם מה שיש",
         "stat": "technique",
         "difficulty": 45,
-        "success": { "text": "אתה מתאים את עצמך מהר. שחקן אמיתי מסתדר בכל מגרש.", "effects": { "rating": 0.2 } },
-        "fail": { "text": "החלקת כבר בריצה הראשונה. זה הולך להיות יום ארוך.", "effects": { "rating": -0.3, "confidence": -2 } }
+        "success": {
+          "text": "אתה מתאים את עצמך מהר. שחקן אמיתי מסתדר בכל מגרש.",
+          "effects": {
+            "rating": 0.2
+          }
+        },
+        "fail": {
+          "text": "החלקת כבר בריצה הראשונה. זה הולך להיות יום ארוך.",
+          "effects": {
+            "rating": -0.3,
+            "confidence": -2
+          }
+        }
       },
       {
         "label": "מבקש זוג רזרבי מחבר לקבוצה",
-        "success": { "text": "חצי מידה גדול, אבל עובד. החבר׳ה תמיד שם בשבילך.", "effects": { "teamMorale": 2, "confidence": 1 } }
+        "success": {
+          "text": "חצי מידה גדול, אבל עובד. החבר׳ה תמיד שם בשבילך.",
+          "effects": {
+            "teamMorale": 2,
+            "confidence": 1
+          }
+        }
       }
     ]
   },
@@ -234,21 +449,42 @@
     "id": "pre_fb_003",
     "type": "preMatch",
     "sport": "football",
+    "scene": "coach_board",
     "speaker": "המאמן",
     "title": "שינוי מערך ברגע האחרון",
     "text": "המאמן מחליט לעבור ל-3-5-2 דקה לפני המשחק מול {יריבה}, ושואל אם אתה מוכן לשחק בעמדה לא מוכרת.",
     "choices": [
       {
         "label": "כן, איפה שהקבוצה צריכה",
-        "success": { "text": "המאמן מעריך את הנכונות. אתה רק מקווה שתמצא את עצמך שם.", "effects": { "coachApproval": 6, "rating": -0.2 } }
+        "success": {
+          "text": "המאמן מעריך את הנכונות. אתה רק מקווה שתמצא את עצמך שם.",
+          "effects": {
+            "coachApproval": 6,
+            "rating": -0.2
+          }
+        }
       },
       {
         "label": "מעדיף להישאר בעמדה שלי",
-        "success": { "text": "המאמן מקבל, בשתיקה. אתה מרגיש בנוח, הוא פחות.", "effects": { "coachApproval": -4, "confidence": 3 } }
+        "success": {
+          "text": "המאמן מקבל, בשתיקה. אתה מרגיש בנוח, הוא פחות.",
+          "effects": {
+            "coachApproval": -4,
+            "confidence": 3
+          }
+        }
       },
       {
         "label": "מסכים, אבל מבקש הסבר מדויק",
-        "success": { "text": "חמש דקות מול הלוח המחיק ואתה מבין בדיוק מה מצופה ממך.", "effects": { "coachApproval": 3, "attributes": { "mental": 1 } } }
+        "success": {
+          "text": "חמש דקות מול הלוח המחיק ואתה מבין בדיוק מה מצופה ממך.",
+          "effects": {
+            "coachApproval": 3,
+            "attributes": {
+              "mental": 1
+            }
+          }
+        }
       }
     ]
   },
@@ -256,21 +492,40 @@
     "id": "pre_fb_004",
     "type": "preMatch",
     "sport": "football",
+    "scene": "locker",
     "speaker": "חדר ההלבשה",
     "title": "שוער בן 17",
     "text": "השוער הראשון חולה, והמחליף הוא נער בן 17 מהנוער. הוא חיוור כמו קיר.",
     "choices": [
       {
         "label": "ניגש להרגיע אותו",
-        "success": { "text": "אתה מספר לו על הפעם הראשונה שלך. הוא מחייך בפעם הראשונה היום.", "effects": { "teamMorale": 5, "fanRep": 1 } }
+        "success": {
+          "text": "אתה מספר לו על הפעם הראשונה שלך. הוא מחייך בפעם הראשונה היום.",
+          "effects": {
+            "teamMorale": 5,
+            "fanRep": 1
+          }
+        }
       },
       {
         "label": "מבקש מההגנה ללחוץ גבוה כדי להגן עליו",
-        "success": { "text": "תוכנית אגרסיבית. אם זה עובד, זה עובד בגדול.", "effects": { "confidence": 2, "rating": 0.1, "coachApproval": -1 } }
+        "success": {
+          "text": "תוכנית אגרסיבית. אם זה עובד, זה עובד בגדול.",
+          "effects": {
+            "confidence": 2,
+            "rating": 0.1,
+            "coachApproval": -1
+          }
+        }
       },
       {
         "label": "מתרכז בעצמך",
-        "success": { "text": "לכל אחד יש תפקיד. שלך הוא לא להיות פסיכולוג.", "effects": { "confidence": 2 } }
+        "success": {
+          "text": "לכל אחד יש תפקיד. שלך הוא לא להיות פסיכולוג.",
+          "effects": {
+            "confidence": 2
+          }
+        }
       }
     ]
   },
@@ -278,21 +533,40 @@
     "id": "pre_bb_001",
     "type": "preMatch",
     "sport": "basketball",
+    "scene": "coach_board",
     "speaker": "המאמן",
     "title": "תוכנית הגנה",
     "text": "המאמן מצייר על הלוח: 'מול {יריבה} אנחנו פותחים באזורית 2-3. מי לוקח את הקלעי שלהם בדקות ההכרעה?'",
     "choices": [
       {
         "label": "אני לוקח אותו",
-        "success": { "text": "המאמן מצביע עליך: 'שלך. אל תיתן לו לנשום.'", "effects": { "coachApproval": 5, "confidence": 2 } }
+        "success": {
+          "text": "המאמן מצביע עליך: 'שלך. אל תיתן לו לנשום.'",
+          "effects": {
+            "coachApproval": 5,
+            "confidence": 2
+          }
+        }
       },
       {
         "label": "מציע הגנה אישית לוחצת",
-        "success": { "text": "המאמן לא אוהב שמערערים על התוכנית, אבל החבר׳ה דווקא בעד.", "effects": { "coachApproval": -2, "teamMorale": 2, "confidence": 3 } }
+        "success": {
+          "text": "המאמן לא אוהב שמערערים על התוכנית, אבל החבר׳ה דווקא בעד.",
+          "effects": {
+            "coachApproval": -2,
+            "teamMorale": 2,
+            "confidence": 3
+          }
+        }
       },
       {
         "label": "שותק ומקשיב",
-        "success": { "text": "אתה רושם בראש כל חץ על הלוח.", "effects": { "coachApproval": 1 } }
+        "success": {
+          "text": "אתה רושם בראש כל חץ על הלוח.",
+          "effects": {
+            "coachApproval": 1
+          }
+        }
       }
     ]
   },
@@ -300,6 +574,7 @@
     "id": "pre_bb_002",
     "type": "preMatch",
     "sport": "basketball",
+    "scene": "field",
     "speaker": "האולם",
     "title": "אולם קפוא",
     "text": "באולם של {יריבה} החימום לא עובד, והכדור מרגיש כמו אבן.",
@@ -308,16 +583,38 @@
         "label": "עוד סדרת זריקות חימום",
         "stat": "attack",
         "difficulty": 45,
-        "success": { "text": "חמש מתוך חמש בסדרה האחרונה. היד חמה.", "effects": { "rating": 0.3, "confidence": 3 } },
-        "fail": { "text": "אוויר, קרש, אוויר. היד עדיין קפואה.", "effects": { "confidence": -3 } }
+        "success": {
+          "text": "חמש מתוך חמש בסדרה האחרונה. היד חמה.",
+          "effects": {
+            "rating": 0.3,
+            "confidence": 3
+          }
+        },
+        "fail": {
+          "text": "אוויר, קרש, אוויר. היד עדיין קפואה.",
+          "effects": {
+            "confidence": -3
+          }
+        }
       },
       {
         "label": "נשאר עם קפוצ׳ון עד הרגע האחרון",
-        "success": { "text": "השרירים נשארים חמים. חכם.", "effects": { "energy": 4 } }
+        "success": {
+          "text": "השרירים נשארים חמים. חכם.",
+          "effects": {
+            "energy": 4
+          }
+        }
       },
       {
         "label": "מבקש מהשופט להחליף כדור",
-        "success": { "text": "השופט מסרב, אבל הקבוצה מעריכה שמישהו נלחם עליה.", "effects": { "teamMorale": 2, "coachApproval": -1 } }
+        "success": {
+          "text": "השופט מסרב, אבל הקבוצה מעריכה שמישהו נלחם עליה.",
+          "effects": {
+            "teamMorale": 2,
+            "coachApproval": -1
+          }
+        }
       }
     ]
   },
@@ -325,21 +622,40 @@
     "id": "pre_bb_003",
     "type": "preMatch",
     "sport": "basketball",
+    "scene": "coach_board",
     "speaker": "המאמן",
     "title": "הרכז חולה",
     "text": "הרכז הפותח של {קבוצה} חולה. המאמן שואל אם אתה מוכן לקחת יותר אחריות עם הכדור היום.",
     "choices": [
       {
         "label": "כן, תן לי את המפתחות",
-        "success": { "text": "המאמן זורק לך את הכדור באימון הבוקר: 'הקבוצה שלך היום.'", "effects": { "confidence": 6, "rating": 0.2, "coachApproval": 2 } }
+        "success": {
+          "text": "המאמן זורק לך את הכדור באימון הבוקר: 'הקבוצה שלך היום.'",
+          "effects": {
+            "confidence": 6,
+            "rating": 0.2,
+            "coachApproval": 2
+          }
+        }
       },
       {
         "label": "אשחק פשוט ובטוח",
-        "success": { "text": "בלי איבודי כדור מיותרים. המאמן מעריך בגרות.", "effects": { "coachApproval": 3 } }
+        "success": {
+          "text": "בלי איבודי כדור מיותרים. המאמן מעריך בגרות.",
+          "effects": {
+            "coachApproval": 3
+          }
+        }
       },
       {
         "label": "מציע שהצעיר ייקח את זה",
-        "success": { "text": "הצעיר מתרגש. אתה פחות בפוקוס.", "effects": { "teamMorale": 2, "confidence": -3 } }
+        "success": {
+          "text": "הצעיר מתרגש. אתה פחות בפוקוס.",
+          "effects": {
+            "teamMorale": 2,
+            "confidence": -3
+          }
+        }
       }
     ]
   },
@@ -347,21 +663,176 @@
     "id": "pre_bb_004",
     "type": "preMatch",
     "sport": "basketball",
+    "scene": "fans",
     "speaker": "היציע",
     "title": "שלט עם השם שלך",
     "text": "אוהדי {יריבה} צועקים עליך מהיציע בחימום. אחד מהם מחזיק שלט ענק עם השם {שחקן} ומחוק בקו אדום.",
     "choices": [
       {
         "label": "שולח להם נשיקה",
-        "success": { "text": "היציע משתגע. האוהדים שלך מתים על זה, המאמן פחות.", "effects": { "fanRep": 4, "followers": 60, "coachApproval": -2, "confidence": 2 } }
+        "success": {
+          "text": "היציע משתגע. האוהדים שלך מתים על זה, המאמן פחות.",
+          "effects": {
+            "fanRep": 4,
+            "followers": 60,
+            "coachApproval": -2,
+            "confidence": 2
+          }
+        }
       },
       {
         "label": "מתעלם וממשיך לזרוק",
-        "success": { "text": "רעש לבן. אתה רק אתה והסל.", "effects": { "confidence": 4 } }
+        "success": {
+          "text": "רעש לבן. אתה רק אתה והסל.",
+          "effects": {
+            "confidence": 4
+          }
+        }
       },
       {
         "label": "מצלם את השלט לסטורי",
-        "success": { "text": "הסטורי הופך ויראלי. המאמן מחרים לך את הטלפון עד אחרי המשחק.", "effects": { "followers": 120, "coachApproval": -3 } }
+        "success": {
+          "text": "הסטורי הופך ויראלי. המאמן מחרים לך את הטלפון עד אחרי המשחק.",
+          "effects": {
+            "followers": 120,
+            "coachApproval": -3
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "pre_nat_001",
+    "type": "preMatch",
+    "sport": "both",
+    "trigger": "national_pre",
+    "scene": "national",
+    "speaker": "המאמן הלאומי",
+    "title": "התקווה",
+    "text": "אתה עומד בשורה עם החולצה הלבנה-כחולה. ההמנון מתחיל, והמצלמה עוצרת בדיוק עליך. {יריבה} מחכה בצד השני.",
+    "choices": [
+      {
+        "label": "שר בקול רם עם היציע",
+        "success": {
+          "text": "צמרמורת בכל הגוף. היציע רואה אותך שר ומתאהב.",
+          "effects": {
+            "fanRep": 4,
+            "confidence": 3
+          }
+        }
+      },
+      {
+        "label": "עוצם עיניים וחושב על ההתחלה בליגות הנמוכות",
+        "success": {
+          "text": "מהמגרשים הסינתטיים ועד כאן. אתה עולה ממוקד לגמרי.",
+          "effects": {
+            "confidence": 6,
+            "rating": 0.2
+          }
+        }
+      },
+      {
+        "label": "מנסה לנטרל את ההתרגשות",
+        "stat": "mental",
+        "difficulty": 55,
+        "success": {
+          "text": "הדופק נרגע. אתה מוכן.",
+          "effects": {
+            "confidence": 5
+          }
+        },
+        "fail": {
+          "text": "הרגליים רועדות. זה גדול ממה שדמיינת.",
+          "effects": {
+            "confidence": -4,
+            "rating": -0.2
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "pre_nat_002",
+    "type": "preMatch",
+    "sport": "both",
+    "trigger": "national_pre",
+    "scene": "national",
+    "speaker": "המאמן הלאומי",
+    "title": "שיחה עם המאמן הלאומי",
+    "text": "המאמן הלאומי מושיב אותך בצד: 'זימנתי אותך בגלל מה שעשית ב{קבוצה}. מול {יריבה} אני צריך ממך אנרגיה. מה אתה מביא?'",
+    "choices": [
+      {
+        "label": "לחץ ומאמץ כל הדקות",
+        "success": {
+          "text": "'בדיוק מה שרציתי לשמוע.'",
+          "effects": {
+            "coachApproval": 3,
+            "energy": -4,
+            "rating": 0.2
+          }
+        }
+      },
+      {
+        "label": "ביטחון עם הכדור",
+        "success": {
+          "text": "המאמן מחייך. 'אז תראה לי.'",
+          "effects": {
+            "confidence": 5
+          }
+        }
+      },
+      {
+        "label": "מה שהקבוצה צריכה",
+        "success": {
+          "text": "תשובה של שחקן נבחרת אמיתי.",
+          "effects": {
+            "teamMorale": 4,
+            "coachApproval": 2
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "pre_nat_003",
+    "type": "preMatch",
+    "sport": "both",
+    "trigger": "national_pre",
+    "scene": "locker",
+    "speaker": "חדר ההלבשה של הנבחרת",
+    "title": "הכוכבים מסתכלים",
+    "text": "בחדר ההלבשה יושבים שחקנים שראית רק בטלוויזיה. אחד מהם שואל: 'אתה החדש מ{קבוצה}?'",
+    "choices": [
+      {
+        "label": "מציג את עצמך בביטחון",
+        "success": {
+          "text": "לחיצת יד חמה. אתה חלק מהקבוצה.",
+          "effects": {
+            "confidence": 4,
+            "teamMorale": 2
+          }
+        }
+      },
+      {
+        "label": "מבקש עצות מהוותיקים",
+        "success": {
+          "text": "עשר דקות של טיפים שלא היית מקבל בשום מקום אחר.",
+          "effects": {
+            "attributes": {
+              "mental": 1
+            },
+            "confidence": 2
+          }
+        }
+      },
+      {
+        "label": "שקט ומתרכז בעצמך",
+        "success": {
+          "text": "אף אחד לא מתייחס. בסדר, הדיבור יהיה ב{משטח}.",
+          "effects": {
+            "confidence": 1
+          }
+        }
       }
     ]
   }

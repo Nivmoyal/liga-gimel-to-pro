@@ -7,6 +7,7 @@ import { Sheet } from './ui/Sheet';
 import { ChoiceButton } from './ui/ChoiceButton';
 import { OutcomeBox } from './ui/OutcomeBox';
 import { GoldButton } from './ui/GoldButton';
+import { SceneBanner } from './art/SceneBanner';
 
 interface Props {
   state: GameState;
@@ -33,14 +34,15 @@ export function PostMatchInterview({ state, dispatch }: Props) {
         ) : undefined
       }
     >
+      <SceneBanner state={state} scene={event.scene ?? 'press'} />
       <div className="mb-4 flex gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rose-500/15 text-rose-300">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rose-500/15 text-rose-600">
           <Mic size={22} />
         </div>
         <div>
-          <div className="text-xs font-bold text-gold">{event.speaker}</div>
+          <div className="text-xs font-bold text-brand">{event.speaker}</div>
           <h3 className="text-lg font-black">{event.title}</h3>
-          <p className="mt-1 leading-relaxed text-white/90">{event.text}</p>
+          <p className="mt-1 leading-relaxed text-ink/80">{event.text}</p>
         </div>
       </div>
       {outcome ? (

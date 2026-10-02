@@ -6,6 +6,9 @@ import { getAgent } from '../data/agents';
 import { formatMoney } from '../services/playerUtils';
 import { Sheet } from './ui/Sheet';
 import { GoldButton } from './ui/GoldButton';
+import { Crest } from './art/Crest';
+import { Jersey } from './art/Jersey';
+import { clubIdentity } from '../data/clubIdentity';
 
 interface Props {
   state: GameState;
@@ -44,14 +47,25 @@ export function TransferWindowModal({ state, dispatch }: Props) {
           {transferOffers.map((offer) => {
             const up = offer.division > player.division;
             return (
-              <div key={offer.id} className={`rounded-2xl border p-4 ${up ? 'border-amber-500/60 bg-amber-500/5' : 'border-line bg-card'}`}>
+              <div key={offer.id} className={`rounded-2xl border p-4 ${up ? 'border-brand/50 bg-brand/5' : 'border-line bg-card'}`}>
                 <div className="mb-2 flex items-start justify-between gap-2">
-                  <div>
-                    <div className="text-lg font-black">{offer.club}</div>
-                    <div className="text-xs text-muted">{divisionName(player.sport, offer.division)}</div>
+                  <div className="flex items-center gap-2.5">
+                    <Crest name={offer.club} size={40} />
+                    <div>
+                      <div className="text-lg font-black">{offer.club}</div>
+                      <div className="text-xs text-muted">{divisionName(player.sport, offer.division)}</div>
+                    </div>
                   </div>
+                  <Jersey
+                    primary={clubIdentity(offer.club).colors.primary}
+                    secondary={clubIdentity(offer.club).colors.secondary}
+                    name={player.name}
+                    number={player.shirtNumber}
+                    sport={player.sport}
+                    width={52}
+                  />
                   {up && (
-                    <span className="flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-black text-black">
+                    <span className="flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-[11px] font-black text-white">
                       <Star size={12} />
                       קפיצת מדרגה
                     </span>
@@ -60,7 +74,7 @@ export function TransferWindowModal({ state, dispatch }: Props) {
                 <div className="mb-3 grid grid-cols-2 gap-2 text-sm">
                   <div className="rounded-xl bg-pitch p-2">
                     <div className="text-[11px] text-muted">שכר שבועי</div>
-                    <div className="font-bold text-gold">{formatMoney(offer.weeklySalary)}</div>
+                    <div className="font-bold text-brand">{formatMoney(offer.weeklySalary)}</div>
                   </div>
                   <div className="rounded-xl bg-pitch p-2">
                     <div className="text-[11px] text-muted">מענק חתימה</div>
@@ -79,7 +93,7 @@ export function TransferWindowModal({ state, dispatch }: Props) {
                   </div>
                 </div>
                 {offer.contract === 'pro' && player.jobId && (
-                  <p className="mb-2 text-xs text-emerald-300">חתימה תסיים אוטומטית את העבודה האזרחית.</p>
+                  <p className="mb-2 text-xs text-emerald-600">חתימה תסיים אוטומטית את העבודה האזרחית.</p>
                 )}
                 <GoldButton onClick={() => dispatch({ type: 'ACCEPT_OFFER', offerId: offer.id })}>
                   <Signature size={18} />

@@ -1,5 +1,5 @@
 import type { GameState } from '../types/game';
-import { SAVE_VERSION } from './gameLogic';
+import { migrateSave } from './gameLogic';
 
 const KEY = 'liga-gimel-to-pro:save';
 
@@ -7,9 +7,8 @@ export function loadGame(): GameState | null {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as GameState;
-    if (parsed?.version !== SAVE_VERSION || !parsed.player) return null;
-    return { ...parsed, toast: null };
+    const migrated = migrateSave(JSON.parse(raw) as GameState);
+    return migrated ? { ...migrated, toast: null } : null;
   } catch {
     return null;
   }

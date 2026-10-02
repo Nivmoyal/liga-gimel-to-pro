@@ -42,9 +42,9 @@ export function LifestyleSheet({ state, dispatch, onClose }: Props) {
               key={opt.id}
               disabled={disabled}
               onClick={() => dispatch({ type: 'LIFESTYLE', option: opt.id })}
-              className="flex w-full items-center gap-3 rounded-2xl border border-line bg-card p-3 text-right transition hover:border-amber-500/60 disabled:opacity-40"
+              className="flex w-full items-center gap-3 rounded-2xl border border-line bg-card p-3 text-right transition hover:border-brand/50 disabled:opacity-40"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 text-gold">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
                 <Icon size={20} />
               </div>
               <div className="min-w-0 flex-1">
@@ -56,7 +56,7 @@ export function LifestyleSheet({ state, dispatch, onClose }: Props) {
               </div>
               <div className="shrink-0 space-y-0.5 text-left text-xs">
                 {opt.energy !== 0 && (
-                  <div className={`flex items-center gap-1 ${opt.energy > 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
+                  <div className={`flex items-center gap-1 ${opt.energy > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                     <Zap size={12} />
                     <span dir="ltr">
                       {opt.energy > 0 ? '+' : ''}
@@ -65,7 +65,7 @@ export function LifestyleSheet({ state, dispatch, onClose }: Props) {
                   </div>
                 )}
                 {opt.budgetCost > 0 && (
-                  <div className="flex items-center gap-1 text-amber-300">
+                  <div className="flex items-center gap-1 text-amber-600">
                     <Coins size={12} />
                     {formatMoney(opt.budgetCost)}
                   </div>

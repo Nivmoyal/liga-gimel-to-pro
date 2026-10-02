@@ -15,7 +15,10 @@ export type GameAction =
   | { type: 'SIGN_AGENT'; agentId: string }
   | { type: 'FIRE_AGENT' }
   | { type: 'AGENT_PUSH' }
-  | { type: 'AGENT_SPONSOR' }
+  | { type: 'SIGN_SPONSOR'; sponsorId: string }
+  | { type: 'DROP_SPONSOR'; sponsorId: string }
+  | { type: 'ACCEPT_CALLUP' }
+  | { type: 'DECLINE_CALLUP' }
   | { type: 'LIFE_CHOICE'; index: number }
   | { type: 'LIFE_DISMISS' }
   | { type: 'START_MATCHDAY' }
@@ -58,8 +61,14 @@ export function gameReducer(state: GameState | null, action: GameAction): GameSt
       return logic.fireAgent(state);
     case 'AGENT_PUSH':
       return logic.agentPush(state);
-    case 'AGENT_SPONSOR':
-      return logic.agentSponsor(state);
+    case 'SIGN_SPONSOR':
+      return logic.signSponsor(state, action.sponsorId);
+    case 'DROP_SPONSOR':
+      return logic.dropSponsor(state, action.sponsorId);
+    case 'ACCEPT_CALLUP':
+      return logic.acceptCallUp(state);
+    case 'DECLINE_CALLUP':
+      return logic.declineCallUp(state);
     case 'LIFE_CHOICE':
       return logic.chooseLife(state, action.index);
     case 'LIFE_DISMISS':

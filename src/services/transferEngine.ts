@@ -26,7 +26,7 @@ export function generateOffers(state: GameState): TransferOffer[] {
   const agent = getAgent(player.agentId);
   const agentLevel = agent?.level ?? 0;
   const form = averageRating(player.seasonStats) || 6;
-  const interest = ovr + (form - 6.5) * 2.5 + (player.fanRep - 50) * 0.05 + agentLevel * 1.5 + (flags.transferPush ? 2 : 0);
+  const interest = ovr + (form - 6.5) * 2.5 + (player.fanRep - 50) * 0.05 + agentLevel * 1.5 + (flags.transferPush ? 2 : 0) + Math.min(4, player.national.caps);
 
   // A two-division jump needs a strong agent who is actively pushing, and only in the summer.
   const bigJump = state.transferContext === 'endseason' && agentLevel >= 2 && flags.transferPush;

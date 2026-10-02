@@ -4,6 +4,8 @@
 
 export type SportType = 'football' | 'basketball';
 
+export type NationalLevel = 'u21' | 'senior';
+
 export type FootballPosition = 'striker' | 'midfielder' | 'centerBack' | 'fullBack';
 export type BasketballPosition = 'PG' | 'SG' | 'SF' | 'PF' | 'C';
 export type Position = FootballPosition | BasketballPosition;
@@ -120,6 +122,8 @@ export interface GameEvent {
   tip?: string;
   /** Minute / time label for in-game scenarios. */
   clock?: string;
+  /** Illustration key rendered by SceneArt (falls back to a default per event type). */
+  scene?: string;
   /** Clutch scenarios make the match close so the decision decides the result. */
   clutch?: boolean;
   /** Special events are never picked at random, only by an explicit trigger. */
@@ -165,8 +169,24 @@ export interface SeasonRecord {
   ovr: number;
 }
 
+export interface ActiveSponsor {
+  id: string;
+  /** Last season (inclusive) the deal is active. */
+  untilSeason: number;
+}
+
+export interface NationalStats {
+  caps: number;
+  u21Caps: number;
+  goals: number;
+  assists: number;
+  points: number;
+  ratingSum: number;
+}
+
 export interface Player {
   name: string;
+  shirtNumber: number;
   sport: SportType;
   position: Position;
   region: RegionId;
@@ -190,6 +210,8 @@ export interface Player {
   seasonStats: SeasonStats;
   careerStats: SeasonStats;
   history: SeasonRecord[];
+  sponsors: ActiveSponsor[];
+  national: NationalStats;
 }
 
 export interface LeagueTeam {
@@ -242,6 +264,8 @@ export interface PendingOutcome {
 
 export interface MatchState {
   opponent: string;
+  /** Set for national team matches (no league table impact). */
+  national: NationalLevel | null;
   opponentStrength: number;
   home: boolean;
   role: MatchRole;
@@ -302,7 +326,15 @@ export type GamePhase =
   | 'matchSummary'
   | 'postMatch'
   | 'transfer'
-  | 'seasonEnd';
+  | 'seasonEnd'
+  | 'callUp';
+
+export interface NationalCallUp {
+  level: NationalLevel;
+  opponent: string;
+  opponentStrength: number;
+  home: boolean;
+}
 
 export interface GameFlags {
   agentDiscovered: boolean;
@@ -311,7 +343,6 @@ export interface GameFlags {
   shiftsThisWeek: number;
   jobWarnings: number;
   raiseAskedSeason: number;
-  sponsorSeason: number;
   transferPush: boolean;
   ownsBoots: boolean;
   jobRaise: number;
@@ -334,6 +365,7 @@ export interface GameState {
   transferOffers: TransferOffer[];
   transferContext: 'midseason' | 'endseason' | null;
   seasonSummary: SeasonSummary | null;
+  nationalCallUp: NationalCallUp | null;
   flags: GameFlags;
   /** Short toast-like message after a dashboard action. */
   toast: string | null;
@@ -341,6 +373,7 @@ export interface GameState {
 
 export interface SetupData {
   name: string;
+  shirtNumber: number;
   sport: SportType;
   position: Position;
   region: RegionId;

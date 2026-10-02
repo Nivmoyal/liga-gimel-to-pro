@@ -47,14 +47,14 @@ export function AgentSheet({ state, dispatch, onClose }: Props) {
     <Sheet title="הסוכן שלי" subtitle={agent.agency} icon={Handshake} onClose={onClose}>
       <div className="mb-3 rounded-2xl border border-line bg-card p-4">
         <div className="mb-2 flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/15 text-gold">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand/10 text-brand">
             <UserRound size={24} />
           </div>
           <div>
             <div className="text-lg font-extrabold">{agent.name}</div>
             <div className="flex items-center gap-1">
               {Array.from({ length: 3 }, (_, i) => (
-                <Star key={i} size={14} className={i < agent.level ? 'fill-amber-500 text-amber-500' : 'text-line'} />
+                <Star key={i} size={14} className={i < agent.level ? 'fill-sun text-sun' : 'text-line'} />
               ))}
               <span className="mr-1 flex items-center gap-1 text-xs text-muted">
                 <BadgePercent size={12} />
@@ -64,14 +64,14 @@ export function AgentSheet({ state, dispatch, onClose }: Props) {
           </div>
         </div>
         <p className="text-sm text-muted">{agent.description}</p>
+        <p className="mt-2 rounded-lg bg-brand/10 px-2.5 py-1.5 text-xs font-semibold text-brand">
+          משפר את תנאי החסויות שלך ב-{agent.level * 10}% (לפני עמלה)
+        </p>
       </div>
       <div className="space-y-2">
         <GoldButton onClick={() => dispatch({ type: 'AGENT_PUSH' })} disabled={flags.transferPush}>
           <Megaphone size={18} />
           {flags.transferPush ? 'הסוכן כבר מפיץ את השם שלך' : 'לבקש לדחוף להעברה בחלון הבא'}
-        </GoldButton>
-        <GoldButton variant="ghost" onClick={() => dispatch({ type: 'AGENT_SPONSOR' })} disabled={flags.sponsorSeason === state.season}>
-          {flags.sponsorSeason === state.season ? 'חסות העונה כבר נסגרה' : 'לסגור חסות אישית'}
         </GoldButton>
         <GoldButton variant="ghost" onClick={() => dispatch({ type: 'FIRE_AGENT' })}>
           <UserX size={18} />
@@ -93,7 +93,7 @@ function AgentList({ ovr, onSign }: { ovr: number; onSign: (id: string) => void 
               <div className="font-extrabold">{a.name}</div>
               <div className="flex">
                 {Array.from({ length: 3 }, (_, i) => (
-                  <Star key={i} size={13} className={i < a.level ? 'fill-amber-500 text-amber-500' : 'text-line'} />
+                  <Star key={i} size={13} className={i < a.level ? 'fill-sun text-sun' : 'text-line'} />
                 ))}
               </div>
             </div>
@@ -103,7 +103,7 @@ function AgentList({ ovr, onSign }: { ovr: number; onSign: (id: string) => void 
               <button
                 disabled={locked}
                 onClick={() => onSign(a.id)}
-                className="rounded-xl bg-amber-500 px-4 py-1.5 text-sm font-bold text-black hover:bg-amber-400 disabled:bg-line disabled:text-muted"
+                className="rounded-xl bg-brand px-4 py-1.5 text-sm font-bold text-white hover:bg-brand-600 disabled:bg-line disabled:text-muted"
               >
                 {locked ? `דורש OVR ${a.minOvr}` : 'לחתום'}
               </button>

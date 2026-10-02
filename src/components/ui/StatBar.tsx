@@ -9,7 +9,7 @@ interface StatBarProps {
 
 export function StatBar({ label, value, max = 100, suffix = '', tone = 'level' }: StatBarProps) {
   const pct = Math.max(0, Math.min(100, (value / max) * 100));
-  const color = tone === 'gold' ? 'bg-amber-500' : pct >= 70 ? 'bg-emerald-500' : pct >= 45 ? 'bg-amber-500' : 'bg-rose-500';
+  const color = tone === 'gold' ? 'bg-brand' : pct >= 70 ? 'bg-emerald-500' : pct >= 45 ? 'bg-brand' : 'bg-rose-500';
   return (
     <div>
       <div className="mb-1 flex items-center justify-between text-sm">

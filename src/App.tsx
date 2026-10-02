@@ -18,6 +18,7 @@ import { MatchSummaryModal } from './components/MatchSummaryModal';
 import { PostMatchInterview } from './components/PostMatchInterview';
 import { TransferWindowModal } from './components/TransferWindowModal';
 import { SeasonEndModal } from './components/SeasonEndModal';
+import { CallUpModal } from './components/CallUpModal';
 import { TrainingSheet } from './components/sheets/TrainingSheet';
 import { JobSheet } from './components/sheets/JobSheet';
 import { AgentSheet } from './components/sheets/AgentSheet';
@@ -35,6 +36,11 @@ export default function App() {
     saveGame(state);
   }, [state]);
 
+  // Every screen change starts at the top
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view, state === null]);
+
   // Auto-hide action feedback
   useEffect(() => {
     if (!state?.toast) return;
@@ -49,7 +55,7 @@ export default function App() {
 
   if (!state) {
     return (
-      <div dir="rtl" className="min-h-dvh bg-pitch text-white">
+      <div dir="rtl" className="min-h-dvh bg-pitch text-ink">
         <SetupScreen
           onStart={(setup) => {
             setView('home');
@@ -70,7 +76,7 @@ export default function App() {
   const closeSheet = () => setSheet(null);
 
   return (
-    <div dir="rtl" className="min-h-dvh bg-pitch text-white">
+    <div dir="rtl" className="min-h-dvh bg-pitch text-ink">
       <div className="mx-auto max-w-md">
         <HeaderStats state={state} />
 
@@ -106,11 +112,12 @@ export default function App() {
       {state.phase === 'postMatch' && <PostMatchInterview state={state} dispatch={dispatch} />}
       {state.phase === 'transfer' && <TransferWindowModal state={state} dispatch={dispatch} />}
       {state.phase === 'seasonEnd' && <SeasonEndModal state={state} dispatch={dispatch} />}
+      {state.phase === 'callUp' && <CallUpModal state={state} dispatch={dispatch} />}
 
       {state.toast && (
         <div className="pointer-events-none fixed inset-x-0 top-[max(5.5rem,env(safe-area-inset-top))] z-[60] flex justify-center px-4">
-          <div className="animate-sheet flex max-w-sm items-center gap-2 rounded-2xl border border-amber-500/50 bg-card-2 px-4 py-3 text-sm font-semibold shadow-2xl">
-            <Info size={16} className="shrink-0 text-gold" />
+          <div className="animate-sheet flex max-w-sm items-center gap-2 rounded-2xl border border-brand/40 bg-card-2 px-4 py-3 text-sm font-semibold shadow-2xl">
+            <Info size={16} className="shrink-0 text-brand" />
             {state.toast}
           </div>
         </div>

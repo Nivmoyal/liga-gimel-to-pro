@@ -4,6 +4,7 @@ import type { GameAction } from '../state/gameReducer';
 import { getParsedEvent } from '../state/gameLogic';
 import { ChoiceButton } from './ui/ChoiceButton';
 import { OutcomeBox } from './ui/OutcomeBox';
+import { SceneBanner } from './art/SceneBanner';
 
 interface DecisionBoxProps {
   state: GameState;
@@ -24,22 +25,23 @@ export function DecisionBox({ state, dispatch }: DecisionBoxProps) {
   }
 
   return (
-    <section className="rounded-2xl border border-amber-500/40 bg-gradient-to-b from-amber-500/10 to-card p-4 shadow-lg shadow-amber-500/5">
+    <section className="rounded-2xl border border-brand/30 bg-gradient-to-b from-brand/10 to-card p-4 shadow-lg shadow-brand/10">
       <div className="mb-3 flex items-center gap-2">
         <span className="relative flex h-2.5 w-2.5">
-          {!state.lifeOutcome && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />}
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-amber-500" />
+          {!state.lifeOutcome && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75" />}
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-brand" />
         </span>
-        <h2 className="text-sm font-extrabold text-gold">הודעה מחכה לתשובה שלך</h2>
+        <h2 className="text-sm font-extrabold text-brand">הודעה מחכה לתשובה שלך</h2>
       </div>
+      <SceneBanner state={state} scene={event.scene} height={120} />
       <div className="mb-3 flex gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card-2 text-gold">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card-2 text-brand">
           <MessageSquare size={18} />
         </div>
         <div className="min-w-0">
           <div className="text-xs text-muted">{event.speaker}</div>
           <div className="font-extrabold">{event.title}</div>
-          <p className="mt-1 leading-relaxed text-white/90">{event.text}</p>
+          <p className="mt-1 leading-relaxed text-ink/80">{event.text}</p>
         </div>
       </div>
       {state.lifeOutcome ? (
@@ -47,7 +49,7 @@ export function DecisionBox({ state, dispatch }: DecisionBoxProps) {
           <OutcomeBox outcome={state.lifeOutcome} sport={state.player.sport} />
           <button
             onClick={() => dispatch({ type: 'LIFE_DISMISS' })}
-            className="flex w-full items-center justify-center gap-1 rounded-xl border border-line bg-card py-2.5 text-sm font-bold hover:border-amber-500/60"
+            className="flex w-full items-center justify-center gap-1 rounded-xl border border-line bg-card py-2.5 text-sm font-bold hover:border-brand/50"
           >
             הבנתי, ממשיכים
             <ChevronLeft size={16} />

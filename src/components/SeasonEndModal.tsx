@@ -6,6 +6,7 @@ import { Sheet } from './ui/Sheet';
 import { GoldButton } from './ui/GoldButton';
 import { LeagueTable } from './LeagueTable';
 import { StatsGrid } from './views/StatsView';
+import { SceneBanner } from './art/SceneBanner';
 
 interface Props {
   state: GameState;
@@ -28,23 +29,24 @@ export function SeasonEndModal({ state, dispatch }: Props) {
         </GoldButton>
       }
     >
+      <SceneBanner state={state} scene={summary.champion || summary.promoted ? 'trophy' : 'stadium'} height={130} />
       <div className="mb-4 rounded-2xl border border-line bg-card p-4 text-center">
         <div className="text-sm text-muted">מקום סופי</div>
-        <div className="text-5xl font-black text-gold">{summary.finalPosition}</div>
+        <div className="text-5xl font-black text-brand">{summary.finalPosition}</div>
         {summary.champion && (
-          <div className="mt-2 flex items-center justify-center gap-2 font-black text-amber-400">
+          <div className="mt-2 flex items-center justify-center gap-2 font-black text-amber-600">
             <Trophy size={18} />
             אלופים!
           </div>
         )}
         {summary.promoted && (
-          <div className="mt-2 flex items-center justify-center gap-2 font-bold text-emerald-400">
+          <div className="mt-2 flex items-center justify-center gap-2 font-bold text-emerald-600">
             <ArrowUp size={18} />
             עולים ל{divisionName(player.sport, player.division + 1)}
           </div>
         )}
         {summary.relegated && (
-          <div className="mt-2 flex items-center justify-center gap-2 font-bold text-rose-400">
+          <div className="mt-2 flex items-center justify-center gap-2 font-bold text-rose-600">
             <ArrowDown size={18} />
             יורדים ל{divisionName(player.sport, player.division - 1)}
           </div>

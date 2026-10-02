@@ -21,7 +21,7 @@ export function BottomNav({ view, onChange }: { view: ViewId; onChange: (v: View
             <button
               key={item.id}
               onClick={() => onChange(item.id)}
-              className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-bold transition ${active ? 'text-gold' : 'text-muted hover:text-white'}`}
+              className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-bold transition ${active ? 'text-brand' : 'text-muted hover:text-ink'}`}
               aria-current={active ? 'page' : undefined}
             >
               <Icon size={20} />

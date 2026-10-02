@@ -14,10 +14,10 @@ const FILTERS: { id: Filter; label: string }[] = [
 ];
 
 const CATEGORY_META: Record<NewsCategory, { icon: LucideIcon; label: string; color: string }> = {
-  club: { icon: Building, label: 'המועדון', color: 'text-sky-400 bg-sky-500/10' },
-  rumors: { icon: Flame, label: 'שמועות', color: 'text-orange-400 bg-orange-500/10' },
-  league: { icon: Megaphone, label: 'הליגה', color: 'text-emerald-400 bg-emerald-500/10' },
-  fans: { icon: Users, label: 'אוהדים', color: 'text-fuchsia-400 bg-fuchsia-500/10' },
+  club: { icon: Building, label: 'המועדון', color: 'text-sky-600 bg-sky-500/10' },
+  rumors: { icon: Flame, label: 'שמועות', color: 'text-orange-600 bg-orange-500/10' },
+  league: { icon: Megaphone, label: 'הליגה', color: 'text-emerald-600 bg-emerald-500/10' },
+  fans: { icon: Users, label: 'אוהדים', color: 'text-fuchsia-600 bg-fuchsia-500/10' },
 };
 
 interface SocialFeedProps {
@@ -35,7 +35,7 @@ export function SocialFeed({ news, limit, title = 'מה מדברים עליכם'
   return (
     <section className="rounded-2xl border border-line bg-card p-4">
       <div className="mb-3 flex items-center gap-2">
-        <Newspaper size={18} className="text-gold" />
+        <Newspaper size={18} className="text-brand" />
         <h2 className="font-extrabold">{title}</h2>
       </div>
       <div className="scrollbar-none -mx-1 mb-3 flex gap-1.5 overflow-x-auto px-1">
@@ -44,7 +44,7 @@ export function SocialFeed({ news, limit, title = 'מה מדברים עליכם'
             key={f.id}
             onClick={() => setFilter(f.id)}
             className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-bold transition ${
-              filter === f.id ? 'bg-amber-500 text-black' : 'border border-line bg-pitch text-muted hover:text-white'
+              filter === f.id ? 'bg-brand text-white' : 'border border-line bg-pitch text-muted hover:text-ink'
             }`}
           >
             {f.label}
@@ -59,7 +59,7 @@ export function SocialFeed({ news, limit, title = 'מה מדברים עליכם'
             const meta = CATEGORY_META[item.category];
             const Icon = meta.icon;
             return (
-              <li key={item.id} className="flex gap-3 rounded-xl bg-pitch/60 p-2.5">
+              <li key={item.id} className="flex gap-3 rounded-xl bg-card-2 p-2.5">
                 <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${meta.color}`}>
                   <Icon size={16} />
                 </div>

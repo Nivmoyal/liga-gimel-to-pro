@@ -4,12 +4,15 @@
 // ===================================================================
 
 import type {
+  Agent,
   Attributes,
   Effects,
   GameEvent,
   GameFlags,
   GameState,
   JobId,
+  NationalCallUp,
+  NationalLevel,
   NewsItem,
   PendingOutcome,
   Player,
@@ -18,6 +21,9 @@ import type {
 import { getRegion } from '../data/clubs';
 import { getJob } from '../data/jobs';
 import { AGENT_UNLOCK, getAgent } from '../data/agents';
+import { MAX_SPONSORS, SPONSORS, getSponsor } from '../data/sponsors';
+import type { Sponsor } from '../data/sponsors';
+import { INTERNATIONAL_WINDOWS, NATIONAL_OPPONENTS, NATIONAL_SETUP, NATIONAL_TEAM_NAME } from '../data/national';
 import {
   ATTR_KEYS,
   CONTRACT_LABEL,
@@ -38,6 +44,7 @@ import {
   getEventById,
   getTriggeredEvent,
   parseEvent,
+  pickTriggeredEvent,
   pickEvent,
   pickInGameEvents,
   resolveChoice,
@@ -56,15 +63,17 @@ import { leagueRoundNews, makeNews, matchNews, rumorNews } from '../services/new
 import { baseSalary, contractForDivision, generateOffers } from '../services/transferEngine';
 import {
   applyPlayerEffects,
+  averageRating,
   calcOvr,
   clamp,
   emptyStats,
   formatMoney,
+  pickRandom,
   randInt,
   trainingGain,
 } from '../services/playerUtils';
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 const MAX_NEWS = 60;
 const SEEN_MEMORY = 40;
 
@@ -80,7 +89,6 @@ function defaultFlags(): GameFlags {
     shiftsThisWeek: 0,
     jobWarnings: 0,
     raiseAskedSeason: 0,
-    sponsorSeason: 0,
     transferPush: false,
     ownsBoots: false,
     jobRaise: 0,
@@ -113,6 +121,29 @@ function applyEffects(state: GameState, effects: Effects): GameState {
     next = { ...next, flags: { ...next.flags, agentDiscovered: true } };
   }
   return next;
+}
+
+function emptyNational() {
+  return { caps: 0, u21Caps: 0, goals: 0, assists: 0, points: 0, ratingSum: 0 };
+}
+
+/** Upgrades older saves in place so existing careers keep working. */
+export function migrateSave(raw: GameState): GameState | null {
+  if (!raw?.player) return null;
+  if (raw.version === SAVE_VERSION) return raw;
+  if (raw.version !== 1) return null;
+  return {
+    ...raw,
+    version: SAVE_VERSION,
+    nationalCallUp: null,
+    currentMatch: raw.currentMatch ? { ...raw.currentMatch, national: null } : null,
+    player: {
+      ...raw.player,
+      shirtNumber: raw.player.shirtNumber ?? 10,
+      sponsors: raw.player.sponsors ?? [],
+      national: raw.player.national ?? emptyNational(),
+    },
+  };
 }
 
 export function isNonPro(player: Player): boolean {
@@ -157,6 +188,7 @@ export function createNewGame(setup: SetupData): GameState {
 
   const player: Player = {
     name: setup.name.trim(),
+    shirtNumber: clamp(Math.round(setup.shirtNumber) || 10, 0, 99),
     sport: setup.sport,
     position: setup.position,
     region: setup.region,
@@ -180,6 +212,8 @@ export function createNewGame(setup: SetupData): GameState {
     seasonStats: emptyStats(),
     careerStats: emptyStats(),
     history: [],
+    sponsors: [],
+    national: emptyNational(),
   };
 
   const league = createLeague(setup.sport, division, club.name, divStrength + randInt(-3, 3));
@@ -200,6 +234,7 @@ export function createNewGame(setup: SetupData): GameState {
     transferOffers: [],
     transferContext: null,
     seasonSummary: null,
+    nationalCallUp: null,
     flags: defaultFlags(),
     toast: null,
   };
@@ -407,17 +442,66 @@ export function agentPush(state: GameState): GameState {
   return withToast(next, `${agent.name} מתחיל להפיץ את השם שלך. התוצאות יגיעו בחלון ההעברות.`);
 }
 
-export function agentSponsor(state: GameState): GameState {
-  const agent = getAgent(state.player.agentId);
-  if (!agent) return state;
-  if (state.flags.sponsorSeason === state.season) return withToast(state, 'כבר סגרת חסות העונה.');
-  if (state.player.followers < 400 && state.player.fanRep < 45) return withToast(state, 'המותגים עוד לא מכירים אותך. צריך 400 עוקבים או מוניטין 45.');
-  const pay = Math.round(800 * agent.level + state.player.followers * 0.2);
-  const net = Math.round(pay * (1 - agent.commission));
-  let next = applyEffects(state, { budget: net, followers: 120 });
-  next = { ...next, flags: { ...next.flags, sponsorSeason: state.season } };
-  next = addNews(next, [newsNow(next, 'fans', `${state.player.name} הוא הפנים החדשות של מותג ספורט מקומי`)]);
-  return withToast(next, `חסות נסגרה: +${formatMoney(net)} (אחרי עמלה)`);
+// ------------------------------------------------------------------
+// Sponsors
+// ------------------------------------------------------------------
+
+/** Weekly sponsor payment after the agent's negotiation bonus and commission. */
+export function sponsorWeeklyNet(sponsor: Sponsor, agent: Agent | null): number {
+  const gross = sponsor.weekly * (1 + (agent?.level ?? 0) * 0.1);
+  return Math.round(gross * (1 - (agent?.commission ?? 0)));
+}
+
+/** Requirements the player still misses for a sponsor (empty = eligible). */
+export function sponsorMissing(player: Player, sponsor: Sponsor): string[] {
+  const r = sponsor.requires;
+  const missing: string[] = [];
+  if (r.followers && player.followers < r.followers) missing.push(`${r.followers.toLocaleString('he-IL')} עוקבים`);
+  if (r.fanRep && player.fanRep < r.fanRep) missing.push(`מוניטין ${r.fanRep}`);
+  if (r.ovr && calcOvr(player) < r.ovr) missing.push(`OVR ${r.ovr}`);
+  if (r.division !== undefined && player.division < r.division) missing.push(divisionName(player.sport, r.division));
+  if (r.nationalCaps && player.national.caps < r.nationalCaps) missing.push('הופעה בנבחרת');
+  return missing;
+}
+
+export function sponsorBlocked(player: Player, sponsor: Sponsor): string | null {
+  if (player.sponsors.some((s) => s.id === sponsor.id)) return 'פעיל';
+  const sameCategory = player.sponsors.map((s) => getSponsor(s.id)).find((s) => s?.category === sponsor.category);
+  if (sameCategory) return `יש כבר חסות בקטגוריה (${sameCategory.name})`;
+  if (player.sponsors.length >= MAX_SPONSORS) return `מקסימום ${MAX_SPONSORS} ספונסרים`;
+  return null;
+}
+
+export function signSponsor(state: GameState, id: string): GameState {
+  const sponsor = getSponsor(id);
+  if (!sponsor) return state;
+  const { player } = state;
+  const blocked = sponsorBlocked(player, sponsor);
+  if (blocked) return withToast(state, blocked);
+  if (sponsorMissing(player, sponsor).length > 0) return withToast(state, 'עוד לא עומדים בדרישות של הספונסר.');
+  const agent = getAgent(player.agentId);
+  const bonus = Math.round(sponsor.signingBonus * (1 - (agent?.commission ?? 0)));
+  let next: GameState = {
+    ...state,
+    player: {
+      ...player,
+      budget: player.budget + bonus,
+      sponsors: [...player.sponsors, { id: sponsor.id, untilSeason: state.season + sponsor.seasons - 1 }],
+    },
+  };
+  next = addNews(next, [newsNow(next, 'fans', `${player.name} הוא הפנים החדשות של ${sponsor.name}`)]);
+  return withToast(next, `חוזה חסות עם ${sponsor.name}: +${formatMoney(bonus)} מענק`);
+}
+
+export function dropSponsor(state: GameState, id: string): GameState {
+  const sponsor = getSponsor(id);
+  if (!sponsor) return state;
+  const next: GameState = { ...state, player: { ...state.player, sponsors: state.player.sponsors.filter((s) => s.id !== id) } };
+  return withToast(applyEffects(next, { fanRep: -1 }), `החוזה עם ${sponsor.name} בוטל.`);
+}
+
+export function availableSponsorCount(player: Player): number {
+  return SPONSORS.filter((s) => !sponsorBlocked(player, s) && sponsorMissing(player, s).length === 0).length;
 }
 
 // ------------------------------------------------------------------
@@ -541,6 +625,7 @@ export function continueInGame(state: GameState): GameState {
 function finishMatch(state: GameState): GameState {
   const match = state.currentMatch;
   if (!match) return state;
+  if (match.national) return finishNationalMatch(state);
   const { player } = state;
   const sport = player.sport;
   const clubIdx = playerClubIndex(state.league);
@@ -611,6 +696,11 @@ function finishMatch(state: GameState): GameState {
 export function continueSummary(state: GameState): GameState {
   const match = state.currentMatch;
   if (!match?.result) return state;
+  if (match.national) {
+    const post = pickTriggeredEvent('national_post', state.player, state.seenEvents);
+    if (!post) return endNationalBreak(state);
+    return { ...state, phase: 'postMatch', currentMatch: { ...match, postEventId: post.id, pendingOutcome: null } };
+  }
   if (match.role === 'injured') return endMatchday(state);
   const post = pickEvent('postMatch', state.player, state.seenEvents, { matchResult: match.result.outcome, matchday: state.matchday });
   if (!post) return endMatchday(state);
@@ -630,6 +720,7 @@ export function choosePostMatch(state: GameState, index: number): GameState {
 }
 
 export function continuePostMatch(state: GameState): GameState {
+  if (state.currentMatch?.national) return endNationalBreak(state);
   return endMatchday(state);
 }
 
@@ -645,10 +736,23 @@ function endMatchday(state: GameState): GameState {
   const living = LIVING_COST[player.contract];
   player.budget += salaryNet - living;
 
+  // Sponsors pay weekly; a sponsor walks away if the fan reputation collapses
+  const news: NewsItem[] = [];
+  const keptSponsors = player.sponsors.filter((active) => {
+    const sponsor = getSponsor(active.id);
+    if (!sponsor) return false;
+    if (sponsor.requires.fanRep && player.fanRep < sponsor.requires.fanRep - 15) {
+      news.push(makeNews('rumors', `${sponsor.name} מפסיקה את החסות של ${player.name} בגלל ירידה בפופולריות`, state.season, matchday));
+      return false;
+    }
+    player.budget += sponsorWeeklyNet(sponsor, agent);
+    return true;
+  });
+  player.sponsors = keptSponsors;
+
   // Day job duty
   const flags = { ...next.flags };
   const job = getJob(player.jobId);
-  const news: NewsItem[] = [];
   if (job && isNonPro(player)) {
     if (flags.shiftsThisWeek === 0) {
       flags.jobWarnings += 1;
@@ -687,6 +791,11 @@ function endMatchday(state: GameState): GameState {
 
   // Agent discovery or next life event
   next = queueLifeEvent(next);
+
+  if (INTERNATIONAL_WINDOWS.includes(matchday)) {
+    const callUp = checkCallUp(next);
+    if (callUp) return { ...next, phase: 'callUp', nationalCallUp: callUp };
+  }
 
   if (matchday === TRANSFER_WINDOW_MATCHDAY) {
     const windowState: GameState = { ...next, phase: 'transfer', transferContext: 'midseason' };
@@ -852,8 +961,10 @@ export function declineOffers(state: GameState): GameState {
 
 function startNewSeason(state: GameState): GameState {
   const season = state.season + 1;
+  const expired = state.player.sponsors.filter((s) => s.untilSeason < season).map((s) => getSponsor(s.id)?.name).filter(Boolean);
   const player: Player = {
     ...state.player,
+    sponsors: state.player.sponsors.filter((s) => s.untilSeason >= season),
     age: state.player.age + 1,
     seasonStats: emptyStats(),
     coachApproval: Math.round(state.player.coachApproval + (52 - state.player.coachApproval) * 0.5),
@@ -876,6 +987,102 @@ function startNewSeason(state: GameState): GameState {
   next = addNews(next, [
     makeNews('league', `עונה ${season} יוצאת לדרך ב${divisionName(player.sport, player.division)}`, season, 0),
     makeNews('club', `${player.club} פותחת את ההכנות לעונה. ${player.name} כבר באימונים.`, season, 0),
+    expired.length ? makeNews('rumors', `הסתיימו חוזי החסות של ${player.name} עם ${expired.join(', ')}`, season, 0) : null,
   ]);
   return next;
+}
+
+// ------------------------------------------------------------------
+// National team
+// ------------------------------------------------------------------
+
+/** Decides whether the player is called up during an international break. */
+export function checkCallUp(state: GameState): NationalCallUp | null {
+  const { player } = state;
+  if (player.injuryWeeks > 0) return null;
+  const ovr = calcOvr(player);
+  const form = player.seasonStats.apps >= 3 ? averageRating(player.seasonStats) : 0;
+  const setup = NATIONAL_SETUP[player.sport];
+  let level: NationalLevel | null = null;
+  if (ovr >= setup.senior.minOvr && (form >= setup.senior.minForm || ovr >= setup.senior.minOvr + 6)) level = 'senior';
+  else if (player.age <= (setup.u21.maxAge ?? 21) && ovr >= setup.u21.minOvr && form >= setup.u21.minForm) level = 'u21';
+  if (!level || Math.random() > 0.85) return null;
+  const opponent = pickRandom(NATIONAL_OPPONENTS[player.sport]);
+  return {
+    level,
+    opponent: opponent.name,
+    opponentStrength: opponent.strength - (level === 'u21' ? 12 : 0),
+    home: Math.random() < 0.5,
+  };
+}
+
+export function acceptCallUp(state: GameState): GameState {
+  const callUp = state.nationalCallUp;
+  if (!callUp) return state;
+  const { player } = state;
+  const strength = NATIONAL_SETUP[player.sport][callUp.level].strength;
+  const role = calcOvr(player) >= strength - 2 && player.energy >= 25 ? 'starter' : 'rotation';
+  const match = { ...createMatchState(callUp.opponent, callUp.opponentStrength, callUp.home, role), national: callUp.level };
+  let next: GameState = addNews(
+    { ...state, currentMatch: match, toast: null },
+    [newsNow(state, 'club', `${player.name} זומן ל${NATIONAL_TEAM_NAME[callUp.level]} לקראת המשחק מול ${callUp.opponent}`)],
+  );
+  const pre = pickTriggeredEvent('national_pre', player, state.seenEvents);
+  if (!pre) return continuePreMatch({ ...next, phase: 'preMatch' });
+  next = { ...next, phase: 'preMatch', currentMatch: { ...match, preEventId: pre.id } };
+  return next;
+}
+
+export function declineCallUp(state: GameState): GameState {
+  const callUp = state.nationalCallUp;
+  if (!callUp) return state;
+  let next = applyEffects(state, { fanRep: -4, energy: 10, coachApproval: 2 });
+  next = addNews(next, [newsNow(next, 'fans', `${state.player.name} ביקש לוותר על הזימון ל${NATIONAL_TEAM_NAME[callUp.level]}. האוהדים מאוכזבים.`)]);
+  return { ...next, phase: 'dashboard', nationalCallUp: null };
+}
+
+function finishNationalMatch(state: GameState): GameState {
+  const match = state.currentMatch!;
+  const level = match.national!;
+  const { player } = state;
+  const sport = player.sport;
+  const strength = NATIONAL_SETUP[sport][level].strength;
+  const fin = finalizeMatch(match, { ...player, division: topDivision(sport) }, strength);
+  const { result } = fin;
+  const played = result.rating !== null;
+  const national = { ...player.national };
+  if (played) {
+    if (level === 'senior') national.caps += 1;
+    else national.u21Caps += 1;
+    national.goals += fin.match.playerGoals;
+    national.assists += fin.match.playerAssists;
+    national.points += fin.match.playerPoints;
+    national.ratingSum += result.rating ?? 0;
+  }
+  const swing = played ? result.rating! - 6.5 : 0;
+  const levelBoost = level === 'senior' ? 2 : 1;
+  const nextPlayer = applyPlayerEffects(
+    { ...player, national },
+    {
+      energy: match.role === 'starter' ? -18 : -10,
+      confidence: Math.round(4 + swing * 3),
+      fanRep: (result.outcome === 'win' ? 4 : result.outcome === 'draw' ? 2 : 1) * levelBoost,
+      followers: Math.round((150 + Math.max(0, swing) * 120) * levelBoost),
+      coachApproval: 3,
+    },
+  );
+  const teamName = NATIONAL_TEAM_NAME[level];
+  const score = sport === 'basketball' ? `${result.teamScore}:${result.oppScore}` : `${result.teamScore}-${result.oppScore}`;
+  const verb = result.outcome === 'win' ? 'ניצחה את' : result.outcome === 'loss' ? 'הפסידה ל' : 'סיימה בתיקו מול';
+  const joiner = result.outcome === 'loss' ? '' : ' ';
+  let next: GameState = { ...state, player: nextPlayer, currentMatch: fin.match, phase: 'matchSummary' };
+  next = addNews(next, [
+    newsNow(next, 'club', `${teamName} ${verb}${joiner}${match.opponent} ${score}. ${player.name} ${played ? `קיבל ציון ${result.rating!.toFixed(1)}` : 'לא נכנס למגרש'}.`),
+    result.motm ? newsNow(next, 'fans', `כל המדינה מדברת על ${player.name} אחרי ההופעה במדי הנבחרת`) : null,
+  ]);
+  return next;
+}
+
+function endNationalBreak(state: GameState): GameState {
+  return { ...state, phase: 'dashboard', currentMatch: null, nationalCallUp: null };
 }

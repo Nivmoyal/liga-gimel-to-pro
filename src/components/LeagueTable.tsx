@@ -1,4 +1,5 @@
 import type { LeagueTeam, SportType } from '../types/game';
+import { Crest } from './art/Crest';
 
 interface LeagueTableProps {
   teams: LeagueTeam[];
@@ -35,7 +36,7 @@ export function LeagueTable({ teams, sport, compact = false, canPromote = true, 
             return (
               <tr
                 key={t.name}
-                className={`border-t border-line ${t.isPlayerClub ? 'bg-amber-500/15 font-bold text-gold' : i % 2 ? 'bg-card' : 'bg-pitch'}`}
+                className={`border-t border-line ${t.isPlayerClub ? 'bg-brand/10 font-bold text-brand' : i % 2 ? 'bg-card' : 'bg-pitch'}`}
               >
                 <td className="py-2 pr-2">
                   <span className="flex items-center gap-1.5">
@@ -43,7 +44,12 @@ export function LeagueTable({ teams, sport, compact = false, canPromote = true, 
                     {pos}
                   </span>
                 </td>
-                <td className="max-w-[9rem] truncate py-2">{t.name}</td>
+                <td className="max-w-[10rem] py-2">
+                  <span className="flex min-w-0 items-center gap-1.5">
+                    <Crest name={t.name} size={18} className="shrink-0" />
+                    <span className="truncate">{t.name}</span>
+                  </span>
+                </td>
                 <td className="px-1 py-2 text-center tabular-nums">{t.played}</td>
                 {!compact && <td className="px-1 py-2 text-center tabular-nums">{t.won}</td>}
                 {!compact && football && <td className="px-1 py-2 text-center tabular-nums">{t.drawn}</td>}

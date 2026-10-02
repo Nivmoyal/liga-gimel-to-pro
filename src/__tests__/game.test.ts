@@ -5,7 +5,10 @@ import { EVENT_POOLS, filterEvents, getAllEvents, parseText } from '../services/
 import { gameReducer } from '../state/gameReducer';
 import type { GameAction } from '../state/gameReducer';
 import type { GameState, Position, SetupData, SportType } from '../types/game';
-import { REGIONS } from '../data/clubs';
+import { CLUB_POOLS, REGIONS } from '../data/clubs';
+import { clubIdentity } from '../data/clubIdentity';
+import { SPONSORS } from '../data/sponsors';
+import { migrateSave, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
 import { FOOTBALL_POSITIONS, BASKETBALL_POSITIONS, SEASON_MATCHDAYS } from '../data/sports';
 
 function walk(dir: string): string[] {
@@ -76,6 +79,7 @@ function autoplay(setup: SetupData, seasons: number) {
   };
   let guard = 0;
   const seasonTables: number[][] = [];
+  let callUps = 0;
   while (state!.season <= seasons && guard++ < 5000) {
     const s = state!;
     switch (s.phase) {
@@ -87,6 +91,11 @@ function autoplay(setup: SetupData, seasons: number) {
         }
         if (s.player.contract !== 'pro' && !s.player.jobId) {
           dispatch({ type: 'CHOOSE_JOB', jobId: 'security' });
+          break;
+        }
+        const offer = SPONSORS.find((sp) => !sponsorBlocked(s.player, sp) && sponsorMissing(s.player, sp).length === 0);
+        if (offer) {
+          dispatch({ type: 'SIGN_SPONSOR', sponsorId: offer.id });
           break;
         }
         if (s.weekSlots > 0) {
@@ -118,6 +127,10 @@ function autoplay(setup: SetupData, seasons: number) {
         seasonTables.push(s.league.teams.map((t) => t.played));
         dispatch({ type: 'SEASON_CONTINUE' });
         break;
+      case 'callUp':
+        callUps += 1;
+        dispatch(guard % 5 === 0 ? { type: 'DECLINE_CALLUP' } : { type: 'ACCEPT_CALLUP' });
+        break;
       case 'transfer':
         if (s.transferOffers.length > 0 && guard % 2 === 0) dispatch({ type: 'ACCEPT_OFFER', offerId: s.transferOffers[0].id });
         else dispatch({ type: 'DECLINE_OFFERS' });
@@ -127,15 +140,52 @@ function autoplay(setup: SetupData, seasons: number) {
     }
   }
   expect(guard).toBeLessThan(5000);
-  return { state: state!, seasonTables };
+  return { state: state!, seasonTables, callUps };
 }
+
+describe('save migration', () => {
+  it('upgrades a version 1 save', () => {
+    const fresh = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', region: 'north', club: 'בית״ר נהריה', jobId: 'pizza' },
+    })!;
+    const { shirtNumber: _n, sponsors: _s, national: _nat, ...oldPlayer } = fresh.player;
+    const { nationalCallUp: _c, ...oldState } = fresh;
+    const migrated = migrateSave({ ...oldState, version: 1, player: oldPlayer } as unknown as GameState)!;
+    expect(migrated.version).toBe(2);
+    expect(migrated.player.shirtNumber).toBe(10);
+    expect(migrated.player.sponsors).toEqual([]);
+    expect(migrated.player.national.caps).toBe(0);
+    expect(migrated.nationalCallUp).toBeNull();
+  });
+});
+
+describe('long careers', () => {
+  it('reach the national team and sign sponsors', () => {
+    let callUps = 0;
+    let caps = 0;
+    let sponsorsSigned = 0;
+    for (let run = 0; run < 6; run++) {
+      const { state, callUps: c } = autoplay(
+        { name: 'נועה לוי', shirtNumber: 7, sport: run % 2 ? 'basketball' : 'football', position: run % 2 ? 'SG' : 'striker', region: 'center', club: run % 2 ? 'אליצור גבעתיים' : 'השקמה רמת חן', jobId: 'security' },
+        6,
+      );
+      callUps += c;
+      caps += state.player.national.caps + state.player.national.u21Caps;
+      sponsorsSigned += state.news.filter((n) => n.text.includes('הפנים החדשות')).length + state.player.sponsors.length;
+    }
+    expect(callUps).toBeGreaterThan(0);
+    expect(caps).toBeGreaterThan(0);
+    expect(sponsorsSigned).toBeGreaterThan(0);
+  });
+});
 
 describe('full playthrough', () => {
   const cases: SetupData[] = [
-    { name: 'דני כהן', sport: 'football', position: 'striker', region: 'golan', club: 'הפועל קצרין', jobId: 'pizza' },
-    { name: 'נועה לוי', sport: 'basketball', position: 'PG', region: 'south', club: 'הפועל ערד', jobId: 'instructor' },
-    { name: 'יוסי ביטון', sport: 'football', position: 'centerBack', region: 'jerusalem', club: 'מ.ס. ירושלים', jobId: 'factory' },
-    { name: 'עומר חסון', sport: 'basketball', position: 'C', region: 'golan', club: 'מ.ס. חצור', jobId: 'mechanic' },
+    { name: 'דני כהן', shirtNumber: 9, sport: 'football', position: 'striker', region: 'golan', club: 'הפועל קצרין', jobId: 'pizza' },
+    { name: 'נועה לוי', shirtNumber: 7, sport: 'basketball', position: 'PG', region: 'south', club: 'הפועל ערד', jobId: 'instructor' },
+    { name: 'יוסי ביטון', shirtNumber: 4, sport: 'football', position: 'centerBack', region: 'jerusalem', club: 'מ.ס. ירושלים', jobId: 'factory' },
+    { name: 'עומר חסון', shirtNumber: 13, sport: 'basketball', position: 'C', region: 'golan', club: 'מ.ס. חצור', jobId: 'mechanic' },
   ];
   for (const setup of cases) {
     it(`plays three seasons: ${setup.sport} ${setup.position}`, () => {
@@ -153,4 +203,17 @@ describe('full playthrough', () => {
       }
     });
   }
+});
+
+describe('club identity', () => {
+  it('gives every club a valid crest shape and shirt sponsor', () => {
+    for (const pools of Object.values(CLUB_POOLS)) {
+      for (const name of pools.flat()) {
+        const id = clubIdentity(name);
+        expect(['shield', 'round', 'crest']).toContain(id.shape);
+        expect(id.shirtSponsor, name).toBeTruthy();
+        expect(id.abbr.length, name).toBeGreaterThan(0);
+      }
+    }
+  });
 });

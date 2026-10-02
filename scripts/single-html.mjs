@@ -30,7 +30,7 @@ for (const list of Object.values(manifest)) {
     if (!existsSync(path) || !quoted.test(js)) continue;
     const meta = await sharp(path).metadata();
     const portrait = (meta.height ?? 0) > (meta.width ?? 0);
-    const webp = await sharp(path).resize(portrait ? { width: 640 } : { width: 960 }).webp({ quality: 68 }).toBuffer();
+    const webp = await sharp(path).resize(portrait ? { width: 720, withoutEnlargement: true } : { width: 1024, withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
     const uri = `data:image/webp;base64,${webp.toString('base64')}`;
     js = js.replace(quoted, (_m, q) => `${q}${uri}${q}`);
     embedded += 1;

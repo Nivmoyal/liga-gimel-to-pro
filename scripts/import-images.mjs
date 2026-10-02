@@ -41,13 +41,23 @@ function brightness(data, width, height, channels) {
 
 /** Longest run of indexes whose line is not a white divider. */
 function widestSegment(lines) {
+  // A divider is a thin (at most 5px) line that is almost entirely white;
+  // wider bright bands are picture content such as white shirts or sky.
+  const divider = new Array(lines.length).fill(false);
+  for (let i = 0; i < lines.length; ) {
+    if (lines[i] <= 0.85) { i++; continue; }
+    let j = i;
+    while (j < lines.length && lines[j] > 0.85) j++;
+    if (j - i <= 5) for (let k = i; k < j; k++) divider[k] = true;
+    i = j;
+  }
   let best = [0, lines.length];
   let bestLen = 0;
   let start = null;
   for (let i = 0; i <= lines.length; i++) {
-    const divider = i === lines.length || lines[i] > 0.5;
-    if (!divider && start === null) start = i;
-    if (divider && start !== null) {
+    const cut = i === lines.length || divider[i];
+    if (!cut && start === null) start = i;
+    if (cut && start !== null) {
       if (i - start > bestLen) {
         bestLen = i - start;
         best = [start, i];
@@ -83,9 +93,8 @@ for (const file of files) {
   const image = await clean(join(dir, file));
   const { width } = await image.clone().toBuffer({ resolveWithObject: true }).then((r) => r.info);
   // Small sources are enlarged a little (smooth Lanczos) so phones do not show blocky pixels.
-  await image
-    .resize({ width: Math.max(width, 768), withoutEnlargement: false, kernel: 'lanczos3' })
-    .sharpen({ sigma: 0.6 })
+  const sized = width < 768 ? image.resize({ width: 768, kernel: 'lanczos3' }).sharpen({ sigma: 0.6 }) : image.resize({ width: Math.min(width, 1280), withoutEnlargement: true });
+  await sized
     .jpeg({ quality: 82, mozjpeg: true })
     .toFile(join(OUT, `${key}.jpg`));
   manifest[key] = [{ file: `images/${key}.jpg`, title: PROMPTS.scenes[key], author: 'תמונת AI', license: 'AI' }];

@@ -61,6 +61,10 @@ export function ScenePhoto({ scene, sport, seed, height = 200, className = '', c
   // A landscape picture on a full-screen portrait scene is shown whole over a
   // blurred copy of itself instead of being cropped to a narrow, blown-up strip.
   const letterbox = wide && PORTRAIT_KEYS.has(scene);
+  const markLoaded = (img: HTMLImageElement) => {
+    setWide(img.naturalWidth > img.naturalHeight * 1.2);
+    setLoaded(true);
+  };
   return (
     <div className={`relative overflow-hidden bg-black ${fade ? 'photo-fade' : ''} ${className}`} style={{ height }}>
       <CinematicBackdrop kind={backdropFor(scene, sport)} />
@@ -78,10 +82,11 @@ export function ScenePhoto({ scene, sport, seed, height = 200, className = '', c
           src={photo.src}
           alt={photo.title ?? ''}
           referrerPolicy="no-referrer"
-          onLoad={(e) => {
-            setWide(e.currentTarget.naturalWidth > e.currentTarget.naturalHeight * 1.2);
-            setLoaded(true);
+          ref={(img) => {
+            // Embedded (data URI) images can finish before React attaches onLoad.
+            if (img?.complete && img.naturalWidth > 0 && !loaded) markLoaded(img);
           }}
+          onLoad={(e) => markLoaded(e.currentTarget)}
           onError={photo.onError}
           className={`absolute transition-opacity duration-500 ${letterbox ? 'inset-x-0 top-[27%] h-auto w-full' : 'inset-0 h-full w-full object-cover'} ${loaded ? 'opacity-100' : 'opacity-0'}`}
           style={letterbox ? { maskImage: SOFT_EDGES, WebkitMaskImage: SOFT_EDGES } : undefined}

@@ -1,0 +1,349 @@
+// ===================================================================
+// Core domain types for the dual-sport career game
+// ===================================================================
+
+export type SportType = 'football' | 'basketball';
+
+export type FootballPosition = 'striker' | 'midfielder' | 'centerBack' | 'fullBack';
+export type BasketballPosition = 'PG' | 'SG' | 'SF' | 'PF' | 'C';
+export type Position = FootballPosition | BasketballPosition;
+
+export type RegionId = 'golan' | 'north' | 'sharon' | 'center' | 'jerusalem' | 'south';
+
+/** Generic attribute keys. Labels change per sport (see data/sports.ts). */
+export type AttrKey = 'attack' | 'technique' | 'playmaking' | 'defense' | 'physical' | 'mental';
+export type Attributes = Record<AttrKey, number>;
+
+export type ContractType = 'amateur' | 'semi' | 'pro';
+
+export type JobId = 'pizza' | 'security' | 'factory' | 'mechanic' | 'instructor';
+
+export interface Job {
+  id: JobId;
+  name: string;
+  description: string;
+  payPerShift: number;
+  energyCost: number;
+  /** Small attribute or reputation perk granted on each shift. */
+  perk: { label: string; effects: Effects };
+}
+
+export interface Agent {
+  id: string;
+  name: string;
+  agency: string;
+  level: 1 | 2 | 3;
+  commission: number;
+  description: string;
+  minOvr: number;
+}
+
+export interface Club {
+  name: string;
+  sport: SportType;
+  region?: RegionId;
+  division: number;
+}
+
+export interface Region {
+  id: RegionId;
+  name: string;
+  description: string;
+  clubs: Record<SportType, Club[]>;
+}
+
+// ------------------------------------------------------------------
+// Effects / events
+// ------------------------------------------------------------------
+
+export type NewsCategory = 'club' | 'rumors' | 'league' | 'fans';
+
+export interface Effects {
+  budget?: number;
+  energy?: number;
+  coachApproval?: number;
+  fanRep?: number;
+  teamMorale?: number;
+  confidence?: number;
+  followers?: number;
+  attributes?: Partial<Attributes>;
+  injuryWeeks?: number;
+  setAgent?: string | null;
+  // Match-only effects
+  rating?: number;
+  playerGoals?: number;
+  playerAssists?: number;
+  playerPoints?: number;
+  playerRebounds?: number;
+  teamScore?: number;
+  oppScore?: number;
+  news?: { category: NewsCategory; text: string };
+}
+
+export interface ChoiceOutcome {
+  text: string;
+  effects: Effects;
+}
+
+export interface EventChoice {
+  label: string;
+  /** When set, the choice is a skill check against this attribute. */
+  stat?: AttrKey;
+  /** Difficulty of the skill check (roughly the attribute value needed for a 50% roll). */
+  difficulty?: number;
+  success: ChoiceOutcome;
+  fail?: ChoiceOutcome;
+}
+
+export type EventType = 'preMatch' | 'inGame' | 'postMatch' | 'life';
+export type EventSport = SportType | 'both';
+
+export interface EventConditions {
+  minDivision?: number;
+  maxDivision?: number;
+  requiresJob?: boolean;
+  requiresAgent?: boolean;
+  contract?: ContractType[];
+  minOvr?: number;
+  positions?: Position[];
+  matchResult?: Array<'win' | 'draw' | 'loss'>;
+  minMatchday?: number;
+}
+
+export interface GameEvent {
+  id: string;
+  type: EventType;
+  sport: EventSport;
+  speaker: string;
+  title: string;
+  text: string;
+  tip?: string;
+  /** Minute / time label for in-game scenarios. */
+  clock?: string;
+  /** Clutch scenarios make the match close so the decision decides the result. */
+  clutch?: boolean;
+  /** Special events are never picked at random, only by an explicit trigger. */
+  trigger?: string;
+  weight?: number;
+  conditions?: EventConditions;
+  choices: EventChoice[];
+}
+
+export interface EventContext {
+  playerName: string;
+  club: string;
+  opponent: string;
+  job: string;
+  agent: string;
+  sport: SportType;
+}
+
+// ------------------------------------------------------------------
+// Player, league, match
+// ------------------------------------------------------------------
+
+export interface SeasonStats {
+  apps: number;
+  starts: number;
+  goals: number;
+  assists: number;
+  points: number;
+  rebounds: number;
+  ratingSum: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  motm: number;
+}
+
+export interface SeasonRecord {
+  season: number;
+  club: string;
+  division: number;
+  finalPosition: number;
+  stats: SeasonStats;
+  ovr: number;
+}
+
+export interface Player {
+  name: string;
+  sport: SportType;
+  position: Position;
+  region: RegionId;
+  club: string;
+  division: number;
+  contract: ContractType;
+  weeklySalary: number;
+  attributes: Attributes;
+  potential: number;
+  age: number;
+  budget: number;
+  energy: number;
+  coachApproval: number;
+  fanRep: number;
+  teamMorale: number;
+  confidence: number;
+  followers: number;
+  jobId: JobId | null;
+  agentId: string | null;
+  injuryWeeks: number;
+  seasonStats: SeasonStats;
+  careerStats: SeasonStats;
+  history: SeasonRecord[];
+}
+
+export interface LeagueTeam {
+  name: string;
+  strength: number;
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  scored: number;
+  conceded: number;
+  points: number;
+  isPlayerClub: boolean;
+}
+
+export interface LeagueState {
+  division: number;
+  teams: LeagueTeam[];
+  /** 12 rounds; each round is a list of [homeIndex, awayIndex] pairs. */
+  rounds: Array<Array<[number, number]>>;
+  /** Fixtures from the round where the player's club had a bye (played on the last matchday). */
+  extraFixtures: Array<[number, number]>;
+}
+
+export type MatchRole = 'starter' | 'rotation' | 'bench' | 'injured';
+
+export interface MatchLogEntry {
+  eventId: string;
+  title: string;
+  choice: string;
+  success: boolean;
+  text: string;
+}
+
+export interface MatchResult {
+  teamScore: number;
+  oppScore: number;
+  outcome: 'win' | 'draw' | 'loss';
+  rating: number | null;
+  overtime: boolean;
+  motm: boolean;
+}
+
+export interface PendingOutcome {
+  success: boolean;
+  skillCheck: boolean;
+  text: string;
+  effects: Effects;
+}
+
+export interface MatchState {
+  opponent: string;
+  opponentStrength: number;
+  home: boolean;
+  role: MatchRole;
+  preEventId: string | null;
+  inGameEventIds: string[];
+  inGameIndex: number;
+  postEventId: string | null;
+  clutch: boolean;
+  log: MatchLogEntry[];
+  playerGoals: number;
+  playerAssists: number;
+  playerPoints: number;
+  playerRebounds: number;
+  teamScoreDelta: number;
+  oppScoreDelta: number;
+  /** Score changes from the clutch scenario, applied after the match is levelled. */
+  clutchTeamDelta: number;
+  clutchOppDelta: number;
+  ratingDelta: number;
+  pendingOutcome: PendingOutcome | null;
+  result: MatchResult | null;
+}
+
+export interface NewsItem {
+  id: string;
+  category: NewsCategory;
+  text: string;
+  season: number;
+  matchday: number;
+}
+
+export interface TransferOffer {
+  id: string;
+  club: string;
+  division: number;
+  contract: ContractType;
+  weeklySalary: number;
+  signingBonus: number;
+  role: 'starter' | 'rotation';
+  strength: number;
+}
+
+export interface SeasonSummary {
+  season: number;
+  finalPosition: number;
+  promoted: boolean;
+  relegated: boolean;
+  champion: boolean;
+  stats: SeasonStats;
+  table: LeagueTeam[];
+}
+
+export type GamePhase =
+  | 'setup'
+  | 'dashboard'
+  | 'preMatch'
+  | 'inGame'
+  | 'matchSummary'
+  | 'postMatch'
+  | 'transfer'
+  | 'seasonEnd';
+
+export interface GameFlags {
+  agentDiscovered: boolean;
+  eliteAgentOffered: boolean;
+  postedThisWeek: boolean;
+  shiftsThisWeek: number;
+  jobWarnings: number;
+  raiseAskedSeason: number;
+  sponsorSeason: number;
+  transferPush: boolean;
+  ownsBoots: boolean;
+  jobRaise: number;
+}
+
+export interface GameState {
+  version: number;
+  phase: GamePhase;
+  player: Player;
+  league: LeagueState;
+  season: number;
+  /** Number of completed matchdays in the current season (0..12). */
+  matchday: number;
+  weekSlots: number;
+  pendingLifeEventId: string | null;
+  lifeOutcome: PendingOutcome | null;
+  currentMatch: MatchState | null;
+  news: NewsItem[];
+  seenEvents: string[];
+  transferOffers: TransferOffer[];
+  transferContext: 'midseason' | 'endseason' | null;
+  seasonSummary: SeasonSummary | null;
+  flags: GameFlags;
+  /** Short toast-like message after a dashboard action. */
+  toast: string | null;
+}
+
+export interface SetupData {
+  name: string;
+  sport: SportType;
+  position: Position;
+  region: RegionId;
+  club: string;
+  jobId: JobId;
+}

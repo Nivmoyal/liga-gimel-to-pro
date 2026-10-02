@@ -1,0 +1,351 @@
+[
+  {
+    "id": "post_win_001",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "כתב הרדיו המקומי",
+    "title": "ראיון אחרי ניצחון",
+    "text": "כתב הרדיו המקומי עוצר אותך ביציאה מ{משטח}: '{שחקן}, ניצחון גדול על {יריבה}. מה הסוד?'",
+    "conditions": { "matchResult": ["win"] },
+    "choices": [
+      {
+        "label": "הקבוצה, הקבוצה, הקבוצה",
+        "success": { "text": "תשובה צנועה. החבר׳ה שמעו את זה בשידור וכבר שולחים לך הודעות.", "effects": { "teamMorale": 6, "fanRep": 2 } }
+      },
+      {
+        "label": "הייתי בפורמה מטורפת היום",
+        "success": { "text": "הציטוט רץ ברשתות. בחדר ההלבשה יש כמה פרצופים חמוצים.", "effects": { "fanRep": 3, "followers": 100, "teamMorale": -4, "confidence": 3 } }
+      },
+      {
+        "label": "מקדיש לאוהדים שנסעו איתנו",
+        "success": { "text": "האוהדים מעלים את הקטע לכל הקבוצות. אתה האהוב החדש של היציע.", "effects": { "fanRep": 6, "followers": 50 } }
+      }
+    ]
+  },
+  {
+    "id": "post_win_002",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "עיתונאי ספורט",
+    "title": "שאלה על העתיד",
+    "text": "עיתונאי מאתר ספורט ארצי שואל: 'אומרים שקבוצות מליגות גבוהות מסתכלות עליך. אתה נשאר ב{קבוצה}?'",
+    "conditions": { "matchResult": ["win"] },
+    "choices": [
+      {
+        "label": "אני מרגיש בבית כאן",
+        "success": { "text": "האוהדים של {קבוצה} מתים על התשובה. ההנהלה רגועה.", "effects": { "fanRep": 6, "coachApproval": 2 } }
+      },
+      {
+        "label": "ב{ספורט} אף פעם אי אפשר לדעת",
+        "success": { "text": "הכותרת מוכנה: '{שחקן} משאיר את הדלת פתוחה'.", "effects": { "followers": 80, "fanRep": -3, "news": { "category": "rumors", "text": "{שחקן} לא סוגר את הדלת: 'ב{ספורט} אף פעם אי אפשר לדעת'" } } }
+      },
+      {
+        "label": "אני מתרכז רק במשחק הבא",
+        "success": { "text": "תשובה משעממת, אבל המאמן אוהב שחקנים משעממים.", "effects": { "coachApproval": 3 } }
+      }
+    ]
+  },
+  {
+    "id": "post_win_003",
+    "type": "postMatch",
+    "sport": "football",
+    "speaker": "היציע",
+    "title": "חגיגה עם האולטראס",
+    "text": "אחרי השריקה, האולטראס של {קבוצה} קוראים לך לגדר. הם שרים את השם שלך.",
+    "conditions": { "matchResult": ["win"] },
+    "choices": [
+      {
+        "label": "קופץ על הגדר וחוגג איתם",
+        "success": { "text": "רגע שתזכור כל החיים. הסרטון כבר בכל מקום.", "effects": { "fanRep": 8, "followers": 150, "coachApproval": -2, "energy": -3 } }
+      },
+      {
+        "label": "מוחא כפיים ונכנס לחדר",
+        "success": { "text": "מכובד ומאופק. האוהדים מעריכים.", "effects": { "fanRep": 3 } }
+      },
+      {
+        "label": "סלפי עם כל היציע",
+        "success": { "text": "הסלפי הכי צפוף בהיסטוריה של המועדון.", "effects": { "followers": 200, "fanRep": 4 } }
+      }
+    ]
+  },
+  {
+    "id": "post_win_004",
+    "type": "postMatch",
+    "sport": "basketball",
+    "speaker": "דף הפייסבוק של המועדון",
+    "title": "שידור חי מחדר ההלבשה",
+    "text": "מנהל הדף של {קבוצה} נכנס עם טלפון לשידור חי: '{שחקן}, תגיד משהו לאוהדים!'",
+    "conditions": { "matchResult": ["win"] },
+    "choices": [
+      {
+        "label": "מוביל שירה של כל הקבוצה",
+        "success": { "text": "כל החדר שר איתך. השידור מקבל אלפי צפיות.", "effects": { "fanRep": 5, "followers": 180, "teamMorale": 4 } }
+      },
+      {
+        "label": "מזמין את כולם למשחק הבית הבא",
+        "success": { "text": "ההנהלה מודה לך. האולם יהיה מלא.", "effects": { "fanRep": 4, "coachApproval": 2 } }
+      },
+      {
+        "label": "מסמן שאתה עייף ויוצא מהפריים",
+        "success": { "text": "כולם צוחקים. לא כל ניצחון צריך הצהרות.", "effects": { "energy": 3 } }
+      }
+    ]
+  },
+  {
+    "id": "post_loss_001",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "כתבת אתר ספורט",
+    "title": "ראיון אחרי הפסד",
+    "text": "'הפסד כואב מול {יריבה}. מה השתבש היום?'",
+    "conditions": { "matchResult": ["loss"] },
+    "choices": [
+      {
+        "label": "לוקח אחריות אישית",
+        "success": { "text": "תשובה בוגרת. גם החבר׳ה וגם האוהדים מעריכים.", "effects": { "fanRep": 4, "teamMorale": 4, "confidence": -2 } }
+      },
+      {
+        "label": "השיפוט החליט את המשחק",
+        "success": { "text": "האוהדים איתך, אבל המאמן לא אוהב שמחפשים תירוצים בתקשורת.", "effects": { "fanRep": 2, "coachApproval": -3, "news": { "category": "league", "text": "{שחקן} תוקף את השיפוט אחרי ההפסד ל{יריבה}" } } }
+      },
+      {
+        "label": "אין לי מה להגיד",
+        "success": { "text": "אתה עובר הלאה. הכתבת לא מרוצה.", "effects": { "fanRep": -3, "confidence": 1 } }
+      }
+    ]
+  },
+  {
+    "id": "post_loss_002",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "אוהד זועם",
+    "title": "בשביל זה אני משלם?",
+    "text": "אוהד מבוגר של {קבוצה} צועק לעברך ביציאה מ{משטח}: 'בשביל זה אני משלם כרטיס?'",
+    "conditions": { "matchResult": ["loss"] },
+    "choices": [
+      {
+        "label": "ניגש להתנצל ולהבטיח שיפור",
+        "success": { "text": "הוא מופתע ולוחץ לך את היד. 'בשבוע הבא תביא שלוש נקודות.'", "effects": { "fanRep": 6, "energy": -2 } }
+      },
+      {
+        "label": "מתעלם ועולה לאוטובוס",
+        "success": { "text": "עוד יום אחד בליגות הנמוכות.", "effects": { "fanRep": -2 } }
+      },
+      {
+        "label": "עונה לו בחזרה",
+        "success": { "text": "מישהו צילם את הוויכוח. הסרטון רץ ברשת, ולא לטובתך.", "effects": { "fanRep": -6, "followers": 100, "confidence": 2, "coachApproval": -3 } }
+      }
+    ]
+  },
+  {
+    "id": "post_loss_003",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "המאמן",
+    "title": "שקט בחדר ההלבשה",
+    "text": "המאמן טורק את הדלת: 'מישהו פה רוצה להגיד משהו?' כולם מסתכלים על הרצפה.",
+    "conditions": { "matchResult": ["loss"] },
+    "choices": [
+      {
+        "label": "מדבר בשם השחקנים",
+        "success": { "text": "אמרת את מה שכולם חשבו. המאמן לא אוהב את זה, אבל השחקנים כן.", "effects": { "teamMorale": 5, "coachApproval": -2 } }
+      },
+      {
+        "label": "שותק",
+        "success": { "text": "הסערה עוברת אחרי עשר דקות של צעקות.", "effects": { "coachApproval": 1 } }
+      },
+      {
+        "label": "מציע אימון תוספת מחר בבוקר",
+        "success": { "text": "המאמן מסתכל עליך בהערכה. החבר׳ה פחות מאושרים.", "effects": { "coachApproval": 5, "energy": -8, "teamMorale": -1 } }
+      }
+    ]
+  },
+  {
+    "id": "post_loss_004",
+    "type": "postMatch",
+    "sport": "basketball",
+    "speaker": "פודקאסט כדורסל",
+    "title": "שאלה על האחוזים",
+    "text": "מגיש פודקאסט כדורסל מקומי שואל: 'האחוזים מהשלוש של {קבוצה} היו היום קטסטרופה. זו בעיה של ביטחון?'",
+    "conditions": { "matchResult": ["loss"] },
+    "choices": [
+      {
+        "label": "נמשיך לזרוק, הכדור ייכנס",
+        "success": { "text": "ביטחון מלא. האוהדים אוהבים את הגישה.", "effects": { "confidence": 4, "fanRep": 2 } }
+      },
+      {
+        "label": "צריך לשנות את ההתקפה",
+        "success": { "text": "המאמן שומע את זה ברדיו בדרך הביתה. הוא לא מבסוט.", "effects": { "coachApproval": -4, "followers": 60 } }
+      },
+      {
+        "label": "נעבוד על זה באימונים",
+        "success": { "text": "תשובה פשוטה ונכונה.", "effects": { "coachApproval": 2 } }
+      }
+    ]
+  },
+  {
+    "id": "post_draw_001",
+    "type": "postMatch",
+    "sport": "football",
+    "speaker": "כתב העיתון המקומי",
+    "title": "תיקו מאכזב",
+    "text": "'נקודה אחת מול {יריבה}. חצי כוס מלאה או ריקה?'",
+    "conditions": { "matchResult": ["draw"] },
+    "choices": [
+      {
+        "label": "נקודה בחוץ זה לא רע",
+        "success": { "text": "תשובה שקולה. אף אחד לא מתרגש.", "effects": { "coachApproval": 2 } }
+      },
+      {
+        "label": "באנו לקחת שלוש ונכשלנו",
+        "success": { "text": "האוהדים אוהבים את הרעב. החבר׳ה מקבלים את המסר.", "effects": { "fanRep": 4, "teamMorale": 2 } }
+      },
+      {
+        "label": "היה צריך לתת לי יותר כדורים",
+        "success": { "text": "ציטוט שיגיע לחדר ההלבשה עוד לפני שאתה.", "effects": { "followers": 80, "teamMorale": -5, "coachApproval": -4 } }
+      }
+    ]
+  },
+  {
+    "id": "post_any_001",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "פודקאסט ספורט",
+    "title": "הזמנה לפודקאסט",
+    "text": "פודקאסט ספורט אזורי מזמין את {שחקן} לפרק מיוחד על החיים בליגות הנמוכות.",
+    "conditions": { "maxDivision": 2 },
+    "choices": [
+      {
+        "label": "מסכים ומדבר בגלוי",
+        "success": { "text": "הפרק מקבל המון האזנות. אנשים מתחברים לסיפור שלך.", "effects": { "followers": 150, "fanRep": 3, "energy": -4 } }
+      },
+      {
+        "label": "מסכים, אבל רק על {ספורט}",
+        "success": { "text": "פרק מקצועי. המאמן שמע ואהב.", "effects": { "followers": 60, "coachApproval": 2 } }
+      },
+      {
+        "label": "מוותר, צריך לנוח",
+        "success": { "text": "ערב על הספה. הגוף מודה לך.", "effects": { "energy": 5 } }
+      }
+    ]
+  },
+  {
+    "id": "post_any_002",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "הבוס מהעבודה",
+    "title": "שיחה מהבוס",
+    "text": "הבוס מהעבודה בתור {עבודה} מתקשר: 'ראיתי את התקציר! אבל מחר אתה בשמונה בבוקר, נכון?'",
+    "conditions": { "requiresJob": true },
+    "choices": [
+      {
+        "label": "בטח, אני שם",
+        "success": { "text": "הבוס מרוצה ומוסיף 150 ש״ח בונוס על המסירות.", "effects": { "budget": 150, "energy": -6 } }
+      },
+      {
+        "label": "מבקש להגיע בעשר",
+        "stat": "mental",
+        "difficulty": 45,
+        "success": { "text": "הבוס מסכים. 'רק בגלל שאתה כוכב.'", "effects": { "energy": 4 } },
+        "fail": { "text": "'בשמונה. נקודה.' הבוס מנתק.", "effects": { "energy": -6, "confidence": -2 } }
+      },
+      {
+        "label": "מזמין אותו למשחק הבא",
+        "success": { "text": "הבוס מתרגש. אולי עכשיו יהיה יותר גמיש במשמרות.", "effects": { "fanRep": 2 } }
+      }
+    ]
+  },
+  {
+    "id": "post_any_003",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "שופט המשחק",
+    "title": "השופט ניגש אליך",
+    "text": "השופט ניגש אליך במנהרה: 'שמעתי מה אמרת לי במשחק. עוד פעם אחת ואתה בדו״ח.'",
+    "choices": [
+      {
+        "label": "מתנצל ולוחץ יד",
+        "success": { "text": "השופט מהנהן. מצב רוח טוב למשחקים הבאים.", "effects": { "coachApproval": 2 } }
+      },
+      {
+        "label": "מסביר שזה היה בלהט המשחק",
+        "success": { "text": "הוא מקבל, בקושי. הקבוצה רואה שאתה נלחם.", "effects": { "teamMorale": 2 } }
+      },
+      {
+        "label": "מושך בכתפיים והולך",
+        "success": { "text": "השופט רושם משהו בפנקס. המאמן לא אוהב את זה.", "effects": { "coachApproval": -3, "confidence": 2 } }
+      }
+    ]
+  },
+  {
+    "id": "post_any_004",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "ערוץ הספורט",
+    "title": "מצלמה של ערוץ הספורט",
+    "text": "מצלמה של ערוץ הספורט הארצי מחכה לך בצד {משטח}. זה הראיון הראשון שלך בטלוויזיה בשידור חי.",
+    "conditions": { "minDivision": 2 },
+    "choices": [
+      {
+        "label": "מחייך ומדבר בביטחון",
+        "stat": "mental",
+        "difficulty": 50,
+        "success": { "text": "ראיון קליל וכריזמטי. הטלפון שלך לא מפסיק לרטוט.", "effects": { "followers": 300, "fanRep": 4, "confidence": 3 } },
+        "fail": { "text": "גמגמת קצת. ברשתות כבר עושים מזה ממים.", "effects": { "followers": 120, "confidence": -4 } }
+      },
+      {
+        "label": "תודה לאל ולמשפחה",
+        "success": { "text": "קלאסי ובטוח.", "effects": { "fanRep": 2 } }
+      },
+      {
+        "label": "שולח ד״ש לחבר׳ה מ{עבודה}",
+        "success": { "text": "רגע אנושי שכולם אוהבים. הכתבים כבר מחפשים את החבר׳ה מהעבודה.", "effects": { "fanRep": 5, "followers": 150 } }
+      }
+    ]
+  },
+  {
+    "id": "post_any_005",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "עיתונאי מהעיתון הארצי",
+    "title": "שאלה על החוזה",
+    "text": "'אתה חתום על חוזה מקצועני ב{קבוצה}. מרגיש את הלחץ של הכסף?'",
+    "conditions": { "contract": ["pro"] },
+    "choices": [
+      {
+        "label": "לחץ זה פריבילגיה",
+        "success": { "text": "ציטוט נהדר שמתפרסם בכותרות.", "effects": { "fanRep": 4, "confidence": 3 } }
+      },
+      {
+        "label": "זוכר מאיפה באתי",
+        "success": { "text": "אתה מספר על הימים בליגות הנמוכות. האוהדים מתחברים.", "effects": { "fanRep": 5, "followers": 120 } }
+      },
+      {
+        "label": "על חוזים לא מדברים בתקשורת",
+        "success": { "text": "תשובה מקצוענית לגמרי.", "effects": { "coachApproval": 1 } }
+      }
+    ]
+  },
+  {
+    "id": "post_any_006",
+    "type": "postMatch",
+    "sport": "both",
+    "speaker": "אוהדת צעירה",
+    "title": "ילדה עם שלט",
+    "text": "ילדה בת עשר מחכה ליד היציאה מ{משטח} עם שלט: '{שחקן}, אני רוצה להיות כמוך'.",
+    "choices": [
+      {
+        "label": "נותן לה את החולצה מהמשחק",
+        "success": { "text": "האמא מעלה את התמונה ומתייגת את המועדון. רגע מושלם.", "effects": { "fanRep": 7, "followers": 120 } }
+      },
+      {
+        "label": "חתימה ותמונה",
+        "success": { "text": "היא קופצת מאושר.", "effects": { "fanRep": 3 } }
+      },
+      {
+        "label": "מנופף ממרחק",
+        "success": { "text": "היא מנופפת בחזרה, קצת מאוכזבת.", "effects": { "fanRep": -1 } }
+      }
+    ]
+  }
+]

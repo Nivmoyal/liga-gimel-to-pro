@@ -1,0 +1,613 @@
+[
+  {
+    "id": "life_agent_discovery",
+    "type": "life",
+    "sport": "both",
+    "trigger": "agent_discovery",
+    "speaker": "מספר לא מזוהה",
+    "title": "שיחה מסוכן שחקנים",
+    "text": "הטלפון מצלצל: 'שלום {שחקן}, ראיתי אותך משחק ב{קבוצה}. אני מייצג שחקנים, ויש לי עניין רציני בך. בוא נדבר.'",
+    "choices": [
+      {
+        "label": "נפגש עם אבי שמעוני",
+        "success": { "text": "אבי מגיע עם קפה ומחברת. 'אני מכיר כל מאמן מכאן ועד אילת.' חתמתם.", "effects": { "setAgent": "agent_avi", "confidence": 3, "news": { "category": "rumors", "text": "{שחקן} חתם עם הסוכן אבי שמעוני" } } }
+      },
+      {
+        "label": "מבקש לשמוע הצעה מרוני דהן",
+        "stat": "mental",
+        "difficulty": 48,
+        "success": { "text": "שכנעת את רוני שאתה שווה את הזמן שלו. הוא מחתים אותך במשרד בתל אביב.", "effects": { "setAgent": "agent_roni", "confidence": 4, "news": { "category": "rumors", "text": "סוכנות דהן ספורט צירפה את {שחקן} לרשימת השחקנים" } } },
+        "fail": { "text": "רוני מקשיב, אבל אומר שהוא יחזור אליך בהמשך. אפשר לנסות שוב דרך מסך הסוכן.", "effects": { "confidence": -2 } }
+      },
+      {
+        "label": "לא עכשיו, אני מתרכז במגרש",
+        "success": { "text": "אתה שומר את המספר. מסך הסוכן פתוח עכשיו, ותוכל לחזור אליהם מתי שתרצה.", "effects": { "coachApproval": 2 } }
+      }
+    ]
+  },
+  {
+    "id": "life_agent_elite",
+    "type": "life",
+    "sport": "both",
+    "trigger": "agent_elite",
+    "speaker": "מיכל ברק",
+    "title": "הסוכנת הכי חזקה בארץ מתקשרת",
+    "text": "'{שחקן}? מיכל ברק. אני לא מתקשרת לכל אחד. אני רואה אותך בליגת העל תוך שנתיים. רוצה לעבוד איתי?'",
+    "choices": [
+      {
+        "label": "חותם עם מיכל ברק",
+        "success": { "text": "חוזה ייצוג חדש. העמלה גבוהה, אבל הדלתות שהיא פותחת שוות הכל.", "effects": { "setAgent": "agent_michal", "confidence": 5, "news": { "category": "rumors", "text": "בומבה: {שחקן} עובר לייצוג של מיכל ברק" } } }
+      },
+      {
+        "label": "נשאר נאמן לסוכן הנוכחי",
+        "success": { "text": "{סוכן} שומע על זה ומבטיח לעבוד כפליים בשבילך.", "effects": { "confidence": 2, "teamMorale": 1 } }
+      },
+      {
+        "label": "מבקש זמן לחשוב",
+        "success": { "text": "'אל תחשוב יותר מדי,' היא אומרת. אפשר לחזור אליה ממסך הסוכן.", "effects": {} }
+      }
+    ]
+  },
+  {
+    "id": "life_001",
+    "type": "life",
+    "sport": "both",
+    "speaker": "הבוס מהעבודה",
+    "title": "משמרת כפולה",
+    "text": "הבוס שלך בעבודה בתור {עבודה} מתקשר: 'חסר לי עובד מחר. משמרת כפולה, משלם טוב.'",
+    "conditions": { "requiresJob": true },
+    "choices": [
+      {
+        "label": "מסכים למשמרת הכפולה",
+        "success": { "text": "יום ארוך ומתיש, אבל הכסף נכנס.", "effects": { "budget": 650, "energy": -22 } }
+      },
+      {
+        "label": "מסרב בנימוס",
+        "success": { "text": "הבוס רוטן, אבל מבין. הרגליים שלך מודות לך.", "effects": { "energy": 3 } }
+      },
+      {
+        "label": "מנהל משא ומתן על תוספת",
+        "stat": "mental",
+        "difficulty": 50,
+        "success": { "text": "הבוס מסכים לשלם יותר על משמרת אחת בלבד. עסקה מצוינת.", "effects": { "budget": 700, "energy": -14 } },
+        "fail": { "text": "הבוס מתעצבן: 'או כפולה או כלום.' בסוף עשית כפולה במחיר רגיל.", "effects": { "budget": 450, "energy": -22, "confidence": -2 } }
+      }
+    ]
+  },
+  {
+    "id": "life_002",
+    "type": "life",
+    "sport": "both",
+    "speaker": "חבר ילדות",
+    "title": "חתונה ביום חמישי",
+    "text": "חבר ילדות מתחתן ביום חמישי, יומיים לפני המשחק של {קבוצה}. כל החבר׳ה מהשכונה יהיו שם.",
+    "choices": [
+      {
+        "label": "רוקד עד הבוקר",
+        "success": { "text": "ערב בלתי נשכח. הרגליים פחות שמחות.", "effects": { "confidence": 5, "energy": -15, "budget": -400 } }
+      },
+      {
+        "label": "מגיע לחופה ויוצא מוקדם",
+        "success": { "text": "צ׳ק, חיבוק, הביתה. בגרות.", "effects": { "confidence": 2, "energy": -4, "budget": -400 } }
+      },
+      {
+        "label": "מוותר ושולח מתנה",
+        "success": { "text": "החבר מבין, אבל קצת נעלב.", "effects": { "confidence": -3, "budget": -300 } }
+      }
+    ]
+  },
+  {
+    "id": "life_003",
+    "type": "life",
+    "sport": "both",
+    "speaker": "העיתון המקומי",
+    "title": "כתבה בעיתון המקומי",
+    "text": "העיתון המקומי רוצה לכתוב עליך כתבת שער: 'מ{עבודה} ל{משטח}: הסיפור של {שחקן}'.",
+    "conditions": { "requiresJob": true },
+    "choices": [
+      {
+        "label": "מסכים ומצטלם בבגדי העבודה",
+        "success": { "text": "התמונה הופכת לאייקונית בעיר. כולם מזהים אותך ברחוב.", "effects": { "fanRep": 7, "followers": 150 } }
+      },
+      {
+        "label": "מסכים, רק בחולצת המועדון",
+        "success": { "text": "כתבה מכובדת. ההנהלה מרוצה.", "effects": { "fanRep": 3, "coachApproval": 2 } }
+      },
+      {
+        "label": "מסרב, לא רוצה תשומת לב",
+        "success": { "text": "אתה נשאר בצל. יש בזה משהו נוח.", "effects": { "confidence": 1 } }
+      }
+    ]
+  },
+  {
+    "id": "life_004",
+    "type": "life",
+    "sport": "both",
+    "speaker": "חנות הספורט",
+    "title": "מבצע על ציוד",
+    "text": "חנות הספורט בעיר עושה מבצע סוף עונה. יש שם בדיוק את הנעליים שחלמת עליהן.",
+    "choices": [
+      {
+        "label": "קונה את הדגם המקצועי",
+        "success": { "text": "800 ש״ח, אבל הרגליים מרגישות כמו של מקצוען.", "effects": { "budget": -800, "attributes": { "technique": 1 }, "confidence": 3 } }
+      },
+      {
+        "label": "קונה דגם בסיסי",
+        "success": { "text": "עדיף מהנעליים הקרועות שהיו לך.", "effects": { "budget": -300, "confidence": 1 } }
+      },
+      {
+        "label": "חוסך את הכסף",
+        "success": { "text": "שכר הדירה יגיע בקרוב. החלטה אחראית.", "effects": {} }
+      }
+    ]
+  },
+  {
+    "id": "life_005",
+    "type": "life",
+    "sport": "both",
+    "speaker": "אמא",
+    "title": "ההורים מודאגים",
+    "text": "אמא מתקשרת: 'אולי הגיע הזמן ללכת ללמוד משהו? ה{ספורט} הזה לא ישלם לך שכר דירה.'",
+    "conditions": { "contract": ["amateur", "semi"] },
+    "choices": [
+      {
+        "label": "מבטיח שזו עוד עונה אחת",
+        "success": { "text": "היא נאנחת. אתה מרגיש את הלחץ.", "effects": { "confidence": -2 } }
+      },
+      {
+        "label": "מזמין אותם למשחק הבא",
+        "success": { "text": "ההורים מגיעים עם שלט. אין מוטיבציה גדולה מזו.", "effects": { "confidence": 5, "fanRep": 2 } }
+      },
+      {
+        "label": "נרשם לקורס ערב",
+        "success": { "text": "אמא מאושרת. אתה קצת יותר עייף, אבל גם קצת יותר רגוע.", "effects": { "budget": -500, "energy": -6, "attributes": { "mental": 1 } } }
+      }
+    ]
+  },
+  {
+    "id": "life_006",
+    "type": "life",
+    "sport": "both",
+    "speaker": "קבוצת הווטסאפ",
+    "title": "דרמה בווטסאפ",
+    "text": "בקבוצת הווטסאפ של {קבוצה} מתפתח ויכוח על מי משלם על הארוחה המשותפת אחרי האימון.",
+    "choices": [
+      {
+        "label": "משלם על כולם",
+        "success": { "text": "אתה המלך של חדר ההלבשה, לפחות לשבוע.", "effects": { "budget": -600, "teamMorale": 8 } }
+      },
+      {
+        "label": "מציע לחלק שווה בשווה",
+        "success": { "text": "הצעה הגיונית. כולם מסכימים.", "effects": { "budget": -100, "teamMorale": 2 } }
+      },
+      {
+        "label": "משתיק את הקבוצה",
+        "success": { "text": "מצאת את עצמך מחוץ לבדיחות הפנימיות של השבוע.", "effects": { "teamMorale": -3, "energy": 2 } }
+      }
+    ]
+  },
+  {
+    "id": "life_007",
+    "type": "life",
+    "sport": "both",
+    "speaker": "מאמן כושר פרטי",
+    "title": "הצעה ממאמן כושר",
+    "text": "מאמן כושר פרטי שראה אותך משחק מציע חבילת אימונים אישית במחיר מיוחד.",
+    "choices": [
+      {
+        "label": "חבילה של ארבעה אימונים",
+        "success": { "text": "אחרי חודש אתה מרגיש את ההבדל בכל ספרינט.", "effects": { "budget": -800, "attributes": { "physical": 2 }, "energy": -5 } }
+      },
+      {
+        "label": "אימון ניסיון אחד",
+        "success": { "text": "אימון קשה אבל מלמד.", "effects": { "budget": -250, "attributes": { "physical": 1 } } }
+      },
+      {
+        "label": "מסרב, יש אימונים בקבוצה",
+        "success": { "text": "הכסף נשאר בכיס.", "effects": {} }
+      }
+    ]
+  },
+  {
+    "id": "life_008",
+    "type": "life",
+    "sport": "both",
+    "speaker": "בן הדוד",
+    "title": "דוכן השווארמה",
+    "text": "בן הדוד שלך רוצה שתשקיע איתו בדוכן שווארמה ליד המגרש של {קבוצה}. 'זה זהב, אחי.'",
+    "choices": [
+      {
+        "label": "משקיע 1,000 ש״ח",
+        "stat": "mental",
+        "difficulty": 58,
+        "success": { "text": "הדוכן מצליח בטירוף, בעיקר בימי משחק. קיבלת את הכסף בחזרה ועוד רווח יפה.", "effects": { "budget": 1600, "fanRep": 2 } },
+        "fail": { "text": "הדוכן נסגר אחרי חודש. בן הדוד לא עונה לטלפון.", "effects": { "budget": -1000, "confidence": -3 } }
+      },
+      {
+        "label": "משקיע רק 300 ש״ח",
+        "stat": "mental",
+        "difficulty": 45,
+        "success": { "text": "רווח קטן ושווארמה חינם בכל ביקור.", "effects": { "budget": 450 } },
+        "fail": { "text": "הכסף הלך. לפחות לא הכל.", "effects": { "budget": -300 } }
+      },
+      {
+        "label": "לא משקיע",
+        "success": { "text": "בן הדוד נעלב, אבל הארנק שלך בטוח.", "effects": {} }
+      }
+    ]
+  },
+  {
+    "id": "life_009",
+    "type": "life",
+    "sport": "both",
+    "speaker": "העבודה",
+    "title": "נקע במשמרת",
+    "text": "במשמרת בתור {עבודה} דרכת לא נכון ומשהו בקרסול צורב.",
+    "conditions": { "requiresJob": true },
+    "choices": [
+      {
+        "label": "ממשיך לעבוד עד סוף המשמרת",
+        "stat": "physical",
+        "difficulty": 50,
+        "success": { "text": "הכאב נרגע עד הערב. שרדת.", "effects": { "budget": 300, "energy": -10 } },
+        "fail": { "text": "הקרסול מתנפח. הרופא אומר שבוע מנוחה.", "effects": { "budget": 300, "injuryWeeks": 1, "coachApproval": -3 } }
+      },
+      {
+        "label": "הולך לחדר מיון",
+        "success": { "text": "נקע קל. קרח, תחבושת, ואתה בסדר.", "effects": { "budget": -200, "energy": -5 } }
+      },
+      {
+        "label": "מתקשר לפיזיו של הקבוצה",
+        "success": { "text": "הפיזיו מגיע אליך הביתה. המאמן שומע ומעריך שדאגת לעצמך.", "effects": { "coachApproval": 1, "energy": -3 } }
+      }
+    ]
+  },
+  {
+    "id": "life_010",
+    "type": "life",
+    "sport": "both",
+    "speaker": "מנהל המתנ״ס",
+    "title": "קליניקה לילדים",
+    "text": "מנהל המתנ״ס מבקש ממך להעביר קליניקת {ספורט} לילדי השכונה בשבת בבוקר.",
+    "choices": [
+      {
+        "label": "מסכים בשמחה",
+        "success": { "text": "חמישים ילדים עם חולצות של {קבוצה}. רגע מרגש.", "effects": { "fanRep": 6, "followers": 60, "energy": -8 } }
+      },
+      {
+        "label": "מסכים ומביא חברים מהקבוצה",
+        "success": { "text": "אירוע ענק. המועדון מפרסם תמונות בכל מקום.", "effects": { "fanRep": 5, "teamMorale": 4, "energy": -6 } }
+      },
+      {
+        "label": "מסרב, צריך מנוחה",
+        "success": { "text": "המנהל מאוכזב.", "effects": { "energy": 4, "fanRep": -2 } }
+      }
+    ]
+  },
+  {
+    "id": "life_011",
+    "type": "life",
+    "sport": "both",
+    "speaker": "בעל הדירה",
+    "title": "שכר הדירה עולה",
+    "text": "בעל הדירה מודיע שהחל מהחודש הבא שכר הדירה עולה ב-500 ש״ח.",
+    "conditions": { "contract": ["amateur", "semi"] },
+    "choices": [
+      {
+        "label": "משלם ושותק",
+        "success": { "text": "עוד הוצאה. צריך עוד משמרת.", "effects": { "budget": -500 } }
+      },
+      {
+        "label": "מנהל משא ומתן",
+        "stat": "mental",
+        "difficulty": 50,
+        "success": { "text": "הסכמתם על תוספת קטנה בלבד, בתמורה לכרטיסים למשחקים.", "effects": { "budget": -150, "fanRep": 1 } },
+        "fail": { "text": "בעל הבית לא זז. משלמים הכל.", "effects": { "budget": -500, "confidence": -2 } }
+      },
+      {
+        "label": "חוזר לגור אצל ההורים",
+        "success": { "text": "חוסך כסף, מאבד קצת עצמאות.", "effects": { "budget": 400, "confidence": -4 } }
+      }
+    ]
+  },
+  {
+    "id": "life_012",
+    "type": "life",
+    "sport": "both",
+    "speaker": "הרשת",
+    "title": "טרול ברשת",
+    "text": "חשבון אנונימי מפרסם סרטון של טעות שלך מהמשחק האחרון, עם מוזיקה של קרקס. הסרטון מתפשט.",
+    "choices": [
+      {
+        "label": "משתף את הסרטון עם בדיחה עצמית",
+        "success": { "text": "ההומור מנצח. אנשים אוהבים שחקן שיודע לצחוק על עצמו.", "effects": { "followers": 200, "fanRep": 3 } }
+      },
+      {
+        "label": "מתעלם",
+        "success": { "text": "זה עובר אחרי יומיים, אבל צורב.", "effects": { "confidence": -2 } }
+      },
+      {
+        "label": "עונה בכעס",
+        "success": { "text": "התגובה שלך הופכת לכותרת. המאמן מבקש שתתרחק מהטלפון.", "effects": { "followers": 100, "fanRep": -5, "coachApproval": -2 } }
+      }
+    ]
+  },
+  {
+    "id": "life_013",
+    "type": "life",
+    "sport": "both",
+    "speaker": "הקפטן",
+    "title": "ערב גיבוש",
+    "text": "הקפטן מארגן ערב גיבוש לכל הקבוצה בצימר בצפון. 200 ש״ח לאדם.",
+    "choices": [
+      {
+        "label": "מגיע ונשאר כל הלילה",
+        "success": { "text": "מנגל, גיטרה, וקבוצה שהופכת למשפחה.", "effects": { "budget": -200, "teamMorale": 8, "energy": -8 } }
+      },
+      {
+        "label": "מגיע לארוחה בלבד",
+        "success": { "text": "נוכחות מכובדת.", "effects": { "budget": -200, "teamMorale": 4 } }
+      },
+      {
+        "label": "לא מגיע",
+        "success": { "text": "תמונות הגיבוש עולות לקבוצה, ואתה לא שם.", "effects": { "teamMorale": -4, "energy": 4 } }
+      }
+    ]
+  },
+  {
+    "id": "life_014",
+    "type": "life",
+    "sport": "both",
+    "speaker": "בעל הפיצרייה השכונתית",
+    "title": "חסות מקומית",
+    "text": "בעל הפיצרייה השכונתית מציע 400 ש״ח בתמורה לסטורי שבועי שלך עם מגש פיצה.",
+    "conditions": { "maxDivision": 2 },
+    "choices": [
+      {
+        "label": "מסכים",
+        "success": { "text": "כסף קל ופיצה חינם. המאמן מבקש שתאכל פחות ממנה.", "effects": { "budget": 400, "followers": 40, "coachApproval": -1 } }
+      },
+      {
+        "label": "מבקש פיצה לכל הקבוצה במקום כסף",
+        "success": { "text": "הקבוצה אוכלת פיצה אחרי כל ניצחון. אתה גיבור.", "effects": { "teamMorale": 5 } }
+      },
+      {
+        "label": "מסרב, שומר על תדמית של ספורטאי",
+        "success": { "text": "התזונאית של המועדון מרוצה.", "effects": { "attributes": { "physical": 1 } } }
+      }
+    ]
+  },
+  {
+    "id": "life_015",
+    "type": "life",
+    "sport": "both",
+    "speaker": "שחקן ותיק",
+    "title": "הצעה לחונכות",
+    "text": "שחקן עבר מוכר מהאזור, ששיחק פעם בליגת העל, מציע ללוות אותך פעם בשבוע.",
+    "choices": [
+      {
+        "label": "מקבל בשמחה",
+        "success": { "text": "הוא מלמד אותך דברים שאף מאמן לא לימד.", "effects": { "attributes": { "mental": 2 }, "energy": -5 } }
+      },
+      {
+        "label": "מבקש שיעבוד איתך על הטכניקה",
+        "success": { "text": "שעות של חזרות על אותה תנועה. זה משתלם.", "effects": { "attributes": { "technique": 1, "mental": 1 }, "energy": -8 } }
+      },
+      {
+        "label": "מסרב בנימוס",
+        "success": { "text": "אולי בפעם אחרת.", "effects": {} }
+      }
+    ]
+  },
+  {
+    "id": "life_016",
+    "type": "life",
+    "sport": "both",
+    "speaker": "השכנים",
+    "title": "מסיבה אצל השכנים",
+    "text": "השכנים עושים מסיבה עד שלוש בלילה, יומיים לפני משחק חשוב של {קבוצה}.",
+    "choices": [
+      {
+        "label": "מצטרף, אם אי אפשר לנצח אותם",
+        "success": { "text": "לילה כיפי. בוקר פחות.", "effects": { "energy": -15, "confidence": 3 } }
+      },
+      {
+        "label": "אטמי אוזניים ושינה",
+        "stat": "mental",
+        "difficulty": 40,
+        "success": { "text": "נרדמת בכל זאת. מנטליות של מקצוען.", "effects": { "energy": 2 } },
+        "fail": { "text": "שעות של התהפכויות במיטה.", "effects": { "energy": -10 } }
+      },
+      {
+        "label": "ישן אצל חבר",
+        "success": { "text": "ספה לא נוחה, אבל שקט.", "effects": { "energy": -3 } }
+      }
+    ]
+  },
+  {
+    "id": "life_017",
+    "type": "life",
+    "sport": "both",
+    "speaker": "המחלקה הטכנית",
+    "title": "הצעה לאימון תוספת",
+    "text": "עוזר המאמן של {קבוצה} מציע לך אימון אישי לפני האימון הקבוצתי, בשש בבוקר.",
+    "choices": [
+      {
+        "label": "מגיע בשש, כל השבוע",
+        "success": { "text": "המאמן שומע ומתרשם. הגוף עייף, אבל משתפר.", "effects": { "coachApproval": 5, "attributes": { "attack": 1 }, "energy": -12 } }
+      },
+      {
+        "label": "פעם אחת בשבוע",
+        "success": { "text": "איזון טוב.", "effects": { "coachApproval": 2, "energy": -4 } }
+      },
+      {
+        "label": "מסביר שיש לך משמרת בבוקר",
+        "success": { "text": "הוא מבין, אבל מסמן משהו בראש.", "effects": { "coachApproval": -2 } }
+      }
+    ]
+  },
+  {
+    "id": "life_018",
+    "type": "life",
+    "sport": "both",
+    "speaker": "{סוכן}",
+    "title": "קמפיין למותג ספורט",
+    "text": "{סוכן} מתקשר: 'יש מותג בגדי ספורט שרוצה אותך לקמפיין קטן ברשתות. כסף טוב.'",
+    "conditions": { "requiresAgent": true },
+    "choices": [
+      {
+        "label": "מסכים מיד",
+        "success": { "text": "יום צילומים ארוך, ותשלום שמכסה חודש שלם.", "effects": { "budget": 1400, "followers": 300, "energy": -8 } }
+      },
+      {
+        "label": "מבקש מ{סוכן} לסחוט עוד",
+        "stat": "mental",
+        "difficulty": 55,
+        "success": { "text": "{סוכן} חוזר עם הצעה כפולה. עבודה טובה.", "effects": { "budget": 2400, "followers": 300, "energy": -8 } },
+        "fail": { "text": "המותג הולך לשחקן אחר. {סוכן} מאוכזב.", "effects": { "confidence": -3 } }
+      },
+      {
+        "label": "מסרב ומתרכז ב{ספורט}",
+        "success": { "text": "המאמן אוהב לשמוע את זה.", "effects": { "coachApproval": 2 } }
+      }
+    ]
+  },
+  {
+    "id": "life_019",
+    "type": "life",
+    "sport": "both",
+    "speaker": "{סוכן}",
+    "title": "שמועה מהסוכן",
+    "text": "{סוכן} לוחש בטלפון: 'יש קבוצה מליגה גבוהה יותר ששאלה עליך. תמשיך ככה עוד כמה מחזורים.'",
+    "conditions": { "requiresAgent": true },
+    "choices": [
+      {
+        "label": "מבקש לדעת איזו קבוצה",
+        "success": { "text": "'סבלנות,' הוא צוחק. הסקרנות אוכלת אותך.", "effects": { "confidence": 3 } }
+      },
+      {
+        "label": "מבקש להדליף את זה לתקשורת",
+        "success": { "text": "השמועה מתפרסמת. אוהדי {קבוצה} מודאגים.", "effects": { "followers": 120, "fanRep": -3, "news": { "category": "rumors", "text": "דיווח: קבוצה מליגה גבוהה יותר מתעניינת ב{שחקן} מ{קבוצה}" } } }
+      },
+      {
+        "label": "מבקש שלא יסיח את דעתך",
+        "success": { "text": "פוקוס. העבודה ב{משטח} היא שתדבר.", "effects": { "coachApproval": 2 } }
+      }
+    ]
+  },
+  {
+    "id": "life_020",
+    "type": "life",
+    "sport": "both",
+    "speaker": "המועדון",
+    "title": "רכב מהמועדון",
+    "text": "{קבוצה} מציעה לך רכב ליסינג כחלק מהחוזה המקצועני. אפשר לבחור דגם.",
+    "conditions": { "contract": ["pro"] },
+    "choices": [
+      {
+        "label": "רכב פשוט וחסכוני",
+        "success": { "text": "המועדון מעריך את הצניעות ומוסיף בונוס קטן.", "effects": { "budget": 800 } }
+      },
+      {
+        "label": "רכב ספורט נוצץ",
+        "success": { "text": "האוהדים מצלמים אותך בחניה. חלקם מתלהבים, חלקם פחות.", "effects": { "followers": 200, "fanRep": -2, "confidence": 3 } }
+      },
+      {
+        "label": "מוותר על הרכב בתמורה לכסף",
+        "success": { "text": "המועדון משלם לך את ההפרש. כסף בבנק.", "effects": { "budget": 1500 } }
+      }
+    ]
+  },
+  {
+    "id": "life_021",
+    "type": "life",
+    "sport": "both",
+    "speaker": "ערוץ הספורט",
+    "title": "הזמנה לתוכנית ספורט",
+    "text": "תוכנית הספורט המרכזית בטלוויזיה מזמינה אותך לאולפן לדבר על העונה של {קבוצה}.",
+    "conditions": { "minDivision": 2 },
+    "choices": [
+      {
+        "label": "מגיע ומדבר בכנות",
+        "success": { "text": "הופעה טבעית. השם שלך עולה בכל הקבוצות.", "effects": { "followers": 350, "fanRep": 4, "energy": -5 } }
+      },
+      {
+        "label": "מגיע עם מסרים מוכנים",
+        "success": { "text": "בטוח ומשעמם. ההנהלה מרוצה.", "effects": { "followers": 120, "coachApproval": 2 } }
+      },
+      {
+        "label": "מסרב, יש אימון",
+        "success": { "text": "המאמן מעריך.", "effects": { "coachApproval": 3 } }
+      }
+    ]
+  },
+  {
+    "id": "life_022",
+    "type": "life",
+    "sport": "both",
+    "speaker": "חבר לקבוצה",
+    "title": "חבר צריך עזרה",
+    "text": "חבר לקבוצה מספר לך בשקט שיש לו חובות, ומבקש הלוואה של 700 ש״ח עד סוף החודש.",
+    "choices": [
+      {
+        "label": "נותן לו את הכסף",
+        "success": { "text": "הוא מתרגש ומחבק אותך. החברות שלכם התחזקה.", "effects": { "budget": -700, "teamMorale": 5, "confidence": 2 } }
+      },
+      {
+        "label": "נותן חצי",
+        "success": { "text": "עזרת כמה שיכולת. הוא מעריך.", "effects": { "budget": -350, "teamMorale": 2 } }
+      },
+      {
+        "label": "מסרב בעדינות",
+        "success": { "text": "הוא מבין, אבל יש קצת מבוכה באימון.", "effects": { "teamMorale": -2 } }
+      }
+    ]
+  },
+  {
+    "id": "life_023",
+    "type": "life",
+    "sport": "football",
+    "speaker": "מגרש השכונה",
+    "title": "משחק שכונה",
+    "text": "החבר׳ה מהשכונה מזמינים אותך למשחק כדורגל על אספלט ביום שישי, כמו פעם.",
+    "choices": [
+      {
+        "label": "משחק ונהנה",
+        "success": { "text": "שעתיים של כיף טהור. הטכניקה מתחדדת.", "effects": { "attributes": { "technique": 1 }, "energy": -10, "confidence": 3 } }
+      },
+      {
+        "label": "רק שופט ומדבר עם הילדים",
+        "success": { "text": "כולם רוצים לשמוע על {קבוצה}.", "effects": { "fanRep": 3 } }
+      },
+      {
+        "label": "מוותר, מסוכן להיפצע",
+        "success": { "text": "המאמן היה מאשר את ההחלטה.", "effects": { "energy": 3 } }
+      }
+    ]
+  },
+  {
+    "id": "life_024",
+    "type": "life",
+    "sport": "basketball",
+    "speaker": "המגרש הציבורי",
+    "title": "שלוש על שלוש בפארק",
+    "text": "טורניר שלוש על שלוש בפארק העירוני, עם פרס של 1,000 ש״ח לקבוצה המנצחת.",
+    "choices": [
+      {
+        "label": "נרשם עם שני חברים מהקבוצה",
+        "stat": "attack",
+        "difficulty": 50,
+        "success": { "text": "זכיתם בטורניר! 333 ש״ח לכל אחד, והרבה כבוד ברחוב.", "effects": { "budget": 333, "fanRep": 4, "energy": -12, "teamMorale": 3 } },
+        "fail": { "text": "הפסדתם בגמר לחבר׳ה מקומיים. לפחות היה כיף.", "effects": { "energy": -12, "confidence": -2 } }
+      },
+      {
+        "label": "רק צופה ומעודד",
+        "success": { "text": "הילדים בפארק מזהים אותך ומבקשים תמונות.", "effects": { "fanRep": 2 } }
+      },
+      {
+        "label": "נשאר בבית לנוח",
+        "success": { "text": "מנוחה זה גם אימון.", "effects": { "energy": 5 } }
+      }
+    ]
+  }
+]

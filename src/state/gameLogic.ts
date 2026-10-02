@@ -1,0 +1,881 @@
+// ===================================================================
+// Pure game state transitions. Every function takes a GameState and
+// returns a new GameState; the reducer in gameReducer.ts wires them up.
+// ===================================================================
+
+import type {
+  Attributes,
+  Effects,
+  GameEvent,
+  GameFlags,
+  GameState,
+  JobId,
+  NewsItem,
+  PendingOutcome,
+  Player,
+  SetupData,
+} from '../types/game';
+import { getRegion } from '../data/clubs';
+import { getJob } from '../data/jobs';
+import { AGENT_UNLOCK, getAgent } from '../data/agents';
+import {
+  ATTR_KEYS,
+  CONTRACT_LABEL,
+  DIVISION_STRENGTH,
+  LIVING_COST,
+  OVR_WEIGHTS,
+  SEASON_MATCHDAYS,
+  TRANSFER_WINDOW_MATCHDAY,
+  WEEK_SLOTS,
+  divisionName,
+  isProDivision,
+  topDivision,
+} from '../data/sports';
+import { LIFESTYLE_OPTIONS, SOCIAL_POSTS, TRAINING_OPTIONS } from '../data/activities';
+import type { LifestyleId, SocialPostId, TrainingId } from '../data/activities';
+import {
+  buildContext,
+  getEventById,
+  getTriggeredEvent,
+  parseEvent,
+  pickEvent,
+  pickInGameEvents,
+  resolveChoice,
+} from '../services/eventEngine';
+import {
+  applyResult,
+  createLeague,
+  fixtureFor,
+  playerClubIndex,
+  playerClubPosition,
+  simulateOtherFixtures,
+  sortedTable,
+} from '../services/leagueEngine';
+import { applyMatchEffects, createMatchState, determineRole, finalizeMatch, inGameEventCount } from '../services/matchEngine';
+import { leagueRoundNews, makeNews, matchNews, rumorNews } from '../services/newsEngine';
+import { baseSalary, contractForDivision, generateOffers } from '../services/transferEngine';
+import {
+  applyPlayerEffects,
+  calcOvr,
+  clamp,
+  emptyStats,
+  formatMoney,
+  randInt,
+  trainingGain,
+} from '../services/playerUtils';
+
+export const SAVE_VERSION = 1;
+const MAX_NEWS = 60;
+const SEEN_MEMORY = 40;
+
+// ------------------------------------------------------------------
+// Helpers
+// ------------------------------------------------------------------
+
+function defaultFlags(): GameFlags {
+  return {
+    agentDiscovered: false,
+    eliteAgentOffered: false,
+    postedThisWeek: false,
+    shiftsThisWeek: 0,
+    jobWarnings: 0,
+    raiseAskedSeason: 0,
+    sponsorSeason: 0,
+    transferPush: false,
+    ownsBoots: false,
+    jobRaise: 0,
+  };
+}
+
+function addNews(state: GameState, items: Array<NewsItem | null | undefined>): GameState {
+  const valid = items.filter((i): i is NewsItem => Boolean(i));
+  if (valid.length === 0) return state;
+  return { ...state, news: [...valid.reverse(), ...state.news].slice(0, MAX_NEWS) };
+}
+
+function newsNow(state: GameState, category: NewsItem['category'], text: string): NewsItem {
+  return makeNews(category, text, state.season, state.matchday);
+}
+
+function markSeen(state: GameState, id: string): GameState {
+  return { ...state, seenEvents: [id, ...state.seenEvents.filter((s) => s !== id)].slice(0, SEEN_MEMORY) };
+}
+
+function withToast(state: GameState, toast: string): GameState {
+  return { ...state, toast };
+}
+
+/** Applies player effects plus side effects such as news items. */
+function applyEffects(state: GameState, effects: Effects): GameState {
+  let next: GameState = { ...state, player: applyPlayerEffects(state.player, effects) };
+  if (effects.news) next = addNews(next, [newsNow(next, effects.news.category, effects.news.text)]);
+  if (effects.setAgent) {
+    next = { ...next, flags: { ...next.flags, agentDiscovered: true } };
+  }
+  return next;
+}
+
+export function isNonPro(player: Player): boolean {
+  return player.contract !== 'pro';
+}
+
+export function playerClubStrength(state: GameState): number {
+  const idx = playerClubIndex(state.league);
+  return state.league.teams[idx]?.strength ?? DIVISION_STRENGTH[state.player.sport][state.player.division];
+}
+
+export function agentUnlockReady(player: Player): boolean {
+  return calcOvr(player) >= AGENT_UNLOCK.ovr || player.fanRep >= AGENT_UNLOCK.fanRep || player.careerStats.motm >= AGENT_UNLOCK.bigGames;
+}
+
+/** Returns why the matchday cannot start, or null when it can. */
+export function matchdayBlocker(state: GameState): string | null {
+  if (state.pendingLifeEventId) return 'יש הודעה שמחכה לתשובה שלך';
+  if (isNonPro(state.player) && !state.player.jobId) return 'בליגות הנמוכות חייבים עבודה אזרחית. בחרו עבודה.';
+  return null;
+}
+
+// ------------------------------------------------------------------
+// New game
+// ------------------------------------------------------------------
+
+function initialAttributes(setup: SetupData, divisionStrength: number): Attributes {
+  const weights = OVR_WEIGHTS[setup.position];
+  const attrs = {} as Attributes;
+  for (const key of ATTR_KEYS) {
+    attrs[key] = clamp(Math.round(divisionStrength - 4 + weights[key] * 40 + randInt(-3, 3)), 20, 80);
+  }
+  return attrs;
+}
+
+export function createNewGame(setup: SetupData): GameState {
+  const region = getRegion(setup.region);
+  const club = region.clubs[setup.sport].find((c) => c.name === setup.club) ?? region.clubs[setup.sport][0];
+  const division = club.division;
+  const divStrength = DIVISION_STRENGTH[setup.sport][division];
+  const contract = contractForDivision(setup.sport, division);
+
+  const player: Player = {
+    name: setup.name.trim(),
+    sport: setup.sport,
+    position: setup.position,
+    region: setup.region,
+    club: club.name,
+    division,
+    contract,
+    weeklySalary: baseSalary(setup.sport, division),
+    attributes: initialAttributes(setup, divStrength),
+    potential: randInt(72, 90),
+    age: 19,
+    budget: 1500,
+    energy: 85,
+    coachApproval: 50,
+    fanRep: 30,
+    teamMorale: 55,
+    confidence: 50,
+    followers: randInt(80, 250),
+    jobId: setup.jobId,
+    agentId: null,
+    injuryWeeks: 0,
+    seasonStats: emptyStats(),
+    careerStats: emptyStats(),
+    history: [],
+  };
+
+  const league = createLeague(setup.sport, division, club.name, divStrength + randInt(-3, 3));
+
+  let state: GameState = {
+    version: SAVE_VERSION,
+    phase: 'dashboard',
+    player,
+    league,
+    season: 1,
+    matchday: 0,
+    weekSlots: WEEK_SLOTS,
+    pendingLifeEventId: null,
+    lifeOutcome: null,
+    currentMatch: null,
+    news: [],
+    seenEvents: [],
+    transferOffers: [],
+    transferContext: null,
+    seasonSummary: null,
+    flags: defaultFlags(),
+    toast: null,
+  };
+
+  const job = getJob(setup.jobId);
+  state = addNews(state, [
+    newsNow(state, 'club', `רשמי: ${player.name} מצטרף ל${player.club} לקראת העונה ב${divisionName(player.sport, division)}`),
+    newsNow(state, 'league', `העונה ב${divisionName(player.sport, division)} נפתחת. 13 קבוצות, 12 מחזורים, שתיים עולות ליגה.`),
+    newsNow(state, 'fans', `אוהדי ${player.club} סקרנים לראות את הרכש החדש בעמדת ${positionWord(player)}`),
+    job ? newsNow(state, 'rumors', `שמועה: ${player.name} עובד בבקרים בתור ${job.name} כדי לממן את החלום`) : null,
+  ]);
+  return state;
+}
+
+function positionWord(player: Player): string {
+  const map: Record<string, string> = {
+    striker: 'החלוץ',
+    midfielder: 'הקשר',
+    centerBack: 'הבלם',
+    fullBack: 'המגן',
+    PG: 'הרכז',
+    SG: 'הקלעי',
+    SF: 'הסמול פורוורד',
+    PF: 'הפאוור פורוורד',
+    C: 'הסנטר',
+  };
+  return map[player.position] ?? '';
+}
+
+// ------------------------------------------------------------------
+// Weekly activities (each consumes a week slot unless noted)
+// ------------------------------------------------------------------
+
+function useSlot(state: GameState): GameState | null {
+  if (state.weekSlots <= 0) return null;
+  return { ...state, weekSlots: state.weekSlots - 1 };
+}
+
+export function train(state: GameState, id: TrainingId): GameState {
+  const option = TRAINING_OPTIONS.find((o) => o.id === id);
+  if (!option) return state;
+  const { player } = state;
+  if (player.injuryWeeks > 0) return withToast(state, 'אתה פצוע. הרופא אסר על אימונים השבוע.');
+  if (player.energy < option.energyCost) return withToast(state, 'אין מספיק אנרגיה לאימון הזה.');
+  if (player.budget < option.budgetCost) return withToast(state, 'אין מספיק תקציב.');
+  const slotted = useSlot(state);
+  if (!slotted) return withToast(state, 'נגמר הזמן השבוע. עולים למחזור הבא.');
+
+  // Position-based gains for the private coach session
+  let gains = option.gains;
+  if (Object.keys(gains).length === 0) {
+    const weights = OVR_WEIGHTS[player.position];
+    const top = [...ATTR_KEYS].sort((a, b) => weights[b] - weights[a]).slice(0, 2);
+    gains = { [top[0]]: 2, [top[1]]: 1.5 };
+  }
+  const attrDelta: Partial<Attributes> = {};
+  const improved: string[] = [];
+  for (const key of ATTR_KEYS) {
+    const base = gains[key];
+    if (!base) continue;
+    const gain = trainingGain(player.attributes[key], player.potential, base);
+    if (gain > 0) {
+      attrDelta[key] = gain;
+      improved.push(key);
+    }
+  }
+
+  const riskyInjury = player.energy < 30 && option.energyCost >= 14 && Math.random() < 0.18;
+  let next = applyEffects(slotted, {
+    energy: -option.energyCost,
+    budget: -option.budgetCost,
+    coachApproval: option.coachApproval,
+    confidence: option.confidence,
+    attributes: attrDelta,
+    injuryWeeks: riskyInjury ? randInt(1, 2) : undefined,
+  });
+  const ovrBefore = calcOvr(player);
+  const ovrAfter = calcOvr(next.player);
+  if (riskyInjury) {
+    next = addNews(next, [newsNow(next, 'club', `${player.name} נפצע באימון אחרי שהתאמן עייף. הוא יחמיץ את המחזורים הקרובים.`)]);
+    return withToast(next, 'התאמנת עייף מדי ונפצעת. צריך לנוח.');
+  }
+  const msg =
+    improved.length === 0
+      ? 'אימון טוב, אבל בלי שיפור מורגש הפעם.'
+      : ovrAfter > ovrBefore
+        ? `שיפור! הדירוג הכללי עלה ל-${ovrAfter}.`
+        : 'התכונות השתפרו. ממשיכים לעבוד.';
+  return withToast(next, msg);
+}
+
+export function lifestyle(state: GameState, id: LifestyleId): GameState {
+  const option = LIFESTYLE_OPTIONS.find((o) => o.id === id);
+  if (!option) return state;
+  if (option.oneTime && state.flags.ownsBoots) return withToast(state, 'כבר קנית את הציוד הזה.');
+  if (state.player.budget < option.budgetCost) return withToast(state, 'אין מספיק תקציב.');
+  if (option.energy < 0 && state.player.energy < -option.energy) return withToast(state, 'אין לך כוח לזה עכשיו.');
+  const slotted = useSlot(state);
+  if (!slotted) return withToast(state, 'נגמר הזמן השבוע. עולים למחזור הבא.');
+  let next = applyEffects(slotted, {
+    budget: -option.budgetCost,
+    energy: option.energy,
+    confidence: option.confidence,
+    fanRep: option.fanRep,
+    attributes: option.attributes,
+  });
+  if (option.oneTime) next = { ...next, flags: { ...next.flags, ownsBoots: true } };
+  return withToast(next, `${option.label}: בוצע.`);
+}
+
+export function chooseJob(state: GameState, jobId: JobId): GameState {
+  const job = getJob(jobId);
+  if (!job) return state;
+  let next: GameState = { ...state, player: { ...state.player, jobId }, flags: { ...state.flags, jobWarnings: 0, jobRaise: 0 } };
+  next = addNews(next, [newsNow(next, 'rumors', `${state.player.name} התחיל לעבוד בתור ${job.name}`)]);
+  return withToast(next, `התחלת לעבוד בתור ${job.name}.`);
+}
+
+export function quitJob(state: GameState): GameState {
+  if (!state.player.jobId) return state;
+  const next: GameState = { ...state, player: { ...state.player, jobId: null }, flags: { ...state.flags, jobWarnings: 0, jobRaise: 0 } };
+  return withToast(next, isNonPro(state.player) ? 'התפטרת. בלי עבודה לא תוכל לעלות למחזור הבא.' : 'התפטרת מהעבודה.');
+}
+
+export function workShift(state: GameState): GameState {
+  const job = getJob(state.player.jobId);
+  if (!job) return withToast(state, 'אין לך עבודה כרגע.');
+  if (state.player.injuryWeeks > 0 && job.energyCost >= 20) return withToast(state, 'אתה פצוע. עבודה פיזית תחמיר את הפציעה.');
+  if (state.player.energy < job.energyCost) return withToast(state, 'אין מספיק אנרגיה למשמרת.');
+  const slotted = useSlot(state);
+  if (!slotted) return withToast(state, 'נגמר הזמן השבוע. עולים למחזור הבא.');
+  const pay = job.payPerShift + state.flags.jobRaise;
+  const perkApplies = Object.keys(job.perk.effects).length > 0 && Math.random() < 0.4;
+  let next = applyEffects(slotted, { budget: pay, energy: -job.energyCost, ...(perkApplies ? job.perk.effects : {}) });
+  next = { ...next, flags: { ...next.flags, shiftsThisWeek: next.flags.shiftsThisWeek + 1, jobWarnings: 0 } };
+  return withToast(next, `משמרת הושלמה: +${formatMoney(pay)}${perkApplies ? ` | ${job.perk.label}` : ''}`);
+}
+
+export function askRaise(state: GameState): GameState {
+  if (!state.player.jobId) return state;
+  if (state.flags.raiseAskedSeason === state.season) return withToast(state, 'כבר ביקשת העלאה העונה.');
+  const chance = clamp(30 + (state.player.attributes.mental - 40) * 1.2, 10, 85);
+  const success = Math.random() * 100 < chance;
+  const flags = { ...state.flags, raiseAskedSeason: state.season, jobRaise: state.flags.jobRaise + (success ? 60 : 0) };
+  return withToast({ ...state, flags }, success ? 'הבוס הסכים: +₪60 לכל משמרת.' : 'הבוס סירב. אולי בעונה הבאה.');
+}
+
+export function socialPost(state: GameState, id: SocialPostId): GameState {
+  const option = SOCIAL_POSTS.find((o) => o.id === id);
+  if (!option) return state;
+  if (state.flags.postedThisWeek) return withToast(state, 'כבר פרסמת השבוע. אל תציף את הפיד.');
+  if (state.player.followers < option.minFollowers) return withToast(state, `צריך לפחות ${option.minFollowers} עוקבים.`);
+  const reach = 1 + state.player.fanRep / 100;
+  let effects: Effects = {};
+  let msg = '';
+  switch (id) {
+    case 'training':
+      effects = { followers: Math.round(randInt(40, 120) * reach), fanRep: 1, coachApproval: 1 };
+      msg = 'הסרטון מהאימון רץ יפה.';
+      break;
+    case 'fans':
+      effects = { followers: Math.round(randInt(15, 50) * reach), fanRep: 4 };
+      msg = 'האוהדים מתים על הפוסט.';
+      break;
+    case 'lifestyle':
+      effects = { followers: Math.round(randInt(80, 220) * reach), coachApproval: -1, confidence: 2 };
+      msg = 'המון צפיות. המאמן פחות התלהב.';
+      break;
+    case 'sponsored': {
+      const pay = Math.min(4000, Math.round(state.player.followers * 0.3));
+      effects = { budget: pay, followers: randInt(10, 40), fanRep: -1 };
+      msg = `פוסט ממומן: +${formatMoney(pay)}`;
+      break;
+    }
+  }
+  const next = applyEffects(state, effects);
+  return withToast({ ...next, flags: { ...next.flags, postedThisWeek: true } }, msg);
+}
+
+// ------------------------------------------------------------------
+// Agent
+// ------------------------------------------------------------------
+
+export function signAgent(state: GameState, agentId: string): GameState {
+  const agent = getAgent(agentId);
+  if (!agent) return state;
+  if (!state.flags.agentDiscovered) return withToast(state, 'עוד אף סוכן לא שם לב אליך.');
+  if (calcOvr(state.player) < agent.minOvr) return withToast(state, `${agent.name} עונה שאתה עוד לא ברמה שלה. צריך דירוג ${agent.minOvr}.`);
+  let next: GameState = { ...state, player: { ...state.player, agentId } };
+  next = addNews(next, [newsNow(next, 'rumors', `${state.player.name} חתם על הסכם ייצוג עם ${agent.name}`)]);
+  return withToast(next, `חתמת עם ${agent.name}.`);
+}
+
+export function fireAgent(state: GameState): GameState {
+  if (!state.player.agentId) return state;
+  return withToast({ ...state, player: { ...state.player, agentId: null }, flags: { ...state.flags, transferPush: false } }, 'נפרדת מהסוכן.');
+}
+
+export function agentPush(state: GameState): GameState {
+  if (!state.player.agentId) return state;
+  if (state.flags.transferPush) return withToast(state, 'הסוכן כבר עובד על זה.');
+  const agent = getAgent(state.player.agentId)!;
+  let next: GameState = { ...state, flags: { ...state.flags, transferPush: true } };
+  next = addNews(next, [newsNow(next, 'rumors', `${agent.name} מציע את ${state.player.name} לקבוצות בליגות גבוהות יותר`)]);
+  return withToast(next, `${agent.name} מתחיל להפיץ את השם שלך. התוצאות יגיעו בחלון ההעברות.`);
+}
+
+export function agentSponsor(state: GameState): GameState {
+  const agent = getAgent(state.player.agentId);
+  if (!agent) return state;
+  if (state.flags.sponsorSeason === state.season) return withToast(state, 'כבר סגרת חסות העונה.');
+  if (state.player.followers < 400 && state.player.fanRep < 45) return withToast(state, 'המותגים עוד לא מכירים אותך. צריך 400 עוקבים או מוניטין 45.');
+  const pay = Math.round(800 * agent.level + state.player.followers * 0.2);
+  const net = Math.round(pay * (1 - agent.commission));
+  let next = applyEffects(state, { budget: net, followers: 120 });
+  next = { ...next, flags: { ...next.flags, sponsorSeason: state.season } };
+  next = addNews(next, [newsNow(next, 'fans', `${state.player.name} הוא הפנים החדשות של מותג ספורט מקומי`)]);
+  return withToast(next, `חסות נסגרה: +${formatMoney(net)} (אחרי עמלה)`);
+}
+
+// ------------------------------------------------------------------
+// Life events (decision box)
+// ------------------------------------------------------------------
+
+export function getParsedEvent(state: GameState, id: string | null): GameEvent | null {
+  const event = getEventById(id);
+  if (!event) return null;
+  return parseEvent(event, buildContext(state));
+}
+
+function toPending(resolution: ReturnType<typeof resolveChoice>): PendingOutcome {
+  return { success: resolution.success, skillCheck: resolution.skillCheck, text: resolution.outcome.text, effects: resolution.outcome.effects };
+}
+
+export function chooseLife(state: GameState, index: number): GameState {
+  if (state.lifeOutcome) return state;
+  const event = getParsedEvent(state, state.pendingLifeEventId);
+  const choice = event?.choices[index];
+  if (!event || !choice) return state;
+  const resolution = resolveChoice(choice, state.player);
+  let next = applyEffects(state, resolution.outcome.effects);
+  next = markSeen(next, event.id);
+  return { ...next, lifeOutcome: toPending(resolution) };
+}
+
+export function dismissLife(state: GameState): GameState {
+  return { ...state, pendingLifeEventId: null, lifeOutcome: null };
+}
+
+// ------------------------------------------------------------------
+// Matchday flow
+// ------------------------------------------------------------------
+
+export function startMatchday(state: GameState): GameState {
+  if (state.phase !== 'dashboard') return state;
+  const blocker = matchdayBlocker(state);
+  if (blocker) return withToast(state, blocker);
+  if (state.matchday >= SEASON_MATCHDAYS) return state;
+
+  const fixture = fixtureFor(state.league, state.matchday);
+  const opponent = state.league.teams[fixture.opponentIndex];
+  const role = determineRole(state.player);
+  const match = createMatchState(opponent.name, opponent.strength, fixture.home, role);
+  let next: GameState = { ...state, currentMatch: match, toast: null };
+
+  if (role === 'injured') {
+    return finishMatch(next);
+  }
+  const pre = pickEvent('preMatch', next.player, next.seenEvents, { matchday: next.matchday });
+  if (!pre) return continuePreMatch({ ...next, phase: 'preMatch' });
+  next = { ...next, phase: 'preMatch', currentMatch: { ...match, preEventId: pre.id } };
+  return next;
+}
+
+export function choosePreMatch(state: GameState, index: number): GameState {
+  const match = state.currentMatch;
+  if (!match || match.pendingOutcome) return state;
+  const event = getParsedEvent(state, match.preEventId);
+  const choice = event?.choices[index];
+  if (!event || !choice) return state;
+  const resolution = resolveChoice(choice, state.player);
+  let next = applyEffects(state, resolution.outcome.effects);
+  next = markSeen(next, event.id);
+  const updatedMatch = applyMatchEffects(match, resolution.outcome.effects, false);
+  return { ...next, currentMatch: { ...updatedMatch, pendingOutcome: toPending(resolution) } };
+}
+
+export function continuePreMatch(state: GameState): GameState {
+  const match = state.currentMatch;
+  if (!match) return state;
+  const role = determineRole(state.player);
+  const count = inGameEventCount(role);
+  const events = pickInGameEvents(state.player, state.seenEvents, count);
+  const nextMatch = {
+    ...match,
+    role,
+    pendingOutcome: null,
+    inGameEventIds: events.map((e) => e.id),
+    inGameIndex: 0,
+    clutch: events.some((e) => e.clutch),
+  };
+  const next: GameState = { ...state, currentMatch: nextMatch };
+  if (events.length === 0) return finishMatch(next);
+  return { ...next, phase: 'inGame' };
+}
+
+export function chooseInGame(state: GameState, index: number): GameState {
+  const match = state.currentMatch;
+  if (!match || match.pendingOutcome) return state;
+  const eventId = match.inGameEventIds[match.inGameIndex];
+  const event = getParsedEvent(state, eventId);
+  const choice = event?.choices[index];
+  if (!event || !choice) return state;
+  const resolution = resolveChoice(choice, state.player);
+  let next = applyEffects(state, resolution.outcome.effects);
+  next = markSeen(next, event.id);
+  let updated = applyMatchEffects(match, resolution.outcome.effects, Boolean(event.clutch));
+  updated = {
+    ...updated,
+    log: [
+      ...updated.log,
+      { eventId: event.id, title: event.title, choice: choice.label, success: resolution.success, text: resolution.outcome.text },
+    ],
+    pendingOutcome: toPending(resolution),
+  };
+  return { ...next, currentMatch: updated };
+}
+
+export function continueInGame(state: GameState): GameState {
+  const match = state.currentMatch;
+  if (!match) return state;
+  const nextIndex = match.inGameIndex + 1;
+  const next: GameState = { ...state, currentMatch: { ...match, inGameIndex: nextIndex, pendingOutcome: null } };
+  if (nextIndex >= match.inGameEventIds.length) return finishMatch(next);
+  return next;
+}
+
+/** Simulates the result, updates the league table, stats, economy and news. */
+function finishMatch(state: GameState): GameState {
+  const match = state.currentMatch;
+  if (!match) return state;
+  const { player } = state;
+  const sport = player.sport;
+  const clubIdx = playerClubIndex(state.league);
+  const fin = finalizeMatch(match, player, playerClubStrength(state));
+  const { result } = fin;
+
+  // League table
+  const fixture = fixtureFor(state.league, state.matchday);
+  let league = fixture.home
+    ? applyResult(state.league, sport, clubIdx, fixture.opponentIndex, fin.teamScore, fin.oppScore)
+    : applyResult(state.league, sport, fixture.opponentIndex, clubIdx, fin.oppScore, fin.teamScore);
+  const others = simulateOtherFixtures(league, sport, state.matchday, state.matchday === SEASON_MATCHDAYS - 1);
+  league = others.league;
+
+  // Player stats
+  const played = result.rating !== null;
+  const s = { ...player.seasonStats };
+  const c = { ...player.careerStats };
+  if (played) {
+    for (const stats of [s, c]) {
+      stats.apps += 1;
+      if (match.role === 'starter') stats.starts += 1;
+      stats.goals += fin.match.playerGoals;
+      stats.assists += fin.match.playerAssists;
+      stats.points += fin.match.playerPoints;
+      stats.rebounds += fin.match.playerRebounds;
+      stats.ratingSum += result.rating ?? 0;
+      if (result.outcome === 'win') stats.wins += 1;
+      else if (result.outcome === 'draw') stats.draws += 1;
+      else stats.losses += 1;
+      if (result.motm) stats.motm += 1;
+    }
+  }
+
+  let nextPlayer: Player = { ...player, seasonStats: s, careerStats: c };
+  const ratingSwing = played ? (result.rating! - 6.5) : 0;
+  const energyCost = match.role === 'starter' ? 22 : match.role === 'rotation' ? 12 : 0;
+  const winBonus = played && result.outcome === 'win' ? Math.round(player.weeklySalary * 0.25) : 0;
+  nextPlayer = applyPlayerEffects(nextPlayer, {
+    energy: -energyCost,
+    coachApproval: played ? Math.round(ratingSwing * 3) : match.role === 'bench' ? -1 : 0,
+    confidence: played ? Math.round(ratingSwing * 3) : -1,
+    fanRep: result.outcome === 'win' ? 1 : result.outcome === 'loss' ? -1 : 0,
+    teamMorale: result.outcome === 'win' ? 4 : result.outcome === 'loss' ? -4 : 0,
+    budget: winBonus,
+  });
+
+  let next: GameState = {
+    ...state,
+    league,
+    player: nextPlayer,
+    currentMatch: fin.match,
+    phase: 'matchSummary',
+  };
+  const md = state.matchday + 1;
+  next = addNews(next, [
+    ...matchNews(player, match.opponent, result, {
+      goals: fin.match.playerGoals,
+      assists: fin.match.playerAssists,
+      points: fin.match.playerPoints,
+      rebounds: fin.match.playerRebounds,
+    }, state.season, md),
+    ...leagueRoundNews(sport, others.results, state.season, md),
+  ]);
+  return next;
+}
+
+export function continueSummary(state: GameState): GameState {
+  const match = state.currentMatch;
+  if (!match?.result) return state;
+  if (match.role === 'injured') return endMatchday(state);
+  const post = pickEvent('postMatch', state.player, state.seenEvents, { matchResult: match.result.outcome, matchday: state.matchday });
+  if (!post) return endMatchday(state);
+  return { ...state, phase: 'postMatch', currentMatch: { ...match, postEventId: post.id, pendingOutcome: null } };
+}
+
+export function choosePostMatch(state: GameState, index: number): GameState {
+  const match = state.currentMatch;
+  if (!match || match.pendingOutcome) return state;
+  const event = getParsedEvent(state, match.postEventId);
+  const choice = event?.choices[index];
+  if (!event || !choice) return state;
+  const resolution = resolveChoice(choice, state.player);
+  let next = applyEffects(state, resolution.outcome.effects);
+  next = markSeen(next, event.id);
+  return { ...next, currentMatch: { ...match, pendingOutcome: toPending(resolution) } };
+}
+
+export function continuePostMatch(state: GameState): GameState {
+  return endMatchday(state);
+}
+
+/** Closes the week: economy, job duty, recovery, agent discovery, new life event, windows. */
+function endMatchday(state: GameState): GameState {
+  const matchday = state.matchday + 1;
+  let next: GameState = { ...state, matchday, currentMatch: null };
+  let player = { ...next.player };
+  const agent = getAgent(player.agentId);
+
+  // Economy
+  const salaryNet = Math.round(player.weeklySalary * (1 - (agent?.commission ?? 0)));
+  const living = LIVING_COST[player.contract];
+  player.budget += salaryNet - living;
+
+  // Day job duty
+  const flags = { ...next.flags };
+  const job = getJob(player.jobId);
+  const news: NewsItem[] = [];
+  if (job && isNonPro(player)) {
+    if (flags.shiftsThisWeek === 0) {
+      flags.jobWarnings += 1;
+      if (flags.jobWarnings >= 2) {
+        news.push(makeNews('rumors', `${player.name} פוטר מהעבודה בתור ${job.name} אחרי שבועיים בלי משמרות`, state.season, matchday));
+        player.jobId = null;
+        flags.jobWarnings = 0;
+        flags.jobRaise = 0;
+      } else {
+        news.push(makeNews('club', `אזהרה מהבוס: ${player.name} לא הגיע למשמרת השבוע. עוד שבוע כזה והוא בחוץ.`, state.season, matchday));
+      }
+    }
+  }
+
+  // Recovery and drift
+  player.energy = clamp(player.energy + 20, 0, 100);
+  if (player.injuryWeeks > 0) player.injuryWeeks -= 1;
+  player.confidence = Math.round(player.confidence + (50 - player.confidence) * 0.08);
+  player.teamMorale = Math.round(player.teamMorale + (55 - player.teamMorale) * 0.08);
+  player.coachApproval = Math.round(player.coachApproval + (50 - player.coachApproval) * 0.06);
+  player.fanRep = Math.round(player.fanRep + (35 - player.fanRep) * 0.04);
+
+  if (player.budget < -1500) {
+    player.confidence = clamp(player.confidence - 3, 0, 100);
+    news.push(makeNews('rumors', `${player.name} בחובות. הלחץ הכלכלי מתחיל להשפיע`, state.season, matchday));
+  }
+
+  flags.shiftsThisWeek = 0;
+  flags.postedThisWeek = false;
+  next = { ...next, player, flags, weekSlots: WEEK_SLOTS };
+
+  // Rumors
+  const ovr = calcOvr(player);
+  const above = player.division < topDivision(player.sport) ? DIVISION_STRENGTH[player.sport][player.division + 1] : null;
+  next = addNews(next, [...news, rumorNews(player, ovr, above, state.season, matchday)]);
+
+  // Agent discovery or next life event
+  next = queueLifeEvent(next);
+
+  if (matchday === TRANSFER_WINDOW_MATCHDAY) {
+    const windowState: GameState = { ...next, phase: 'transfer', transferContext: 'midseason' };
+    return { ...windowState, transferOffers: generateOffers(windowState) };
+  }
+  if (matchday >= SEASON_MATCHDAYS) {
+    return enterSeasonEnd(next);
+  }
+  return { ...next, phase: 'dashboard' };
+}
+
+function queueLifeEvent(state: GameState): GameState {
+  const { player, flags } = state;
+  if (!player.agentId && !flags.agentDiscovered && agentUnlockReady(player)) {
+    return {
+      ...state,
+      pendingLifeEventId: getTriggeredEvent('agent_discovery')?.id ?? null,
+      lifeOutcome: null,
+      flags: { ...flags, agentDiscovered: true },
+    };
+  }
+  if (player.agentId && player.agentId !== 'agent_michal' && !flags.eliteAgentOffered && calcOvr(player) >= 60) {
+    return {
+      ...state,
+      pendingLifeEventId: getTriggeredEvent('agent_elite')?.id ?? null,
+      lifeOutcome: null,
+      flags: { ...flags, eliteAgentOffered: true },
+    };
+  }
+  if (Math.random() < 0.65) {
+    const event = pickEvent('life', player, state.seenEvents, { matchday: state.matchday });
+    if (event) return { ...state, pendingLifeEventId: event.id, lifeOutcome: null };
+  }
+  return { ...state, pendingLifeEventId: null, lifeOutcome: null };
+}
+
+// ------------------------------------------------------------------
+// Season end & transfers
+// ------------------------------------------------------------------
+
+function enterSeasonEnd(state: GameState): GameState {
+  const { player, league } = state;
+  const table = sortedTable(league);
+  const position = playerClubPosition(league);
+  const top = topDivision(player.sport);
+  const promoted = position <= 2 && player.division < top;
+  const relegated = position >= table.length - 1 && player.division > 0;
+  const champion = position === 1;
+  return {
+    ...state,
+    phase: 'seasonEnd',
+    seasonSummary: {
+      season: state.season,
+      finalPosition: position,
+      promoted,
+      relegated,
+      champion,
+      stats: player.seasonStats,
+      table,
+    },
+  };
+}
+
+export function continueSeasonEnd(state: GameState): GameState {
+  const summary = state.seasonSummary;
+  if (!summary) return state;
+  let player = { ...state.player };
+  const record = {
+    season: summary.season,
+    club: player.club,
+    division: player.division,
+    finalPosition: summary.finalPosition,
+    stats: player.seasonStats,
+    ovr: calcOvr(player),
+  };
+  player.history = [...player.history, record];
+
+  const news: NewsItem[] = [];
+  const oldDivision = player.division;
+  if (summary.promoted) player.division += 1;
+  if (summary.relegated) player.division -= 1;
+  if (summary.champion) {
+    news.push(makeNews('league', `${player.club} אלופת ${divisionName(player.sport, oldDivision)}!`, state.season, SEASON_MATCHDAYS));
+    player.fanRep = clamp(player.fanRep + 8, 0, 100);
+  }
+  if (summary.promoted) {
+    news.push(makeNews('club', `${player.club} עולה ל${divisionName(player.sport, player.division)}!`, state.season, SEASON_MATCHDAYS));
+    // A promoted club upgrades the player's contract to the new level.
+    const newContract = contractForDivision(player.sport, player.division);
+    if (newContract !== player.contract) {
+      player.contract = newContract;
+      player.weeklySalary = Math.max(player.weeklySalary, baseSalary(player.sport, player.division));
+      news.push(makeNews('club', `${player.name} קיבל ${CONTRACT_LABEL[newContract]} לאחר העלייה`, state.season, SEASON_MATCHDAYS));
+    }
+  }
+  if (summary.relegated) {
+    news.push(makeNews('club', `${player.club} יורדת ל${divisionName(player.sport, player.division)}`, state.season, SEASON_MATCHDAYS));
+  }
+  player = autoQuitJobIfPro(player, news, state.season);
+
+  let next: GameState = { ...state, player };
+  next = addNews(next, news);
+  const windowState: GameState = { ...next, phase: 'transfer', transferContext: 'endseason' };
+  return { ...windowState, transferOffers: generateOffers(windowState) };
+}
+
+function autoQuitJobIfPro(player: Player, news: NewsItem[], season: number): Player {
+  if (player.jobId && player.contract === 'pro' && isProDivision(player.sport, player.division)) {
+    const job = getJob(player.jobId);
+    news.push(makeNews('club', `${player.name} עוזב את העבודה בתור ${job?.name ?? 'עובד'}: מעכשיו ${player.name} שחקן מקצוען במשרה מלאה`, season, SEASON_MATCHDAYS));
+    return { ...player, jobId: null };
+  }
+  return player;
+}
+
+export function acceptOffer(state: GameState, offerId: string): GameState {
+  const offer = state.transferOffers.find((o) => o.id === offerId);
+  if (!offer) return state;
+  const agent = getAgent(state.player.agentId);
+  const bonusNet = Math.round(offer.signingBonus * (1 - (agent?.commission ?? 0)));
+  const news: NewsItem[] = [];
+  let player: Player = {
+    ...state.player,
+    club: offer.club,
+    division: offer.division,
+    contract: offer.contract,
+    weeklySalary: offer.weeklySalary,
+    budget: state.player.budget + bonusNet,
+    coachApproval: offer.role === 'starter' ? 62 : 48,
+    teamMorale: 55,
+  };
+  news.push(
+    makeNews(
+      'club',
+      `רשמי: ${player.name} חתם ב${offer.club} (${divisionName(player.sport, offer.division)}) על ${CONTRACT_LABEL[offer.contract]}`,
+      state.season,
+      state.matchday,
+    ),
+  );
+  news.push(makeNews('fans', `אוהדי ${offer.club} מקבלים את ${player.name} בחום ברשתות`, state.season, state.matchday));
+  player = autoQuitJobIfPro(player, news, state.season);
+
+  let next: GameState = {
+    ...state,
+    player,
+    transferOffers: [],
+    flags: { ...state.flags, transferPush: false },
+  };
+  next = addNews(next, news);
+
+  if (state.transferContext === 'midseason') {
+    const league = createLeague(player.sport, player.division, player.club, offer.strength, state.matchday);
+    return { ...next, league, phase: 'dashboard', transferContext: null };
+  }
+  return startNewSeason({ ...next, transferContext: null });
+}
+
+export function declineOffers(state: GameState): GameState {
+  const next: GameState = { ...state, transferOffers: [], flags: { ...state.flags, transferPush: false } };
+  if (state.transferContext === 'midseason') return { ...next, phase: 'dashboard', transferContext: null };
+  return startNewSeason({ ...next, transferContext: null });
+}
+
+function startNewSeason(state: GameState): GameState {
+  const season = state.season + 1;
+  const player: Player = {
+    ...state.player,
+    age: state.player.age + 1,
+    seasonStats: emptyStats(),
+    coachApproval: Math.round(state.player.coachApproval + (52 - state.player.coachApproval) * 0.5),
+    energy: 100,
+    injuryWeeks: 0,
+  };
+  const clubStrength = DIVISION_STRENGTH[player.sport][player.division] + randInt(-3, 3);
+  const league = createLeague(player.sport, player.division, player.club, clubStrength);
+  let next: GameState = {
+    ...state,
+    season,
+    matchday: 0,
+    player,
+    league,
+    phase: 'dashboard',
+    seasonSummary: null,
+    weekSlots: WEEK_SLOTS,
+    flags: { ...state.flags, shiftsThisWeek: 0, postedThisWeek: false, jobWarnings: 0 },
+  };
+  next = addNews(next, [
+    makeNews('league', `עונה ${season} יוצאת לדרך ב${divisionName(player.sport, player.division)}`, season, 0),
+    makeNews('club', `${player.club} פותחת את ההכנות לעונה. ${player.name} כבר באימונים.`, season, 0),
+  ]);
+  return next;
+}

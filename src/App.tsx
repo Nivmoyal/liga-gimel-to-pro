@@ -19,6 +19,9 @@ import { PostMatchInterview } from './components/PostMatchInterview';
 import { TransferWindowModal } from './components/TransferWindowModal';
 import { SeasonEndModal } from './components/SeasonEndModal';
 import { CallUpModal } from './components/CallUpModal';
+import { TitleScreen } from './components/TitleScreen';
+import { IntroStory } from './components/IntroStory';
+import { CreditsScreen } from './components/CreditsScreen';
 import { TrainingSheet } from './components/sheets/TrainingSheet';
 import { JobSheet } from './components/sheets/JobSheet';
 import { AgentSheet } from './components/sheets/AgentSheet';
@@ -31,6 +34,8 @@ export default function App() {
   const [state, dispatch] = useReducer(gameReducer, null, loadGame);
   const [view, setView] = useState<ViewId>('home');
   const [sheet, setSheet] = useState<ActionSheetId | null>(null);
+  /** Out-of-game screens. The saved career stays untouched until a new one starts. */
+  const [screen, setScreen] = useState<'title' | 'intro' | 'setup' | 'credits' | 'game'>('title');
 
   useEffect(() => {
     saveGame(state);
@@ -39,7 +44,7 @@ export default function App() {
   // Every screen change starts at the top
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [view, state === null]);
+  }, [view, screen]);
 
   // Auto-hide action feedback
   useEffect(() => {
@@ -53,15 +58,32 @@ export default function App() {
     if (state && state.phase !== 'dashboard') setSheet(null);
   }, [state?.phase]);
 
-  if (!state) {
+  if (screen !== 'game' || !state) {
     return (
       <div dir="rtl" className="min-h-dvh bg-pitch text-ink">
-        <SetupScreen
-          onStart={(setup) => {
-            setView('home');
-            dispatch({ type: 'NEW_GAME', setup });
-          }}
-        />
+        {screen === 'intro' && <IntroStory onDone={() => setScreen('setup')} />}
+        {screen === 'setup' && (
+          <SetupScreen
+            onBack={() => setScreen('title')}
+            onStart={(setup) => {
+              setView('home');
+              dispatch({ type: 'NEW_GAME', setup });
+              setScreen('game');
+            }}
+          />
+        )}
+        {screen === 'credits' && <CreditsScreen onBack={() => setScreen('title')} />}
+        {(screen === 'title' || screen === 'game') && (
+          <TitleScreen
+            save={state}
+            onContinue={() => {
+              setView('home');
+              setScreen('game');
+            }}
+            onNewGame={() => setScreen('intro')}
+            onCredits={() => setScreen('credits')}
+          />
+        )}
       </div>
     );
   }
@@ -91,7 +113,16 @@ export default function App() {
           )}
           {view === 'table' && <StatsView state={state} />}
           {view === 'news' && <SocialFeed news={state.news} title="חדשות ורשתות" />}
-          {view === 'career' && <CareerView state={state} onReset={() => dispatch({ type: 'RESET' })} />}
+          {view === 'career' && (
+            <CareerView
+              state={state}
+              onReset={() => {
+                dispatch({ type: 'RESET' });
+                setScreen('title');
+              }}
+              onHome={() => setScreen('title')}
+            />
+          )}
         </main>
       </div>
 

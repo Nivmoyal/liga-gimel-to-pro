@@ -1,13 +1,12 @@
-import { ChevronLeft, DoorOpen } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import type { GameState } from '../types/game';
 import type { GameAction } from '../state/gameReducer';
 import { getParsedEvent } from '../state/gameLogic';
-import { Sheet } from './ui/Sheet';
 import { ChoiceButton } from './ui/ChoiceButton';
 import { OutcomeBox } from './ui/OutcomeBox';
 import { GoldButton } from './ui/GoldButton';
+import { GameCard } from './ui/GameCard';
 import { MatchHeader } from './MatchHeader';
-import { SceneBanner } from './art/SceneBanner';
 
 interface Props {
   state: GameState;
@@ -21,10 +20,20 @@ export function PreMatchModal({ state, dispatch }: Props) {
   if (!match || !event) return null;
   const outcome = match.pendingOutcome;
   return (
-    <Sheet
-      title="לפני השריקה"
-      subtitle="חדר ההלבשה"
-      icon={DoorOpen}
+    <GameCard
+      label="לפני השריקה"
+      scene={event.scene ?? 'locker'}
+      seed={event.id}
+      sport={state.player.sport}
+      badge="לפני השריקה"
+      kicker={
+        <>
+          <MatchHeader state={state} />
+          <div className="mt-2 text-brand">{event.speaker}</div>
+        </>
+      }
+      title={event.title}
+      text={event.text}
       footer={
         outcome ? (
           <GoldButton onClick={() => dispatch({ type: 'PRE_CONTINUE' })}>
@@ -34,22 +43,15 @@ export function PreMatchModal({ state, dispatch }: Props) {
         ) : undefined
       }
     >
-      <MatchHeader state={state} />
-      <SceneBanner state={state} scene={event.scene} />
-      <div className="mb-4">
-        <div className="text-xs font-bold text-brand">{event.speaker}</div>
-        <h3 className="mb-1 text-xl font-black">{event.title}</h3>
-        <p className="leading-relaxed text-ink/80">{event.text}</p>
-      </div>
       {outcome ? (
         <OutcomeBox outcome={outcome} sport={state.player.sport} />
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {event.choices.map((choice, i) => (
             <ChoiceButton key={i} choice={choice} index={i} player={state.player} onChoose={(index) => dispatch({ type: 'PRE_CHOICE', index })} />
           ))}
         </div>
       )}
-    </Sheet>
+    </GameCard>
   );
 }

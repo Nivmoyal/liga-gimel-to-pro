@@ -125,7 +125,7 @@ function SponsorsTab({ state, dispatch }: { state: GameState; dispatch: (a: Game
       <section className="rounded-2xl border border-line bg-card p-3">
         <div className="mb-2 flex items-center justify-between">
           <h3 className="font-extrabold">החסויות שלי</h3>
-          <span className="text-sm font-bold text-emerald-600">+{formatMoney(weeklyTotal)} לשבוע</span>
+          <span className="text-sm font-bold text-emerald-400">+{formatMoney(weeklyTotal)} לשבוע</span>
         </div>
         {player.sponsors.length === 0 ? (
           <p className="text-sm text-muted">אין עדיין ספונסרים. עוקבים, מוניטין ודירוג פותחים מותגים חדשים.</p>
@@ -144,7 +144,7 @@ function SponsorsTab({ state, dispatch }: { state: GameState; dispatch: (a: Game
                   </div>
                   <button
                     onClick={() => dispatch({ type: 'DROP_SPONSOR', sponsorId: sponsor.id })}
-                    className="shrink-0 rounded-lg border border-line px-2.5 py-1 text-xs font-bold text-muted hover:text-rose-600"
+                    className="shrink-0 rounded-lg border border-line px-2.5 py-1 text-xs font-bold text-muted hover:text-rose-400"
                   >
                     לבטל
                   </button>
@@ -177,7 +177,7 @@ function SponsorsTab({ state, dispatch }: { state: GameState; dispatch: (a: Game
               {ready ? (
                 <button
                   onClick={() => dispatch({ type: 'SIGN_SPONSOR', sponsorId: sponsor.id })}
-                  className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand py-2 text-sm font-bold text-white hover:bg-brand-600"
+                  className="flex w-full items-center justify-center gap-1.5 rounded-xl btn-gold chamfer py-2 text-sm font-black"
                 >
                   <CircleCheck size={16} />
                   לחתום על חסות

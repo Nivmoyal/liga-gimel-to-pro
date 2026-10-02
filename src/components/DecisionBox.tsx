@@ -4,7 +4,7 @@ import type { GameAction } from '../state/gameReducer';
 import { getParsedEvent } from '../state/gameLogic';
 import { ChoiceButton } from './ui/ChoiceButton';
 import { OutcomeBox } from './ui/OutcomeBox';
-import { SceneBanner } from './art/SceneBanner';
+import { ScenePhoto } from './art/ScenePhoto';
 
 interface DecisionBoxProps {
   state: GameState;
@@ -25,7 +25,7 @@ export function DecisionBox({ state, dispatch }: DecisionBoxProps) {
   }
 
   return (
-    <section className="rounded-2xl border border-brand/30 bg-gradient-to-b from-brand/10 to-card p-4 shadow-lg shadow-brand/10">
+    <section className="overflow-hidden rounded-2xl border border-brand/40 bg-card p-4 shadow-lg shadow-black/40">
       <div className="mb-3 flex items-center gap-2">
         <span className="relative flex h-2.5 w-2.5">
           {!state.lifeOutcome && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75" />}
@@ -33,7 +33,7 @@ export function DecisionBox({ state, dispatch }: DecisionBoxProps) {
         </span>
         <h2 className="text-sm font-extrabold text-brand">הודעה מחכה לתשובה שלך</h2>
       </div>
-      <SceneBanner state={state} scene={event.scene} height={120} />
+      <ScenePhoto scene={event.scene ?? 'phone'} seed={event.id} sport={state.player.sport} height={150} className="-mx-4 -mt-4 mb-3" />
       <div className="mb-3 flex gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card-2 text-brand">
           <MessageSquare size={18} />

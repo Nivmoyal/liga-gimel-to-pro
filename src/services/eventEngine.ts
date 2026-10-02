@@ -129,6 +129,7 @@ export function isEligible(event: GameEvent, player: Player, extras: FilterExtra
   if (c.maxDivision !== undefined && player.division > c.maxDivision) return false;
   if (c.requiresJob !== undefined && Boolean(player.jobId) !== c.requiresJob) return false;
   if (c.requiresAgent !== undefined && Boolean(player.agentId) !== c.requiresAgent) return false;
+  if (c.requiresCaptain !== undefined && Boolean(player.isCaptain) !== c.requiresCaptain) return false;
   if (c.contract && !c.contract.includes(player.contract)) return false;
   if (c.minOvr !== undefined && calcOvr(player) < c.minOvr) return false;
   if (c.positions && !c.positions.includes(player.position)) return false;

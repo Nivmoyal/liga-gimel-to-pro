@@ -56,7 +56,7 @@ export function LifestyleSheet({ state, dispatch, onClose }: Props) {
               </div>
               <div className="shrink-0 space-y-0.5 text-left text-xs">
                 {opt.energy !== 0 && (
-                  <div className={`flex items-center gap-1 ${opt.energy > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                  <div className={`flex items-center gap-1 ${opt.energy > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                     <Zap size={12} />
                     <span dir="ltr">
                       {opt.energy > 0 ? '+' : ''}
@@ -65,7 +65,7 @@ export function LifestyleSheet({ state, dispatch, onClose }: Props) {
                   </div>
                 )}
                 {opt.budgetCost > 0 && (
-                  <div className="flex items-center gap-1 text-amber-600">
+                  <div className="flex items-center gap-1 text-amber-300">
                     <Coins size={12} />
                     {formatMoney(opt.budgetCost)}
                   </div>

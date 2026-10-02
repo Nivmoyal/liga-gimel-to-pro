@@ -73,7 +73,7 @@ import {
   trainingGain,
 } from '../services/playerUtils';
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 const MAX_NEWS = 60;
 const SEEN_MEMORY = 40;
 
@@ -85,6 +85,7 @@ function defaultFlags(): GameFlags {
   return {
     agentDiscovered: false,
     eliteAgentOffered: false,
+    captainOfferSeason: 0,
     postedThisWeek: false,
     shiftsThisWeek: 0,
     jobWarnings: 0,
@@ -120,6 +121,12 @@ function applyEffects(state: GameState, effects: Effects): GameState {
   if (effects.setAgent) {
     next = { ...next, flags: { ...next.flags, agentDiscovered: true } };
   }
+  if (effects.setCaptain && !state.player.isCaptain) {
+    next = addNews(next, [
+      newsNow(next, 'club', `רשמי: ${next.player.name} נבחר לקפטן של ${next.player.club}`),
+      newsNow(next, 'fans', `סרט הקפטן על הזרוע של ${next.player.name}. האוהדים מתרגשים`),
+    ]);
+  }
   return next;
 }
 
@@ -131,15 +138,17 @@ function emptyNational() {
 export function migrateSave(raw: GameState): GameState | null {
   if (!raw?.player) return null;
   if (raw.version === SAVE_VERSION) return raw;
-  if (raw.version !== 1) return null;
+  if (raw.version !== 1 && raw.version !== 2) return null;
   return {
     ...raw,
     version: SAVE_VERSION,
-    nationalCallUp: null,
-    currentMatch: raw.currentMatch ? { ...raw.currentMatch, national: null } : null,
+    nationalCallUp: raw.nationalCallUp ?? null,
+    currentMatch: raw.currentMatch ? { ...raw.currentMatch, national: raw.currentMatch.national ?? null } : null,
+    flags: { ...raw.flags, captainOfferSeason: raw.flags.captainOfferSeason ?? 0 },
     player: {
       ...raw.player,
       shirtNumber: raw.player.shirtNumber ?? 10,
+      isCaptain: raw.player.isCaptain ?? false,
       sponsors: raw.player.sponsors ?? [],
       national: raw.player.national ?? emptyNational(),
     },
@@ -189,6 +198,7 @@ export function createNewGame(setup: SetupData): GameState {
   const player: Player = {
     name: setup.name.trim(),
     shirtNumber: clamp(Math.round(setup.shirtNumber) || 10, 0, 99),
+    isCaptain: false,
     sport: setup.sport,
     position: setup.position,
     region: setup.region,
@@ -732,7 +742,8 @@ function endMatchday(state: GameState): GameState {
   const agent = getAgent(player.agentId);
 
   // Economy
-  const salaryNet = Math.round(player.weeklySalary * (1 - (agent?.commission ?? 0)));
+  const captainBonus = player.isCaptain ? 1.1 : 1;
+  const salaryNet = Math.round(player.weeklySalary * captainBonus * (1 - (agent?.commission ?? 0)));
   const living = LIVING_COST[player.contract];
   player.budget += salaryNet - living;
 
@@ -775,6 +786,16 @@ function endMatchday(state: GameState): GameState {
   player.coachApproval = Math.round(player.coachApproval + (50 - player.coachApproval) * 0.06);
   player.fanRep = Math.round(player.fanRep + (35 - player.fanRep) * 0.04);
 
+  // Captaincy: the armband lifts the dressing room, but the coach can take it back
+  if (player.isCaptain) {
+    if (player.coachApproval < 35) {
+      player.isCaptain = false;
+      news.push(makeNews('club', `המאמן לקח מ${player.name} את סרט הקפטן אחרי תקופה חלשה`, state.season, matchday));
+    } else {
+      player.teamMorale = clamp(player.teamMorale + 2, 0, 100);
+    }
+  }
+
   if (player.budget < -1500) {
     player.confidence = clamp(player.confidence - 3, 0, 100);
     news.push(makeNews('rumors', `${player.name} בחובות. הלחץ הכלכלי מתחיל להשפיע`, state.season, matchday));
@@ -807,6 +828,20 @@ function endMatchday(state: GameState): GameState {
   return { ...next, phase: 'dashboard' };
 }
 
+/** The coach offers the armband to a trusted, in-form regular (once per season). */
+export function captainOfferReady(state: GameState): boolean {
+  const { player, flags } = state;
+  if (player.isCaptain || flags.captainOfferSeason === state.season) return false;
+  const stats = player.seasonStats;
+  return (
+    stats.apps >= 4 &&
+    stats.starts >= 3 &&
+    player.coachApproval >= 70 &&
+    player.teamMorale >= 50 &&
+    averageRating(stats) >= 6.8
+  );
+}
+
 function queueLifeEvent(state: GameState): GameState {
   const { player, flags } = state;
   if (!player.agentId && !flags.agentDiscovered && agentUnlockReady(player)) {
@@ -823,6 +858,14 @@ function queueLifeEvent(state: GameState): GameState {
       pendingLifeEventId: getTriggeredEvent('agent_elite')?.id ?? null,
       lifeOutcome: null,
       flags: { ...flags, eliteAgentOffered: true },
+    };
+  }
+  if (captainOfferReady(state)) {
+    return {
+      ...state,
+      pendingLifeEventId: getTriggeredEvent('captain_offer')?.id ?? null,
+      lifeOutcome: null,
+      flags: { ...flags, captainOfferSeason: state.season },
     };
   }
   if (Math.random() < 0.65) {
@@ -926,6 +969,7 @@ export function acceptOffer(state: GameState, offerId: string): GameState {
     budget: state.player.budget + bonusNet,
     coachApproval: offer.role === 'starter' ? 62 : 48,
     teamMorale: 55,
+    isCaptain: false,
   };
   news.push(
     makeNews(

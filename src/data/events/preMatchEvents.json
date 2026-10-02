@@ -835,5 +835,104 @@
         }
       }
     ]
+  },
+  {
+    "id": "pre_cap_001",
+    "type": "preMatch",
+    "sport": "both",
+    "scene": "field",
+    "weight": 2,
+    "conditions": {
+      "requiresCaptain": true
+    },
+    "speaker": "השופט",
+    "title": "הקפטנים במרכז",
+    "text": "השופט קורא לקפטנים למרכז {משטח}. הקפטן של {יריבה} מושיט יד ומנסה לקרוא אותך.",
+    "choices": [
+      {
+        "label": "לחיצה חזקה ומבט ישר בעיניים",
+        "success": {
+          "text": "הוא מסיט את המבט ראשון. נקודה פסיכולוגית ראשונה.",
+          "effects": {
+            "confidence": 4,
+            "teamMorale": 2
+          }
+        }
+      },
+      {
+        "label": "מחייך ומאחל משחק הוגן",
+        "success": {
+          "text": "השופט מעריך. יהיה לך קרדיט אם תצטרך לדבר איתו במשחק.",
+          "effects": {
+            "coachApproval": 2,
+            "rating": 0.1
+          }
+        }
+      },
+      {
+        "label": "מזכיר לו את התוצאה מהפעם הקודמת",
+        "success": {
+          "text": "הוא מתעצבן ושולח מבטים כל המשחק. הקבוצה שלך נהנית.",
+          "effects": {
+            "teamMorale": 4,
+            "coachApproval": -2
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "pre_cap_002",
+    "type": "preMatch",
+    "sport": "both",
+    "scene": "locker",
+    "weight": 2,
+    "conditions": {
+      "requiresCaptain": true
+    },
+    "speaker": "חדר ההלבשה",
+    "title": "נאום הקפטן",
+    "text": "שתי דקות לעלייה ל{משטח}. כולם עומדים במעגל ומחכים לקפטן שלהם.",
+    "choices": [
+      {
+        "label": "נאום שמדליק את החדר",
+        "stat": "mental",
+        "difficulty": 48,
+        "success": {
+          "text": "הקבוצה יוצאת מהחדר כמו טייפון. {יריבה} לא יודעת מה פגע בה.",
+          "effects": {
+            "teamMorale": 10,
+            "confidence": 4,
+            "rating": 0.2
+          }
+        },
+        "fail": {
+          "text": "המילים לא מתחברות. המעגל מתפרק בשקט מביך.",
+          "effects": {
+            "teamMorale": -3,
+            "confidence": -3
+          }
+        }
+      },
+      {
+        "label": "שלוש מילים: עבודה, אחדות, ניצחון",
+        "success": {
+          "text": "קצר וחד. כולם צועקים את זה איתך.",
+          "effects": {
+            "teamMorale": 6
+          }
+        }
+      },
+      {
+        "label": "נותן לוותיק לדבר",
+        "success": {
+          "text": "קפטן גדול יודע גם לשתף. הוותיק מתרגש.",
+          "effects": {
+            "teamMorale": 4,
+            "coachApproval": 1
+          }
+        }
+      }
+    ]
   }
 ]

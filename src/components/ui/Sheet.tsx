@@ -14,7 +14,7 @@ interface SheetProps {
 /** Mobile bottom sheet used for actions and match phases. */
 export function Sheet({ title, subtitle, icon: Icon, onClose, children, footer }: SheetProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/45 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={title}>
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={title}>
       <div className="animate-sheet flex max-h-[92dvh] w-full max-w-md flex-col rounded-t-3xl border border-b-0 border-line bg-pitch shadow-2xl">
         <div className="flex items-center gap-3 border-b border-line px-4 py-3">
           {Icon && (

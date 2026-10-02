@@ -4,10 +4,9 @@ import type { GameAction } from '../state/gameReducer';
 import { NATIONAL_BODY, NATIONAL_TEAM_NAME } from '../data/national';
 import { Sheet } from './ui/Sheet';
 import { GoldButton } from './ui/GoldButton';
-import { SceneArt } from './art/SceneArt';
+import { ScenePhoto } from './art/ScenePhoto';
 import { Crest } from './art/Crest';
 import { Jersey } from './art/Jersey';
-import { ISRAEL_PAINT, clubPaint } from './art/paints';
 
 interface Props {
   state: GameState;
@@ -38,9 +37,7 @@ export function CallUpModal({ state, dispatch }: Props) {
         </div>
       }
     >
-      <div className="relative mb-4 overflow-hidden rounded-2xl border border-line">
-        <SceneArt scene="national" sport={player.sport} team={ISRAEL_PAINT} opp={clubPaint(callUp.opponent)} number={player.shirtNumber} height={150} />
-      </div>
+      <ScenePhoto scene="national" sport={player.sport} height={170} className="mb-4 rounded-2xl" />
       <div className="mb-4 rounded-2xl border border-brand/30 bg-brand/5 p-4">
         <div className="mb-2 flex items-center gap-2 text-sm font-bold text-brand">
           <Mail size={16} />

@@ -149,11 +149,13 @@ describe('save migration', () => {
       type: 'NEW_GAME',
       setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', region: 'north', club: 'בית״ר נהריה', jobId: 'pizza' },
     })!;
-    const { shirtNumber: _n, sponsors: _s, national: _nat, ...oldPlayer } = fresh.player;
+    const { shirtNumber: _n, sponsors: _s, national: _nat, isCaptain: _c2, ...oldPlayer } = fresh.player;
     const { nationalCallUp: _c, ...oldState } = fresh;
     const migrated = migrateSave({ ...oldState, version: 1, player: oldPlayer } as unknown as GameState)!;
-    expect(migrated.version).toBe(2);
+    expect(migrated.version).toBe(3);
     expect(migrated.player.shirtNumber).toBe(10);
+    expect(migrated.player.isCaptain).toBe(false);
+    expect(migrated.flags.captainOfferSeason).toBe(0);
     expect(migrated.player.sponsors).toEqual([]);
     expect(migrated.player.national.caps).toBe(0);
     expect(migrated.nationalCallUp).toBeNull();
@@ -165,6 +167,7 @@ describe('long careers', () => {
     let callUps = 0;
     let caps = 0;
     let sponsorsSigned = 0;
+    let captains = 0;
     for (let run = 0; run < 6; run++) {
       const { state, callUps: c } = autoplay(
         { name: 'נועה לוי', shirtNumber: 7, sport: run % 2 ? 'basketball' : 'football', position: run % 2 ? 'SG' : 'striker', region: 'center', club: run % 2 ? 'אליצור גבעתיים' : 'השקמה רמת חן', jobId: 'security' },
@@ -172,11 +175,13 @@ describe('long careers', () => {
       );
       callUps += c;
       caps += state.player.national.caps + state.player.national.u21Caps;
+      captains += state.news.some((n) => n.text.includes('נבחר לקפטן')) || state.player.isCaptain ? 1 : 0;
       sponsorsSigned += state.news.filter((n) => n.text.includes('הפנים החדשות')).length + state.player.sponsors.length;
     }
     expect(callUps).toBeGreaterThan(0);
     expect(caps).toBeGreaterThan(0);
     expect(sponsorsSigned).toBeGreaterThan(0);
+    expect(captains).toBeGreaterThan(0);
   });
 });
 

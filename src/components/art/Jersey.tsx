@@ -9,6 +9,7 @@ interface JerseyProps {
   number: number | string;
   sport: SportType;
   sponsor?: string;
+  captain?: boolean;
   width?: number;
   className?: string;
 }
@@ -17,7 +18,7 @@ const FOOTBALL = 'M62 18 Q100 34 138 18 L184 42 L168 92 L148 84 L148 204 Q100 21
 const BASKETBALL = 'M66 14 Q100 42 134 14 L150 17 Q147 62 166 78 L162 205 Q100 214 38 205 L34 78 Q53 62 50 17 Z';
 
 /** Back view of the player's shirt with name and number, in club colors. */
-export function Jersey({ primary, secondary, name, number, sport, sponsor, width = 180, className }: JerseyProps) {
+export function Jersey({ primary, secondary, name, number, sport, sponsor, captain, width = 180, className }: JerseyProps) {
   const id = useId().replace(/:/g, '');
   const text = primary.toLowerCase() === '#ffffff' ? secondary : readableOn(primary);
   const outline = primary.toLowerCase() === '#ffffff' ? secondary : '#13233a';
@@ -75,6 +76,14 @@ export function Jersey({ primary, secondary, name, number, sport, sponsor, width
       >
         {number}
       </text>
+      {captain && (
+        <g transform={sport === 'football' ? 'rotate(-18 40 64)' : 'rotate(-12 44 60)'}>
+          <rect x={sport === 'football' ? 22 : 30} y="56" width="34" height="15" rx="2" fill="#e3b24c" stroke="#120d02" strokeOpacity="0.5" />
+          <text x={sport === 'football' ? 39 : 47} y="68" textAnchor="middle" fontSize="12" fontWeight="900" fill="#120d02" fontFamily="Heebo, sans-serif">
+            C
+          </text>
+        </g>
+      )}
       {sponsor && (
         <text x="100" y="192" textAnchor="middle" fontSize="11" fontWeight="700" fill={text} opacity="0.85" fontFamily="Heebo, system-ui, sans-serif">
           {sponsor}

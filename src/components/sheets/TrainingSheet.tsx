@@ -56,11 +56,11 @@ export function TrainingSheet({ state, dispatch, onClose }: Props) {
                 <div className="text-xs text-muted">{gains}</div>
               </div>
               <div className="shrink-0 space-y-0.5 text-left text-xs">
-                <div className="flex items-center gap-1 text-rose-600">
+                <div className="flex items-center gap-1 text-rose-400">
                   <Zap size={12} />-{opt.energyCost}%
                 </div>
                 {opt.budgetCost > 0 && (
-                  <div className="flex items-center gap-1 text-amber-600">
+                  <div className="flex items-center gap-1 text-amber-300">
                     <Coins size={12} />
                     {formatMoney(opt.budgetCost)}
                   </div>

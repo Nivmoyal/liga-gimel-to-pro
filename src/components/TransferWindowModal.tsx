@@ -65,7 +65,7 @@ export function TransferWindowModal({ state, dispatch }: Props) {
                     width={52}
                   />
                   {up && (
-                    <span className="flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-[11px] font-black text-white">
+                    <span className="flex items-center gap-1 rounded-full bg-brand px-2 py-0.5 text-[11px] font-black text-black">
                       <Star size={12} />
                       קפיצת מדרגה
                     </span>
@@ -93,7 +93,7 @@ export function TransferWindowModal({ state, dispatch }: Props) {
                   </div>
                 </div>
                 {offer.contract === 'pro' && player.jobId && (
-                  <p className="mb-2 text-xs text-emerald-600">חתימה תסיים אוטומטית את העבודה האזרחית.</p>
+                  <p className="mb-2 text-xs text-emerald-400">חתימה תסיים אוטומטית את העבודה האזרחית.</p>
                 )}
                 <GoldButton onClick={() => dispatch({ type: 'ACCEPT_OFFER', offerId: offer.id })}>
                   <Signature size={18} />

@@ -15,10 +15,10 @@ export function MainCTA({ state, onStart }: MainCTAProps) {
   const fixture = fixtureFor(state.league, state.matchday);
   const opponent = state.league.teams[fixture.opponentIndex]?.name ?? '';
   return (
-    <div className="fixed inset-x-0 bottom-[calc(3.6rem+env(safe-area-inset-bottom))] z-30 bg-gradient-to-t from-pitch via-pitch to-transparent px-4 pb-2 pt-5">
+    <div className="fixed inset-x-0 bottom-[calc(3.6rem+env(safe-area-inset-bottom))] z-30 bg-gradient-to-t from-pitch via-pitch/95 to-transparent px-4 pb-2 pt-5">
       <div className="mx-auto max-w-md">
         {blocker && (
-          <div className="mb-1.5 flex items-center justify-center gap-1.5 rounded-lg border border-rose-500/40 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-600">
+          <div className="mb-1.5 flex items-center justify-center gap-1.5 rounded-lg border border-rose-500/40 bg-[#2a1719] px-3 py-1.5 text-xs font-bold text-rose-400">
             <CircleAlert size={14} />
             {blocker}
           </div>
@@ -26,7 +26,7 @@ export function MainCTA({ state, onStart }: MainCTAProps) {
         <button
           onClick={onStart}
           disabled={Boolean(blocker)}
-          className="flex w-full items-center justify-between gap-3 rounded-2xl bg-brand px-5 py-3.5 text-white shadow-xl shadow-brand/30 transition hover:bg-brand-600 active:scale-[0.99] disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+          className="flex w-full items-center justify-between gap-3 btn-gold rounded-md px-5 py-3.5 shadow-xl shadow-black/50 transition active:scale-[0.99]"
         >
           <div className="text-right">
             <div className="text-lg font-black leading-tight">{CTA_LABEL[state.player.sport]}</div>
@@ -34,7 +34,7 @@ export function MainCTA({ state, onStart }: MainCTAProps) {
               מחזור {state.matchday + 1} | {fixture.home ? 'בבית' : 'בחוץ'} מול {opponent}
             </div>
           </div>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/25">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/15">
             <Play size={20} fill="currentColor" />
           </div>
         </button>

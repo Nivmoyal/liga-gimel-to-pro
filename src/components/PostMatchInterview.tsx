@@ -1,13 +1,11 @@
-import { ChevronLeft, Mic } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import type { GameState } from '../types/game';
 import type { GameAction } from '../state/gameReducer';
 import { getParsedEvent } from '../state/gameLogic';
-import { SURFACE_LABEL } from '../data/sports';
-import { Sheet } from './ui/Sheet';
 import { ChoiceButton } from './ui/ChoiceButton';
 import { OutcomeBox } from './ui/OutcomeBox';
 import { GoldButton } from './ui/GoldButton';
-import { SceneBanner } from './art/SceneBanner';
+import { GameCard } from './ui/GameCard';
 
 interface Props {
   state: GameState;
@@ -21,10 +19,15 @@ export function PostMatchInterview({ state, dispatch }: Props) {
   if (!match || !event) return null;
   const outcome = match.pendingOutcome;
   return (
-    <Sheet
-      title="ראיון אחרי המשחק"
-      subtitle={`בצד ${SURFACE_LABEL[state.player.sport]}`}
-      icon={Mic}
+    <GameCard
+      label="ראיון אחרי המשחק"
+      scene={event.scene ?? 'press'}
+      seed={event.id}
+      sport={state.player.sport}
+      badge="ראיון"
+      kicker={<span className="text-brand">{event.speaker}</span>}
+      title={event.title}
+      text={event.text}
       footer={
         outcome ? (
           <GoldButton onClick={() => dispatch({ type: 'POST_CONTINUE' })}>
@@ -34,26 +37,15 @@ export function PostMatchInterview({ state, dispatch }: Props) {
         ) : undefined
       }
     >
-      <SceneBanner state={state} scene={event.scene ?? 'press'} />
-      <div className="mb-4 flex gap-3">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-rose-500/15 text-rose-600">
-          <Mic size={22} />
-        </div>
-        <div>
-          <div className="text-xs font-bold text-brand">{event.speaker}</div>
-          <h3 className="text-lg font-black">{event.title}</h3>
-          <p className="mt-1 leading-relaxed text-ink/80">{event.text}</p>
-        </div>
-      </div>
       {outcome ? (
         <OutcomeBox outcome={outcome} sport={state.player.sport} />
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {event.choices.map((choice, i) => (
             <ChoiceButton key={i} choice={choice} index={i} player={state.player} onChoose={(index) => dispatch({ type: 'POST_CHOICE', index })} />
           ))}
         </div>
       )}
-    </Sheet>
+    </GameCard>
   );
 }

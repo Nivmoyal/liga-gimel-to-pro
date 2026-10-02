@@ -779,5 +779,53 @@
         }
       }
     ]
+  },
+  {
+    "id": "post_cap_001",
+    "type": "postMatch",
+    "sport": "both",
+    "scene": "press",
+    "weight": 2,
+    "conditions": {
+      "requiresCaptain": true,
+      "matchResult": [
+        "loss"
+      ]
+    },
+    "speaker": "התקשורת",
+    "title": "הקפטן נשלח לתקשורת",
+    "text": "אחרי ההפסד ל{יריבה} כולם מחכים לשמוע את קפטן {קבוצה}.",
+    "choices": [
+      {
+        "label": "מגן על החבר׳ה ולוקח הכל עליי",
+        "success": {
+          "text": "החדר שמע את זה. הם יילחמו בשבילך בשבוע הבא.",
+          "effects": {
+            "teamMorale": 8,
+            "fanRep": 3,
+            "confidence": -2
+          }
+        }
+      },
+      {
+        "label": "דורש מכולם יותר, כולל ממני",
+        "success": {
+          "text": "מסר חד. המאמן מהנהן מול הטלוויזיה.",
+          "effects": {
+            "coachApproval": 4,
+            "teamMorale": 2
+          }
+        }
+      },
+      {
+        "label": "מבקש מהמאמן לדבר במקומי",
+        "success": {
+          "text": "האוהדים מצפים מהקפטן לעמוד מול המצלמה.",
+          "effects": {
+            "fanRep": -4
+          }
+        }
+      }
+    ]
   }
 ]

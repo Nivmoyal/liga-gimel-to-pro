@@ -71,6 +71,7 @@ export interface Effects {
   attributes?: Partial<Attributes>;
   injuryWeeks?: number;
   setAgent?: string | null;
+  setCaptain?: boolean;
   // Match-only effects
   rating?: number;
   playerGoals?: number;
@@ -105,6 +106,7 @@ export interface EventConditions {
   maxDivision?: number;
   requiresJob?: boolean;
   requiresAgent?: boolean;
+  requiresCaptain?: boolean;
   contract?: ContractType[];
   minOvr?: number;
   positions?: Position[];
@@ -122,7 +124,7 @@ export interface GameEvent {
   tip?: string;
   /** Minute / time label for in-game scenarios. */
   clock?: string;
-  /** Illustration key rendered by SceneArt (falls back to a default per event type). */
+  /** Photo key for the event (see src/data/photos.ts). */
   scene?: string;
   /** Clutch scenarios make the match close so the decision decides the result. */
   clutch?: boolean;
@@ -187,6 +189,8 @@ export interface NationalStats {
 export interface Player {
   name: string;
   shirtNumber: number;
+  /** Captain of the current club (lost on transfer or when the coach loses faith). */
+  isCaptain: boolean;
   sport: SportType;
   position: Position;
   region: RegionId;
@@ -339,6 +343,7 @@ export interface NationalCallUp {
 export interface GameFlags {
   agentDiscovered: boolean;
   eliteAgentOffered: boolean;
+  captainOfferSeason: number;
   postedThisWeek: boolean;
   shiftsThisWeek: number;
   jobWarnings: number;

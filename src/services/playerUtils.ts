@@ -71,6 +71,7 @@ export function applyPlayerEffects(player: Player, effects: Effects): Player {
     }
   }
   if (effects.setAgent !== undefined) next.agentId = effects.setAgent;
+  if (effects.setCaptain !== undefined) next.isCaptain = effects.setCaptain;
   return next;
 }
 

@@ -4,7 +4,7 @@ import type { GameAction } from '../state/gameReducer';
 import { Sheet } from './ui/Sheet';
 import { GoldButton } from './ui/GoldButton';
 import { Crest } from './art/Crest';
-import { SceneBanner } from './art/SceneBanner';
+import { ScenePhoto } from './art/ScenePhoto';
 
 interface Props {
   state: GameState;
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const OUTCOME_LABEL = { win: 'ניצחון', draw: 'תיקו', loss: 'הפסד' } as const;
-const OUTCOME_COLOR = { win: 'text-emerald-600', draw: 'text-amber-600', loss: 'text-rose-600' } as const;
+const OUTCOME_COLOR = { win: 'text-emerald-400', draw: 'text-amber-300', loss: 'text-rose-400' } as const;
 
 export function MatchSummaryModal({ state, dispatch }: Props) {
   const match = state.currentMatch;
@@ -46,8 +46,8 @@ export function MatchSummaryModal({ state, dispatch }: Props) {
         </GoldButton>
       }
     >
-      <SceneBanner state={state} scene={result.outcome === 'win' ? 'stadium' : 'field'} height={220}>
-        <div className="absolute inset-x-3 bottom-3 rounded-2xl bg-white/90 p-3 text-center shadow-lg backdrop-blur">
+      <ScenePhoto scene={result.outcome === 'win' ? 'stadium' : 'field'} sport={player.sport} height={230} className="mb-4 rounded-2xl">
+        <div className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/15 bg-black/65 p-3 text-center shadow-lg backdrop-blur">
           <div className={`text-sm font-black ${OUTCOME_COLOR[result.outcome]}`}>
             {OUTCOME_LABEL[result.outcome]}
             {result.overtime ? ' (אחרי הארכה)' : ''}
@@ -68,7 +68,7 @@ export function MatchSummaryModal({ state, dispatch }: Props) {
             </div>
           </div>
         </div>
-      </SceneBanner>
+      </ScenePhoto>
 
       {result.rating !== null ? (
         <div className="mb-4 grid grid-cols-4 gap-2">
@@ -90,7 +90,7 @@ export function MatchSummaryModal({ state, dispatch }: Props) {
       )}
 
       {result.motm && (
-        <div className="mb-4 flex items-center gap-2 rounded-xl bg-brand p-3 font-black text-white">
+        <div className="mb-4 flex items-center gap-2 btn-gold chamfer rounded-md p-3 font-black">
           <Trophy size={20} />
           שחקן המשחק!
         </div>
@@ -103,9 +103,9 @@ export function MatchSummaryModal({ state, dispatch }: Props) {
             {match.log.map((entry) => (
               <li key={entry.eventId} className="flex gap-2 rounded-xl bg-card p-2.5 text-sm">
                 {entry.success ? (
-                  <CircleCheck size={18} className="mt-0.5 shrink-0 text-emerald-600" />
+                  <CircleCheck size={18} className="mt-0.5 shrink-0 text-emerald-400" />
                 ) : (
-                  <CircleX size={18} className="mt-0.5 shrink-0 text-rose-600" />
+                  <CircleX size={18} className="mt-0.5 shrink-0 text-rose-400" />
                 )}
                 <div>
                   <div className="font-bold">{entry.title}</div>

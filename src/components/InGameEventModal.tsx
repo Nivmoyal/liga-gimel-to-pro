@@ -1,18 +1,24 @@
-import { ChevronLeft, Flame, Lightbulb, Timer } from 'lucide-react';
+import { ChevronLeft, Lightbulb } from 'lucide-react';
 import type { GameState } from '../types/game';
 import type { GameAction } from '../state/gameReducer';
 import { getParsedEvent } from '../state/gameLogic';
-import { SURFACE_LABEL } from '../data/sports';
-import { Sheet } from './ui/Sheet';
 import { ChoiceButton } from './ui/ChoiceButton';
 import { OutcomeBox } from './ui/OutcomeBox';
 import { GoldButton } from './ui/GoldButton';
+import { GameCard } from './ui/GameCard';
 import { MatchHeader } from './MatchHeader';
-import { SceneBanner } from './art/SceneBanner';
 
 interface Props {
   state: GameState;
   dispatch: (a: GameAction) => void;
+}
+
+/** "Clock" labels like "דקה 34" become a compact pill: "34׳ הזדמנות". */
+function badgeFor(clock: string | undefined, clutch: boolean | undefined) {
+  const label = clutch ? 'רגע הכרעה' : 'הזדמנות';
+  if (!clock) return label;
+  const minute = clock.match(/^דקה (.+)$/);
+  return minute ? `${minute[1]}׳ ${label}` : `${clock} | ${label}`;
 }
 
 /** In-game decision scenario with a scouting tip and three skill-check actions. */
@@ -26,10 +32,24 @@ export function InGameEventModal({ state, dispatch }: Props) {
   const isLast = match.inGameIndex >= total - 1;
 
   return (
-    <Sheet
-      title={`רגע מכריע על ${SURFACE_LABEL[state.player.sport]}`}
-      subtitle={`מצב ${match.inGameIndex + 1} מתוך ${total}`}
-      icon={Flame}
+    <GameCard
+      label="רגע מכריע"
+      scene={event.scene ?? 'field'}
+      seed={event.id}
+      sport={state.player.sport}
+      badge={badgeFor(event.clock, event.clutch)}
+      kicker={
+        <>
+          <MatchHeader state={state} />
+          <div className="mt-2 flex justify-center gap-1">
+            {Array.from({ length: total }, (_, i) => (
+              <span key={i} className={`h-1 w-6 rounded-full ${i < match.inGameIndex ? 'bg-emerald-500' : i === match.inGameIndex ? 'bg-brand' : 'bg-line'}`} />
+            ))}
+          </div>
+        </>
+      }
+      title={event.title}
+      text={event.text}
       footer={
         outcome ? (
           <GoldButton onClick={() => dispatch({ type: 'INGAME_CONTINUE' })}>
@@ -39,42 +59,27 @@ export function InGameEventModal({ state, dispatch }: Props) {
         ) : undefined
       }
     >
-      <MatchHeader state={state} />
-      <SceneBanner state={state} scene={event.scene} />
-      <div className="mb-3 flex items-center gap-2">
-        {event.clock && (
-          <span className="flex items-center gap-1 rounded-full bg-rose-500/15 px-2.5 py-1 text-xs font-bold text-rose-600">
-            <Timer size={13} />
-            {event.clock}
-          </span>
-        )}
-        {event.clutch && <span className="rounded-full bg-brand px-2.5 py-1 text-xs font-black text-white">רגע הכרעה</span>}
-        <div className="mr-auto flex gap-1">
-          {Array.from({ length: total }, (_, i) => (
-            <span key={i} className={`h-1.5 w-6 rounded-full ${i < match.inGameIndex ? 'bg-emerald-500' : i === match.inGameIndex ? 'bg-brand' : 'bg-line'}`} />
-          ))}
-        </div>
-      </div>
-      <h3 className="mb-1 text-xl font-black">{event.title}</h3>
-      <p className="mb-3 leading-relaxed text-ink/80">{event.text}</p>
-      {event.tip && !outcome && (
-        <div className="mb-4 flex gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 p-3 text-sm">
-          <Lightbulb size={18} className="shrink-0 text-sky-700" />
-          <div>
-            <div className="text-xs font-bold text-sky-700">טיפ הסקאוט</div>
-            <p className="leading-snug text-ink/80">{event.tip}</p>
-          </div>
-        </div>
-      )}
       {outcome ? (
         <OutcomeBox outcome={outcome} sport={state.player.sport} />
       ) : (
-        <div className="space-y-2">
-          {event.choices.map((choice, i) => (
-            <ChoiceButton key={i} choice={choice} index={i} player={state.player} onChoose={(index) => dispatch({ type: 'INGAME_CHOICE', index })} />
-          ))}
-        </div>
+        <>
+          {event.tip && (
+            <div className="mb-4 flex gap-2 rounded-xl border border-line bg-card-2 p-3 text-sm">
+              <Lightbulb size={18} className="shrink-0 text-brand" />
+              <p className="leading-snug text-ink/80">
+                <span className="font-bold text-brand">המודיעין: </span>
+                {event.tip}
+              </p>
+            </div>
+          )}
+          <p className="mb-2.5 text-center text-sm font-bold text-muted">מה עושים?</p>
+          <div className="space-y-2.5">
+            {event.choices.map((choice, i) => (
+              <ChoiceButton key={i} choice={choice} index={i} player={state.player} onChoose={(index) => dispatch({ type: 'INGAME_CHOICE', index })} />
+            ))}
+          </div>
+        </>
       )}
-    </Sheet>
+    </GameCard>
   );
 }

@@ -1199,5 +1199,147 @@
         }
       }
     ]
+  },
+  {
+    "id": "life_captain_offer",
+    "type": "life",
+    "sport": "both",
+    "trigger": "captain_offer",
+    "scene": "coach_board",
+    "speaker": "המאמן",
+    "title": "סרט הקפטן",
+    "text": "המאמן מזמין אותך לשיחה אחרי האימון: 'החדר מקשיב לך, {שחקן}. אני רוצה שתענוד את סרט הקפטן של {קבוצה}.'",
+    "choices": [
+      {
+        "label": "מקבל בגאווה",
+        "success": {
+          "text": "המאמן מושיט לך את הסרט. מהיום אתה הקול של הקבוצה ב{משטח}.",
+          "effects": {
+            "setCaptain": true,
+            "confidence": 6,
+            "teamMorale": 5
+          }
+        }
+      },
+      {
+        "label": "מקבל, אבל רק אם החבר׳ה מסכימים",
+        "success": {
+          "text": "המאמן מעלה את זה מול כל הקבוצה. מחיאות כפיים מכל הכיוונים. אתה הקפטן.",
+          "effects": {
+            "setCaptain": true,
+            "teamMorale": 9,
+            "coachApproval": 2
+          }
+        }
+      },
+      {
+        "label": "עוד לא מוכן לזה",
+        "success": {
+          "text": "המאמן מכבד את ההחלטה. 'הדלת פתוחה. אולי בעונה הבאה.'",
+          "effects": {
+            "coachApproval": -3,
+            "confidence": -2
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "life_captain_001",
+    "type": "life",
+    "sport": "both",
+    "scene": "locker",
+    "weight": 2,
+    "conditions": {
+      "requiresCaptain": true
+    },
+    "speaker": "חדר ההלבשה",
+    "title": "ריב בחדר ההלבשה",
+    "text": "שני שחקנים של {קבוצה} כמעט מתקוטטים אחרי האימון. כולם מסתכלים על הקפטן.",
+    "choices": [
+      {
+        "label": "נכנס ביניהם ומרגיע",
+        "stat": "mental",
+        "difficulty": 50,
+        "success": {
+          "text": "כמה מילים שקטות, לחיצת יד, וזה נגמר. ככה נראה קפטן.",
+          "effects": {
+            "teamMorale": 8,
+            "coachApproval": 3
+          }
+        },
+        "fail": {
+          "text": "הם צועקים גם עליך. המאמן נאלץ להתערב.",
+          "effects": {
+            "teamMorale": -4,
+            "coachApproval": -2
+          }
+        }
+      },
+      {
+        "label": "מכנס ישיבת קבוצה",
+        "success": {
+          "text": "שיחה פתוחה של חצי שעה. האוויר מתנקה.",
+          "effects": {
+            "teamMorale": 5,
+            "energy": -4
+          }
+        }
+      },
+      {
+        "label": "משאיר את זה למאמן",
+        "success": {
+          "text": "המאמן פותר את זה, אבל שואל אחר כך למה הקפטן לא התערב.",
+          "effects": {
+            "coachApproval": -3
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "life_captain_002",
+    "type": "life",
+    "sport": "both",
+    "scene": "field",
+    "weight": 2,
+    "conditions": {
+      "requiresCaptain": true
+    },
+    "speaker": "שחקן צעיר",
+    "title": "הצעיר צריך אותך",
+    "text": "שחקן בן 18 שעלה מהנוער של {קבוצה} מבקש ממך להישאר איתו אחרי האימון לעבוד על ה{ספורט}.",
+    "choices": [
+      {
+        "label": "נשאר איתו שעה",
+        "success": {
+          "text": "הוא לא מפסיק להודות לך. הוא ישחק בשבילך עד הסוף.",
+          "effects": {
+            "teamMorale": 5,
+            "energy": -8,
+            "fanRep": 2
+          }
+        }
+      },
+      {
+        "label": "נותן לו טיפים קצרים",
+        "success": {
+          "text": "עשר דקות, שלושה טיפים. הוא שומר אותם בטלפון.",
+          "effects": {
+            "teamMorale": 2
+          }
+        }
+      },
+      {
+        "label": "שולח אותו לעוזר המאמן",
+        "success": {
+          "text": "הוא מבין, אבל קצת מאוכזב.",
+          "effects": {
+            "teamMorale": -1,
+            "energy": 2
+          }
+        }
+      }
+    ]
   }
 ]

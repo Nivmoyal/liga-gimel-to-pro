@@ -12,7 +12,7 @@ export function SportIndicator({ state }: { state: GameState }) {
   return (
     <div className="flex items-center justify-between gap-2 rounded-2xl border border-line bg-card px-3 py-2.5">
       <div className="flex items-center gap-2.5">
-        <Jersey primary={colors.primary} secondary={colors.secondary} name={player.name} number={player.shirtNumber} sport={player.sport} width={40} />
+        <Jersey primary={colors.primary} secondary={colors.secondary} name={player.name} number={player.shirtNumber} sport={player.sport} captain={player.isCaptain} width={40} />
         <div>
           <div className="flex items-center gap-1 text-[11px] text-muted">
             <Icon size={12} className="text-brand" />
@@ -25,7 +25,7 @@ export function SportIndicator({ state }: { state: GameState }) {
       </div>
       <div className="text-left">
         {player.injuryWeeks > 0 ? (
-          <div className="flex items-center gap-1 text-xs font-bold text-rose-600">
+          <div className="flex items-center gap-1 text-xs font-bold text-rose-400">
             <HeartPulse size={14} />
             פצוע ({player.injuryWeeks})
           </div>

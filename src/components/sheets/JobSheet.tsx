@@ -29,7 +29,7 @@ export function JobSheet({ state, dispatch, onClose }: Props) {
     return (
       <Sheet title="עבודה אזרחית" icon={Briefcase} onClose={onClose}>
         <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4">
-          <div className="mb-1 flex items-center gap-2 font-extrabold text-emerald-600">
+          <div className="mb-1 flex items-center gap-2 font-extrabold text-emerald-400">
             <Car size={18} />
             שחקן מקצוען במשרה מלאה
           </div>
@@ -70,7 +70,7 @@ export function JobSheet({ state, dispatch, onClose }: Props) {
           </div>
           <div className="rounded-xl bg-pitch p-2">
             <div className="text-[11px] text-muted">אנרגיה</div>
-            <div className="font-bold text-rose-600">-{job.energyCost}%</div>
+            <div className="font-bold text-rose-400">-{job.energyCost}%</div>
           </div>
           <div className="rounded-xl bg-pitch p-2">
             <div className="text-[11px] text-muted">השבוע</div>
@@ -81,7 +81,7 @@ export function JobSheet({ state, dispatch, onClose }: Props) {
       </div>
 
       {flags.shiftsThisWeek === 0 && (
-        <div className="mb-3 flex items-start gap-2 rounded-xl bg-brand/10 p-3 text-xs text-amber-700">
+        <div className="mb-3 flex items-start gap-2 rounded-xl bg-brand/10 p-3 text-xs text-amber-200">
           <TriangleAlert size={16} className="shrink-0" />
           <span>
             הבוס מצפה למשמרת אחת לפחות בכל שבוע.
@@ -137,7 +137,7 @@ export function JobPicker({ onPick, selected }: { onPick: (id: JobId) => void; s
             </div>
             <div className="shrink-0 text-left text-xs">
               <div className="font-bold text-brand">{formatMoney(job.payPerShift)}</div>
-              <div className="text-rose-600">-{job.energyCost}%</div>
+              <div className="text-rose-400">-{job.energyCost}%</div>
             </div>
           </button>
         );

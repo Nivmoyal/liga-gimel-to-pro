@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BadgeDollarSign, CalendarDays, Coins, Flag, Heart, History, RotateCcw, Smile, Users } from 'lucide-react';
+import { BadgeDollarSign, House, CalendarDays, Coins, Flag, Heart, History, RotateCcw, Smile, Users } from 'lucide-react';
 import type { GameState } from '../../types/game';
 import { getRegion } from '../../data/clubs';
 import { ATTR_KEYS, ATTR_LABEL, CONTRACT_LABEL, SPORT_LABEL, divisionName, positionLabel } from '../../data/sports';
@@ -12,7 +12,7 @@ import { Jersey } from '../art/Jersey';
 import { Crest } from '../art/Crest';
 import { SponsorLogo } from '../art/SponsorLogo';
 
-export function CareerView({ state, onReset }: { state: GameState; onReset: () => void }) {
+export function CareerView({ state, onReset, onHome }: { state: GameState; onReset: () => void; onHome: () => void }) {
   const { player } = state;
   const [confirm, setConfirm] = useState(false);
   const agent = getAgent(player.agentId);
@@ -35,6 +35,7 @@ export function CareerView({ state, onReset }: { state: GameState; onReset: () =
             number={player.shirtNumber}
             sport={player.sport}
             sponsor={clubIdentity(player.club).shirtSponsor}
+            captain={player.isCaptain}
             width={74}
             className="shrink-0"
           />
@@ -43,6 +44,7 @@ export function CareerView({ state, onReset }: { state: GameState; onReset: () =
             <div className="flex items-center gap-1.5 text-sm font-semibold">
               <Crest name={player.club} size={16} />
               <span className="truncate">{player.club}</span>
+              {player.isCaptain && <span className="rounded bg-brand px-1.5 text-[11px] font-black text-black">קפטן</span>}
             </div>
             <div className="text-sm text-muted">
               {SPORT_LABEL[player.sport]} | {positionLabel(player.position)} | {getRegion(player.region).name}
@@ -153,12 +155,17 @@ export function CareerView({ state, onReset }: { state: GameState; onReset: () =
         )}
       </section>
 
+      <button onClick={onHome} className="flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-card py-3 font-bold text-ink hover:border-brand/50">
+        <House size={16} />
+        למסך הפתיחה (המשחק נשמר)
+      </button>
+
       <section className="rounded-2xl border border-rose-500/30 bg-rose-500/5 p-4">
         {confirm ? (
           <div className="space-y-2">
             <p className="text-sm">למחוק את הקריירה ולהתחיל מחדש? אי אפשר לבטל.</p>
             <div className="grid grid-cols-2 gap-2">
-              <button onClick={onReset} className="rounded-xl bg-rose-500 py-2.5 font-bold text-white hover:bg-rose-600">
+              <button onClick={onReset} className="rounded-xl bg-rose-500 py-2.5 font-bold text-white hover:bg-rose-400">
                 כן, להתחיל מחדש
               </button>
               <button onClick={() => setConfirm(false)} className="rounded-xl border border-line bg-card py-2.5 font-bold">
@@ -167,7 +174,7 @@ export function CareerView({ state, onReset }: { state: GameState; onReset: () =
             </div>
           </div>
         ) : (
-          <button onClick={() => setConfirm(true)} className="flex w-full items-center justify-center gap-2 py-1 font-bold text-rose-600">
+          <button onClick={() => setConfirm(true)} className="flex w-full items-center justify-center gap-2 py-1 font-bold text-rose-400">
             <RotateCcw size={16} />
             קריירה חדשה
           </button>

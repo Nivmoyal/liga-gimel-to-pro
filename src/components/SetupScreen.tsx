@@ -5,14 +5,14 @@ import { REGIONS, getRegion } from '../data/clubs';
 import { DIVISIONS, SPORT_LABEL, divisionName, positionsFor } from '../data/sports';
 import { JobPicker } from './sheets/JobSheet';
 import { GoldButton } from './ui/GoldButton';
-import { SceneArt } from './art/SceneArt';
+import { ScenePhoto } from './art/ScenePhoto';
 import { Jersey } from './art/Jersey';
 import { Crest } from './art/Crest';
 import { clubIdentity } from '../data/clubIdentity';
 
 const STEPS = ['שחקן וענף', 'עמדה', 'אזור ומועדון', 'עבודה אזרחית'];
 
-export function SetupScreen({ onStart }: { onStart: (setup: SetupData) => void }) {
+export function SetupScreen({ onStart, onBack }: { onStart: (setup: SetupData) => void; onBack: () => void }) {
   const [step, setStep] = useState(0);
   const [name, setName] = useState('');
   const [number, setNumber] = useState('10');
@@ -69,14 +69,8 @@ export function SetupScreen({ onStart }: { onStart: (setup: SetupData) => void }
     <div className="mx-auto flex min-h-dvh max-w-md flex-col px-4 pb-6 pt-[max(1.25rem,env(safe-area-inset-top))]">
       <header className="mb-5">
         <div className="relative -mx-4 -mt-5 mb-4 overflow-hidden rounded-b-3xl shadow-lg shadow-brand/20">
-          <SceneArt
-            scene={step === 0 ? 'stadium' : 'locker'}
-            sport={sport ?? 'football'}
-            team={{ shirt: shirtColors.primary, shorts: shirtColors.secondary }}
-            number={Number(number) || 10}
-            height={step === 0 ? 190 : 120}
-          />
-          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#13233a]/95 via-[#13233a]/70 to-transparent px-4 pb-3 pt-14 text-white">
+          <ScenePhoto scene={step === 0 ? 'stadium' : 'locker'} sport={sport ?? 'football'} height={step === 0 ? 190 : 120} fade={false} />
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent px-4 pb-3 pt-14 text-white">
             <h1 className="text-2xl font-black leading-tight">מליגה ג׳ למקצוענות</h1>
             <p className="text-sm text-white/85">קריירה ישראלית בכדורגל או בכדורסל</p>
           </div>
@@ -243,15 +237,13 @@ export function SetupScreen({ onStart }: { onStart: (setup: SetupData) => void }
       </main>
 
       <footer className="mt-6 flex gap-2">
-        {step > 0 && (
-          <button
-            onClick={() => setStep(step - 1)}
-            className="flex items-center gap-1 rounded-2xl border border-line bg-card px-4 py-3.5 font-bold text-muted hover:text-ink"
-          >
-            <ChevronRight size={18} />
-            חזרה
-          </button>
-        )}
+        <button
+          onClick={() => (step > 0 ? setStep(step - 1) : onBack())}
+          className="flex items-center gap-1 rounded-md border border-line bg-card px-4 py-3.5 font-bold text-muted hover:text-ink"
+        >
+          <ChevronRight size={18} />
+          חזרה
+        </button>
         {step < STEPS.length - 1 ? (
           <GoldButton disabled={!canNext} onClick={() => setStep(step + 1)}>
             המשך

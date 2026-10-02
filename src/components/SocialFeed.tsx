@@ -14,10 +14,10 @@ const FILTERS: { id: Filter; label: string }[] = [
 ];
 
 const CATEGORY_META: Record<NewsCategory, { icon: LucideIcon; label: string; color: string }> = {
-  club: { icon: Building, label: 'המועדון', color: 'text-sky-600 bg-sky-500/10' },
-  rumors: { icon: Flame, label: 'שמועות', color: 'text-orange-600 bg-orange-500/10' },
-  league: { icon: Megaphone, label: 'הליגה', color: 'text-emerald-600 bg-emerald-500/10' },
-  fans: { icon: Users, label: 'אוהדים', color: 'text-fuchsia-600 bg-fuchsia-500/10' },
+  club: { icon: Building, label: 'המועדון', color: 'text-sky-400 bg-sky-500/10' },
+  rumors: { icon: Flame, label: 'שמועות', color: 'text-orange-400 bg-orange-500/10' },
+  league: { icon: Megaphone, label: 'הליגה', color: 'text-emerald-400 bg-emerald-500/10' },
+  fans: { icon: Users, label: 'אוהדים', color: 'text-fuchsia-400 bg-fuchsia-500/10' },
 };
 
 interface SocialFeedProps {
@@ -44,7 +44,7 @@ export function SocialFeed({ news, limit, title = 'מה מדברים עליכם'
             key={f.id}
             onClick={() => setFilter(f.id)}
             className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-bold transition ${
-              filter === f.id ? 'bg-brand text-white' : 'border border-line bg-pitch text-muted hover:text-ink'
+              filter === f.id ? 'bg-brand text-black' : 'border border-line bg-pitch text-muted hover:text-ink'
             }`}
           >
             {f.label}

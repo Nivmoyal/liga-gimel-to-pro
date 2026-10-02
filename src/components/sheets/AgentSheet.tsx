@@ -103,7 +103,7 @@ function AgentList({ ovr, onSign }: { ovr: number; onSign: (id: string) => void 
               <button
                 disabled={locked}
                 onClick={() => onSign(a.id)}
-                className="rounded-xl bg-brand px-4 py-1.5 text-sm font-bold text-white hover:bg-brand-600 disabled:bg-line disabled:text-muted"
+                className="btn-gold chamfer rounded-md px-4 py-1.5 text-sm font-black"
               >
                 {locked ? `דורש OVR ${a.minOvr}` : 'לחתום'}
               </button>

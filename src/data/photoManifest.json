@@ -478,5 +478,13 @@
       "author": "תמונת AI",
       "license": "AI"
     }
+  ],
+  "bus": [
+    {
+      "file": "images/bus.jpg",
+      "title": "A team bus at night on an Israeli highway, players resting with headphones, city lights through the window.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
   ]
 }

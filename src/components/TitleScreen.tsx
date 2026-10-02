@@ -39,9 +39,9 @@ export function TitleScreen({ save, onContinue, onNewGame, onCredits }: TitleScr
           <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-brand/60 bg-black/40 text-brand backdrop-blur">
             <Trophy size={28} />
           </div>
-          <h1 className="gold-text text-[2.6rem] font-black leading-none drop-shadow">מליגה ג׳</h1>
-          <h1 className="gold-text text-[2.6rem] font-black leading-tight drop-shadow">למקצוענות</h1>
-          <p className="mt-2 text-sm font-semibold text-white/80">קריירה ישראלית בכדורגל ובכדורסל</p>
+          <h1 className="gold-text text-[3.2rem] font-black leading-none drop-shadow">עולים ליגה</h1>
+          <p className="mt-2 text-base font-bold text-white/90">מליגה ג׳ ועד הנבחרת</p>
+          <p className="mt-1 text-sm font-semibold text-white/70">קריירה ישראלית בכדורגל ובכדורסל</p>
         </div>
 
         <div className="mt-auto space-y-3">

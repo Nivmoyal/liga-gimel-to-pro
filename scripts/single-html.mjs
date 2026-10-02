@@ -38,7 +38,7 @@ for (const list of Object.values(manifest)) {
   }
 }
 
-const html = `<title>מליגה ג׳ למקצוענות</title>
+const html = `<title>עולים ליגה</title>
 <meta name="theme-color" content="#080c0a" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

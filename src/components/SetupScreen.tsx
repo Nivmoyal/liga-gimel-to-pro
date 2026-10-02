@@ -88,7 +88,7 @@ export function SetupScreen({ onStart, onBack }: { onStart: (setup: SetupData) =
         <div className="relative -mx-4 -mt-5 mb-4 overflow-hidden rounded-b-3xl shadow-lg shadow-brand/20">
           <ScenePhoto scene={step === 0 ? 'stadium' : 'locker'} sport={sport ?? 'football'} height={step === 0 ? 190 : 120} fade={false} />
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent px-4 pb-3 pt-14 text-white">
-            <h1 className="text-2xl font-black leading-tight">מליגה ג׳ למקצוענות</h1>
+            <h1 className="text-2xl font-black leading-tight">עולים ליגה</h1>
             <p className="text-sm text-white/85">קריירה ישראלית בכדורגל או בכדורסל</p>
           </div>
         </div>

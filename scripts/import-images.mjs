@@ -1,5 +1,6 @@
 // Installs ready-made scene images (e.g. AI images made by hand) from a folder:
-// files named <scene>.jpg/.png/.webp as listed in scripts/ai-photo-prompts.json.
+// files named <scene>.jpg/.png/.webp as listed in scripts/ai-photo-prompts.json
+// (<scene>-2.jpg and so on add extra variants of a scene).
 // Thin white frame lines and slivers of neighbouring pictures (left over from
 // cutting a contact sheet) are trimmed, then each image is saved as
 // public/images/<scene>.jpg and registered in src/data/photoManifest.json.
@@ -85,7 +86,11 @@ const manifest = existsSync(MANIFEST) ? JSON.parse(await readFile(MANIFEST, 'utf
 const files = (await readdir(dir)).filter((f) => ['.jpg', '.jpeg', '.png', '.webp'].includes(extname(f).toLowerCase()));
 let installed = 0;
 for (const file of files) {
-  const key = file.slice(0, -extname(file).length);
+  // "<scene>.jpg" is the main image; "<scene>-2.jpg", "<scene>-3.jpg" add variants
+  // that the game picks between per situation.
+  const name = file.slice(0, -extname(file).length);
+  const variant = /^(.+)-(\d+)$/.exec(name);
+  const key = variant && PROMPTS.scenes[variant[1]] ? variant[1] : name;
   if (!PROMPTS.scenes[key]) {
     console.warn(`skipped ${file}: unknown scene`);
     continue;
@@ -96,8 +101,10 @@ for (const file of files) {
   const sized = width < 768 ? image.resize({ width: 768, kernel: 'lanczos3' }).sharpen({ sigma: 0.6 }) : image.resize({ width: Math.min(width, 1280), withoutEnlargement: true });
   await sized
     .jpeg({ quality: 82, mozjpeg: true })
-    .toFile(join(OUT, `${key}.jpg`));
-  manifest[key] = [{ file: `images/${key}.jpg`, title: PROMPTS.scenes[key], author: 'תמונת AI', license: 'AI' }];
+    .toFile(join(OUT, `${name}.jpg`));
+  const entry = { file: `images/${name}.jpg`, title: PROMPTS.scenes[key], author: 'תמונת AI', license: 'AI' };
+  const others = (manifest[key] ?? []).filter((p) => p.file !== entry.file);
+  manifest[key] = name === key ? [entry, ...others] : [...others, entry];
   installed += 1;
 }
 await writeFile(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');

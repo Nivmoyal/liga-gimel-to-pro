@@ -1,1 +1,434 @@
-{}
+{
+  "bb_block": [
+    {
+      "file": "images/bb_block.jpg",
+      "title": "A basketball player blocking a shot at the rim, dramatic upward angle.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "bb_drive": [
+    {
+      "file": "images/bb_drive.jpg",
+      "title": "A basketball wing driving hard to the basket between two defenders.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "bb_dunk": [
+    {
+      "file": "images/bb_dunk.jpg",
+      "title": "A basketball player dunking with two hands, rim shaking, crowd on their feet.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "bb_fastbreak": [
+    {
+      "file": "images/bb_fastbreak.jpg",
+      "title": "A basketball fast break, a guard driving to the basket for a layup with defenders chasing.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "bb_freethrow": [
+    {
+      "file": "images/bb_freethrow.jpg",
+      "title": "A basketball player at the free-throw line, ball in hands, quiet focused moment, blurred crowd behind.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "bb_pnr": [
+    {
+      "file": "images/bb_pnr.jpg",
+      "title": "A point guard dribbling around a screen set by a big man in a pick and roll, indoor court.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "bb_post": [
+    {
+      "file": "images/bb_post.jpg",
+      "title": "A basketball centre backing down a defender in the low post, physical battle under the hoop.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "bb_rebound": [
+    {
+      "file": "images/bb_rebound.jpg",
+      "title": "Several basketball players fighting for a rebound under the basket, hands reaching for the ball.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "bb_three": [
+    {
+      "file": "images/bb_three.jpg",
+      "title": "A basketball player rising for a three-point jump shot in an Israeli sports hall, defender closing out.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "bb_timeout": [
+    {
+      "file": "images/bb_timeout.jpg",
+      "title": "A basketball coach drawing a play on a clipboard during a timeout, players huddled around, sweat and towels.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "coach_board": [
+    {
+      "file": "images/coach_board.jpg",
+      "title": "A coach explaining tactics on a whiteboard to players in a dressing room, players seen from behind.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fans_basketball": [
+    {
+      "file": "images/fans_basketball.jpg",
+      "title": "Basketball fans in a sports hall cheering behind the basket, banners and drums.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fans_football": [
+    {
+      "file": "images/fans_football.jpg",
+      "title": "Passionate football fans in a stadium stand singing with scarves raised, flares glowing, night.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_1v1": [
+    {
+      "file": "images/fb_1v1.jpg",
+      "title": "A striker running through on goal one-on-one with the goalkeeper rushing out, low angle, evening floodlights.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_celebration": [
+    {
+      "file": "images/fb_celebration.jpg",
+      "title": "A football player sliding on his knees in celebration in front of a small cheering lower-league crowd.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_corner": [
+    {
+      "file": "images/fb_corner.jpg",
+      "title": "A crowded penalty box during a football corner kick, players jostling, ball arriving from the corner flag.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_counter": [
+    {
+      "file": "images/fb_counter.jpg",
+      "title": "A midfielder dribbling at speed on a counter attack with open space ahead, teammates sprinting alongside.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_cross": [
+    {
+      "file": "images/fb_cross.jpg",
+      "title": "A winger crossing the ball from the touchline at full speed, defenders racing back.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_defense": [
+    {
+      "file": "images/fb_defense.jpg",
+      "title": "A centre-back shielding the ball from a striker, shoulder to shoulder duel, intense faces turned away from camera.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_freekick": [
+    {
+      "file": "images/fb_freekick.jpg",
+      "title": "A free kick in football: a defensive wall of players jumping, the ball curling over them, floodlit evening.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_header": [
+    {
+      "file": "images/fb_header.jpg",
+      "title": "Two football players leaping for a header in the penalty area, dramatic mid-air moment.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_keeper": [
+    {
+      "file": "images/fb_keeper.jpg",
+      "title": "A goalkeeper making a full-stretch diving save, fingertips touching the ball, floodlights.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_longshot": [
+    {
+      "file": "images/fb_longshot.jpg",
+      "title": "A football player striking a powerful long-range shot from outside the box, ball flying toward the top corner.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_penalty": [
+    {
+      "file": "images/fb_penalty.jpg",
+      "title": "A football player placing the ball on the penalty spot, goalkeeper bouncing on the line, tense crowd behind the goal.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "fb_tackle": [
+    {
+      "file": "images/fb_tackle.jpg",
+      "title": "A defender making a clean sliding tackle on a wet pitch, water spraying from the grass.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "field_basketball": [
+    {
+      "file": "images/field_basketball.jpg",
+      "title": "An old municipal basketball hall with wooden floor, a few rows of bleachers, fluorescent lights.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "field_football": [
+    {
+      "file": "images/field_football.jpg",
+      "title": "A modest lower-league football ground in Israel in daylight, small concrete stand, uneven grass.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "gym": [
+    {
+      "file": "images/gym.jpg",
+      "title": "An athlete training alone in a gritty gym late at night, weights and resistance bands, warm light.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "home": [
+    {
+      "file": "images/home.jpg",
+      "title": "A warm Israeli family Friday dinner table, food and candles, cozy apartment, evening.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "intro_1": [
+    {
+      "file": "images/intro_1.jpg",
+      "title": "A worn amateur football pitch at sunset in a small Israeli town, chain-link fence, an old bench, a ball resting on the grass.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "intro_2": [
+    {
+      "file": "images/intro_2.jpg",
+      "title": "Amateur players training under weak floodlights on a patchy pitch on a weekday evening, a few people watching from the fence.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "intro_3": [
+    {
+      "file": "images/intro_3.jpg",
+      "title": "A packed Israeli football stadium at night, bright floodlights, flares and scarves in the stands, view from the tunnel toward the pitch.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "locker": [
+    {
+      "file": "images/locker.jpg",
+      "title": "A lower-league football dressing room before a match, shirts hanging on hooks, boots on the floor, tactics board.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "medical": [
+    {
+      "file": "images/medical.jpg",
+      "title": "A physiotherapist treating an athlete's knee on a treatment table in a club medical room.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "national_basketball": [
+    {
+      "file": "images/national_basketball.jpg",
+      "title": "Israel national basketball team players in blue and white uniforms huddling on court in a full arena, faces not recognizable.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "national_football": [
+    {
+      "file": "images/national_football.jpg",
+      "title": "Israel national football team players in blue and white kits lining up for the anthem in a full stadium, faces not recognizable.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "office": [
+    {
+      "file": "images/office.jpg",
+      "title": "A small club office with a contract on the desk, a pen, scarves and old team photos on the wall.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "party": [
+    {
+      "file": "images/party.jpg",
+      "title": "A lively evening party with friends in Tel Aviv, string lights and music, blurred motion.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "phone": [
+    {
+      "file": "images/phone.jpg",
+      "title": "A young athlete's hand holding a smartphone showing social media notifications, dark room lit by the screen.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "press": [
+    {
+      "file": "images/press.jpg",
+      "title": "A post-match press conference table with several microphones, a sponsor backdrop without readable text, camera flashes.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "shop": [
+    {
+      "file": "images/shop.jpg",
+      "title": "Football boots and basketball shoes on display shelves in a sports store.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "stadium_basketball": [
+    {
+      "file": "images/stadium_basketball.jpg",
+      "title": "A large basketball arena in Israel during a game, packed stands, bright court lights, jumbotron glow.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "stadium_football": [
+    {
+      "file": "images/stadium_football.jpg",
+      "title": "An Israeli football stadium at night from the stands, full crowd, bright floodlights, green pitch below.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "street_basketball": [
+    {
+      "file": "images/street_basketball.jpg",
+      "title": "A pickup basketball game on an outdoor neighbourhood court in Israel at sunset.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "street_football": [
+    {
+      "file": "images/street_football.jpg",
+      "title": "Kids and young men playing street football in a neighbourhood courtyard in Israel at sunset.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "title": [
+    {
+      "file": "images/title.jpg",
+      "title": "A lone young football player standing on a small floodlit lower-league pitch at dusk, seen from behind, Mediterranean hills and palm trees in the distance, golden sunset light.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "trophy_basketball": [
+    {
+      "file": "images/trophy_basketball.jpg",
+      "title": "Basketball players celebrating a title with a trophy on court, confetti falling.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "trophy_football": [
+    {
+      "file": "images/trophy_football.jpg",
+      "title": "Lower-league football players celebrating a promotion with a trophy, confetti, small stadium.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "work": [
+    {
+      "file": "images/work.jpg",
+      "title": "A young man working a day job in the city, tired but determined, early morning.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "work_factory": [
+    {
+      "file": "images/work_factory.jpg",
+      "title": "A young worker in a factory production line with safety glasses and gloves.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "work_instructor": [
+    {
+      "file": "images/work_instructor.jpg",
+      "title": "A young coach teaching children football drills with cones on a small pitch.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "work_mechanic": [
+    {
+      "file": "images/work_mechanic.jpg",
+      "title": "A young mechanic working under a car in a small garage, hands with grease.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "work_pizza": [
+    {
+      "file": "images/work_pizza.jpg",
+      "title": "A pizza delivery rider on a scooter in an Israeli city street at night, pizza box in the delivery bag.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ],
+  "work_security": [
+    {
+      "file": "images/work_security.jpg",
+      "title": "A young security guard at the entrance to a shopping mall, standing by a metal detector, morning.",
+      "author": "תמונת AI",
+      "license": "AI"
+    }
+  ]
+}

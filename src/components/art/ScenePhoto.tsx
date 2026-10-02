@@ -47,6 +47,8 @@ interface ScenePhotoProps {
   fade?: boolean;
 }
 
+const SOFT_EDGES = 'linear-gradient(180deg, transparent 0%, #000 18%, #000 80%, transparent 100%)';
+
 /**
  * Real photo for a scene with a cinematic grade. When no photo is installed
  * for the scene, a dark atmospheric backdrop is shown instead.
@@ -54,23 +56,39 @@ interface ScenePhotoProps {
 export function ScenePhoto({ scene, sport, seed, height = 200, className = '', children, fade = true }: ScenePhotoProps) {
   const photo = useScenePhoto(scene, sport, seed ?? '');
   const [loaded, setLoaded] = useState(false);
+  const [wide, setWide] = useState(false);
   useEffect(() => setLoaded(false), [photo?.src]);
+  // A landscape picture on a full-screen portrait scene is shown whole over a
+  // blurred copy of itself instead of being cropped to a narrow, blown-up strip.
+  const letterbox = wide && PORTRAIT_KEYS.has(scene);
   return (
     <div className={`relative overflow-hidden bg-black ${fade ? 'photo-fade' : ''} ${className}`} style={{ height }}>
       <CinematicBackdrop kind={backdropFor(scene, sport)} />
+      {photo && letterbox && (
+        <img
+          src={photo.src}
+          alt=""
+          aria-hidden
+          className={`absolute inset-0 h-full w-full scale-125 object-cover blur-2xl transition-opacity duration-500 ${loaded ? 'opacity-70' : 'opacity-0'}`}
+        />
+      )}
       {photo && (
         <img
           key={photo.src}
           src={photo.src}
           alt={photo.title ?? ''}
           referrerPolicy="no-referrer"
-          onLoad={() => setLoaded(true)}
+          onLoad={(e) => {
+            setWide(e.currentTarget.naturalWidth > e.currentTarget.naturalHeight * 1.2);
+            setLoaded(true);
+          }}
           onError={photo.onError}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`absolute transition-opacity duration-500 ${letterbox ? 'inset-x-0 top-[27%] h-auto w-full' : 'inset-0 h-full w-full object-cover'} ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          style={letterbox ? { maskImage: SOFT_EDGES, WebkitMaskImage: SOFT_EDGES } : undefined}
         />
       )}
       {photo?.author && loaded && (
-        <span className="absolute right-2 top-1 z-20 max-w-[60%] truncate text-[9px] text-white/45">צילום: {photo.author}</span>
+        <span className="absolute right-2 top-1 z-20 max-w-[60%] truncate text-[9px] text-white/45">{photo.author === 'תמונת AI' ? photo.author : `צילום: ${photo.author}`}</span>
       )}
       {children && <div className="absolute inset-0 z-10">{children}</div>}
     </div>

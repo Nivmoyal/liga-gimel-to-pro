@@ -2,6 +2,13 @@ import { ArrowLeftRight, Building, Coins, Signature, Star } from 'lucide-react';
 import type { GameState } from '../types/game';
 import type { GameAction } from '../state/gameReducer';
 import { CONTRACT_LABEL, divisionName } from '../data/sports';
+import { clubDistance } from '../data/places';
+
+function distanceLabel(km: number | null, pro: boolean): string {
+  if (km === null) return '';
+  if (km < 3) return 'בעיר שלך';
+  return pro ? `${km} ק״מ מהבית, המועדון נותן דירה` : `${km} ק״מ מהבית`;
+}
 import { getAgent } from '../data/agents';
 import { formatMoney } from '../services/playerUtils';
 import { Sheet } from './ui/Sheet';
@@ -54,6 +61,7 @@ export function TransferWindowModal({ state, dispatch }: Props) {
                     <div>
                       <div className="text-lg font-black">{offer.club}</div>
                       <div className="text-xs text-muted">{divisionName(player.sport, offer.division)}</div>
+                      <div className="text-xs text-muted">{distanceLabel(clubDistance(player.home, offer.club), offer.contract === 'pro')}</div>
                     </div>
                   </div>
                   <Jersey

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BadgeDollarSign, House, CalendarDays, Coins, Flag, Heart, History, RotateCcw, Smile, Users } from 'lucide-react';
 import type { GameState } from '../../types/game';
-import { getRegion } from '../../data/clubs';
+import { clubDistance } from '../../data/places';
 import { ATTR_KEYS, ATTR_LABEL, CONTRACT_LABEL, SPORT_LABEL, divisionName, positionLabel } from '../../data/sports';
 import { getAgent } from '../../data/agents';
 import { averageRating, calcOvr, formatFollowers, formatMoney } from '../../services/playerUtils';
@@ -16,6 +16,7 @@ export function CareerView({ state, onReset, onHome }: { state: GameState; onRes
   const { player } = state;
   const [confirm, setConfirm] = useState(false);
   const agent = getAgent(player.agentId);
+  const homeKm = clubDistance(player.home, player.club);
   const facts = [
     { icon: CalendarDays, label: 'גיל', value: String(player.age) },
     { icon: Coins, label: 'שכר שבועי', value: formatMoney(player.weeklySalary) },
@@ -47,7 +48,11 @@ export function CareerView({ state, onReset, onHome }: { state: GameState; onRes
               {player.isCaptain && <span className="rounded bg-brand px-1.5 text-[11px] font-black text-black">קפטן</span>}
             </div>
             <div className="text-sm text-muted">
-              {SPORT_LABEL[player.sport]} | {positionLabel(player.position)} | {getRegion(player.region).name}
+              {SPORT_LABEL[player.sport]} | {positionLabel(player.position)}
+            </div>
+            <div className="text-xs text-muted">
+              גר ב{player.home.name}
+              {homeKm !== null && homeKm >= 3 ? ` | ${homeKm} ק״מ מהמועדון` : ' | ליד המועדון'}
             </div>
             <div className="text-xs text-muted">
               {CONTRACT_LABEL[player.contract]} | {agent ? `סוכן: ${agent.name}` : 'ללא סוכן'}
@@ -75,7 +80,7 @@ export function CareerView({ state, onReset, onHome }: { state: GameState; onRes
       <section className="space-y-2.5 rounded-2xl border border-line bg-card p-4">
         <h2 className="font-extrabold">תכונות</h2>
         {ATTR_KEYS.map((k) => (
-          <StatBar key={k} label={ATTR_LABEL[player.sport][k]} value={player.attributes[k]} max={99} tone="gold" />
+          <StatBar key={k} label={ATTR_LABEL[player.sport][k]} value={player.attributes[k]} max={99} tone="gold" next={player.progress?.[k] ?? 0} />
         ))}
       </section>
 

@@ -30,10 +30,12 @@ export function TrainingSheet({ state, dispatch, onClose }: Props) {
     <Sheet title="אימונים" subtitle={`דירוג כללי ${calcOvr(player)} | פוטנציאל משוער ${player.potential - 3}-${player.potential + 3}`} icon={Dumbbell} onClose={onClose}>
       <div className="mb-4 grid grid-cols-2 gap-x-4 gap-y-2.5 rounded-2xl border border-line bg-card p-3">
         {ATTR_KEYS.map((k) => (
-          <StatBar key={k} label={labels[k]} value={player.attributes[k]} max={99} tone="gold" />
+          <StatBar key={k} label={labels[k]} value={player.attributes[k]} max={99} tone="gold" next={player.progress?.[k] ?? 0} />
         ))}
       </div>
-      <p className="mb-2 text-xs text-muted">כל אימון לוקח משבצת זמן אחת מתוך השבוע. אימון במצב עייפות מעלה סיכון לפציעה.</p>
+      <p className="mb-2 text-xs text-muted">
+        השיפור הדרגתי: כל אימון ממלא את הפס הדק, וכשהוא מתמלא התכונה עולה בנקודה. ככל שמתקרבים לפוטנציאל ומתבגרים, ההתקדמות איטית יותר. אימון בעייפות מאט את ההתקדמות ומסכן בפציעה.
+      </p>
       <div className="space-y-2">
         {TRAINING_OPTIONS.map((opt) => {
           const Icon = ICONS[opt.id];

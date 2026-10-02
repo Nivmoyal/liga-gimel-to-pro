@@ -1,4 +1,4 @@
-import type { Attributes, Effects, Player, SeasonStats, SportType } from '../types/game';
+import type { AttrKey, Attributes, Effects, Player, SeasonStats, SportType } from '../types/game';
 import { ATTR_KEYS, ATTR_LABEL, OVR_WEIGHTS } from '../data/sports';
 
 export const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
@@ -75,14 +75,59 @@ export function applyPlayerEffects(player: Player, effects: Effects): Player {
   return next;
 }
 
-/** Training gain that slows down as the attribute approaches the player's potential. */
-export function trainingGain(current: number, potential: number, base: number): number {
-  const room = potential - current;
-  if (room <= 0) return Math.random() < 0.15 ? 1 : 0;
-  const factor = clamp(room / 40, 0.2, 1);
-  const raw = base * factor;
-  const whole = Math.floor(raw);
-  return whole + (Math.random() < raw - whole ? 1 : 0);
+/**
+ * How far the player's name carries. Nobody follows a 19-year-old in the
+ * bottom tier; fame grows with the league, the level and the national team.
+ */
+export function fameFactor(player: Pick<Player, 'division' | 'attributes' | 'position' | 'national' | 'fanRep'>): number {
+  const ovr = calcOvr(player);
+  const caps = player.national.caps + player.national.u21Caps;
+  return clamp(0.3 + player.division * 0.25 + Math.max(0, ovr - 50) * 0.02 + (caps > 0 ? 0.3 : 0), 0.3, 2);
+}
+
+/** Scales positive followers / fan reputation gains by the player's fame. */
+export function scaleFame(effects: Effects, player: Parameters<typeof fameFactor>[0]): Effects {
+  if (!(effects.followers && effects.followers > 0) && !(effects.fanRep && effects.fanRep > 0)) return effects;
+  const fame = fameFactor(player);
+  const out = { ...effects };
+  if (out.followers && out.followers > 0) out.followers = Math.max(1, Math.round(out.followers * fame));
+  if (out.fanRep && out.fanRep > 0) {
+    // Winning hearts gets harder the more the fans already love you.
+    const saturation = Math.max(0.25, 1 - player.fanRep / 120);
+    out.fanRep = Math.max(1, Math.round(out.fanRep * clamp(0.45 + fame * 0.4, 0.55, 1.2) * saturation));
+  }
+  return out;
+}
+
+/**
+ * Fraction of an attribute point one session adds. Progress slows as the
+ * attribute nears the player's potential, with age, and when training tired.
+ */
+export function trainingProgress(player: Pick<Player, 'attributes' | 'potential' | 'age' | 'energy'>, key: AttrKey, base: number): number {
+  const room = player.potential - player.attributes[key];
+  const roomFactor = room <= 0 ? 0.05 : clamp(room / 30, 0.12, 1);
+  const ageFactor = player.age <= 21 ? 1.1 : player.age <= 24 ? 1 : player.age <= 28 ? 0.8 : player.age <= 31 ? 0.55 : 0.35;
+  const fatigue = player.energy < 40 ? 0.7 : 1;
+  return base * roomFactor * ageFactor * fatigue * randFloat(0.8, 1.2);
+}
+
+/** Adds fractional progress; every full point raises the attribute by one. */
+export function addProgress(player: Player, gains: Partial<Attributes>): { player: Player; raised: AttrKey[] } {
+  const attributes = { ...player.attributes };
+  const progress = { ...player.progress };
+  const raised: AttrKey[] = [];
+  for (const key of ATTR_KEYS) {
+    const gain = gains[key];
+    if (!gain) continue;
+    progress[key] += gain;
+    while (progress[key] >= 1 && attributes[key] < 99) {
+      progress[key] -= 1;
+      attributes[key] += 1;
+      raised.push(key);
+    }
+    progress[key] = clamp(progress[key], 0, 0.999);
+  }
+  return { player: { ...player, attributes, progress }, raised };
 }
 
 export function addAttributes(attrs: Attributes, delta: Partial<Attributes>): Attributes {

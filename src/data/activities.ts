@@ -8,7 +8,7 @@ export interface TrainingOption {
   description: string;
   energyCost: number;
   budgetCost: number;
-  /** Attribute gains (base value before the potential factor). Empty = position-based. */
+  /** Fraction of a point per session (before potential, age and fatigue). Empty = position-based. */
   gains: Partial<Record<AttrKey, number>>;
   coachApproval: number;
   confidence: number;
@@ -21,7 +21,7 @@ export const TRAINING_OPTIONS: TrainingOption[] = [
     description: 'ריצות, חדר כושר ועבודה על הגוף.',
     energyCost: 16,
     budgetCost: 0,
-    gains: { physical: 1.5 },
+    gains: { physical: 0.55 },
     coachApproval: 1,
     confidence: 0,
   },
@@ -31,7 +31,7 @@ export const TRAINING_OPTIONS: TrainingOption[] = [
     description: 'מאות חזרות על אותה תנועה עד שהיא אוטומטית.',
     energyCost: 14,
     budgetCost: 0,
-    gains: { attack: 1, technique: 1 },
+    gains: { attack: 0.4, technique: 0.4 },
     coachApproval: 1,
     confidence: 2,
   },
@@ -41,7 +41,7 @@ export const TRAINING_OPTIONS: TrainingOption[] = [
     description: 'עבודה על מיקום, קריאת משחק ומסירות. המאמן שם לב.',
     energyCost: 12,
     budgetCost: 0,
-    gains: { playmaking: 1, defense: 1 },
+    gains: { playmaking: 0.35, defense: 0.35 },
     coachApproval: 4,
     confidence: 0,
   },
@@ -51,7 +51,7 @@ export const TRAINING_OPTIONS: TrainingOption[] = [
     description: 'עבודה על ריכוז, לחץ ושגרות. עולה כסף, חוסך כוח.',
     energyCost: 4,
     budgetCost: 250,
-    gains: { mental: 1.5 },
+    gains: { mental: 0.5 },
     coachApproval: 0,
     confidence: 5,
   },
@@ -78,13 +78,15 @@ export interface LifestyleOption {
   confidence: number;
   fanRep: number;
   attributes: Partial<Record<AttrKey, number>>;
+  /** Fraction of a point towards these attributes (gradual, like training). */
+  progress?: Partial<Record<AttrKey, number>>;
   oneTime?: boolean;
 }
 
 export const LIFESTYLE_OPTIONS: LifestyleOption[] = [
   { id: 'rest', label: 'מנוחה בבית', description: 'ספה, סדרה ושינה ארוכה.', budgetCost: 0, energy: 30, confidence: 0, fanRep: 0, attributes: {} },
   { id: 'physio', label: 'טיפול פיזיותרפיה', description: 'עיסוי עמוק ושחרור שרירים.', budgetCost: 350, energy: 45, confidence: 1, fanRep: 0, attributes: {} },
-  { id: 'nutrition', label: 'תזונאי ספורט', description: 'תפריט מסודר, פחות שווארמה.', budgetCost: 400, energy: 10, confidence: 1, fanRep: 0, attributes: { physical: 1 } },
+  { id: 'nutrition', label: 'תזונאי ספורט', description: 'תפריט מסודר, פחות שווארמה.', budgetCost: 400, energy: 10, confidence: 1, fanRep: 0, attributes: {}, progress: { physical: 0.35 } },
   { id: 'friends', label: 'ערב עם החברים', description: 'לנקות את הראש מהלחץ.', budgetCost: 200, energy: -8, confidence: 6, fanRep: 1, attributes: {} },
   { id: 'family', label: 'ארוחת שישי אצל המשפחה', description: 'אוכל של אמא ושקט נפשי.', budgetCost: 0, energy: 15, confidence: 5, fanRep: 0, attributes: {} },
   {

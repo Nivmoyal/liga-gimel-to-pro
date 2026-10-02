@@ -6,7 +6,8 @@ import { parseClock, scoreAt } from '../services/matchEngine';
 import { gameReducer } from '../state/gameReducer';
 import type { GameAction } from '../state/gameReducer';
 import type { GameState, Position, SetupData, SportType } from '../types/game';
-import { CLUB_POOLS, REGIONS } from '../data/clubs';
+import { CLUB_POOLS } from '../data/clubs';
+import { clubPlace, findPlace, nearestStartingClubs, searchPlaces, startingClubs } from '../data/places';
 import { clubIdentity } from '../data/clubIdentity';
 import { SPONSORS } from '../data/sponsors';
 import { migrateSave, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
@@ -100,7 +101,7 @@ describe('live match timeline', () => {
       for (let run = 0; run < 30; run++) {
         let s: GameState | null = gameReducer(null, {
           type: 'NEW_GAME',
-          setup: { name: 'בדיקה', shirtNumber: 8, sport, position: sport === 'football' ? 'striker' : 'SG', region: 'center', club: sport === 'football' ? 'השקמה רמת חן' : 'אליצור גבעתיים', jobId: 'pizza' },
+          setup: { name: 'בדיקה', shirtNumber: 8, sport, position: sport === 'football' ? 'striker' : 'SG', home: findPlace('תל אביב')!, club: sport === 'football' ? 'השקמה רמת חן' : 'אליצור גבעתיים', jobId: 'pizza' },
         });
         s = gameReducer(s, { type: 'START_MATCHDAY' });
         let guard = 0;
@@ -212,12 +213,15 @@ describe('save migration', () => {
   it('upgrades a version 1 save', () => {
     const fresh = gameReducer(null, {
       type: 'NEW_GAME',
-      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', region: 'north', club: 'בית״ר נהריה', jobId: 'pizza' },
+      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
     })!;
-    const { shirtNumber: _n, sponsors: _s, national: _nat, isCaptain: _c2, ...oldPlayer } = fresh.player;
+    const { shirtNumber: _n, sponsors: _s, national: _nat, isCaptain: _c2, home: _h, progress: _p, ...oldPlayer } = fresh.player;
     const { nationalCallUp: _c, ...oldState } = fresh;
-    const migrated = migrateSave({ ...oldState, version: 1, player: oldPlayer } as unknown as GameState)!;
-    expect(migrated.version).toBe(4);
+    const migrated = migrateSave({ ...oldState, version: 1, player: { ...oldPlayer, region: 'north' } } as unknown as GameState)!;
+    expect(migrated.version).toBe(5);
+    expect(migrated.player.home.name).toBe('נהריה');
+    expect('region' in migrated.player).toBe(false);
+    expect(migrated.player.progress.attack).toBe(0);
     expect(migrated.player.shirtNumber).toBe(10);
     expect(migrated.player.isCaptain).toBe(false);
     expect(migrated.flags.captainOfferSeason).toBe(0);
@@ -235,7 +239,7 @@ describe('long careers', () => {
     let captains = 0;
     for (let run = 0; run < 6; run++) {
       const { state, callUps: c } = autoplay(
-        { name: 'נועה לוי', shirtNumber: 7, sport: run % 2 ? 'basketball' : 'football', position: run % 2 ? 'SG' : 'striker', region: 'center', club: run % 2 ? 'אליצור גבעתיים' : 'השקמה רמת חן', jobId: 'security' },
+        { name: 'נועה לוי', shirtNumber: 7, sport: run % 2 ? 'basketball' : 'football', position: run % 2 ? 'SG' : 'striker', home: findPlace('תל אביב')!, club: run % 2 ? 'אליצור גבעתיים' : 'השקמה רמת חן', jobId: 'security' },
         6,
       );
       callUps += c;
@@ -252,14 +256,14 @@ describe('long careers', () => {
 
 describe('full playthrough', () => {
   const cases: SetupData[] = [
-    { name: 'דני כהן', shirtNumber: 9, sport: 'football', position: 'striker', region: 'golan', club: 'הפועל קצרין', jobId: 'pizza' },
-    { name: 'נועה לוי', shirtNumber: 7, sport: 'basketball', position: 'PG', region: 'south', club: 'הפועל ערד', jobId: 'instructor' },
-    { name: 'יוסי ביטון', shirtNumber: 4, sport: 'football', position: 'centerBack', region: 'jerusalem', club: 'מ.ס. ירושלים', jobId: 'factory' },
-    { name: 'עומר חסון', shirtNumber: 13, sport: 'basketball', position: 'C', region: 'golan', club: 'מ.ס. חצור', jobId: 'mechanic' },
+    { name: 'דני כהן', shirtNumber: 9, sport: 'football', position: 'striker', home: findPlace('קצרין')!, club: 'הפועל קצרין', jobId: 'pizza' },
+    { name: 'נועה לוי', shirtNumber: 7, sport: 'basketball', position: 'PG', home: findPlace('ערד')!, club: 'הפועל ערד', jobId: 'instructor' },
+    { name: 'יוסי ביטון', shirtNumber: 4, sport: 'football', position: 'centerBack', home: findPlace('ירושלים')!, club: 'מ.ס. ירושלים', jobId: 'factory' },
+    { name: 'עומר חסון', shirtNumber: 13, sport: 'basketball', position: 'C', home: findPlace('קצרין')!, club: 'מ.ס. חצור', jobId: 'mechanic' },
   ];
   for (const setup of cases) {
     it(`plays three seasons: ${setup.sport} ${setup.position}`, () => {
-      expect(REGIONS.find((r) => r.id === setup.region)!.clubs[setup.sport].some((c) => c.name === setup.club)).toBe(true);
+      expect(startingClubs(setup.sport).some((c) => c.name === setup.club)).toBe(true);
       for (let run = 0; run < 5; run++) {
         const { state, seasonTables } = autoplay(setup, 3);
         expect(state.season).toBe(4);
@@ -273,6 +277,52 @@ describe('full playthrough', () => {
       }
     });
   }
+});
+
+describe('home town and nearby clubs', () => {
+  it('finds typed places despite spelling variants', () => {
+    expect(searchPlaces('קרית שמונה')[0].name).toBe('קריית שמונה');
+    expect(searchPlaces('ת"א')[0].name).toBe('תל אביב');
+    expect(searchPlaces('פתח תקוה')[0].name).toBe('פתח תקווה');
+    expect(searchPlaces('באר שבא')[0].name).toBe('באר שבע');
+    expect(searchPlaces('נצרת עילית')[0].name).toBe('נוף הגליל');
+    expect(searchPlaces('x')).toEqual([]);
+  });
+
+  it('locates every club and sorts starting clubs by distance', () => {
+    for (const pools of Object.values(CLUB_POOLS)) {
+      for (const name of pools.flat()) expect(clubPlace(name), name).not.toBeNull();
+    }
+    const north = nearestStartingClubs('football', findPlace('קריית שמונה')!);
+    expect(north[0].km).toBeLessThan(15);
+    expect(['הפועל מטולה', 'הפועל צפון הגולן']).toContain(north[0].name);
+    for (let i = 1; i < north.length; i++) expect(north[i].km).toBeGreaterThanOrEqual(north[i - 1].km);
+    const south = nearestStartingClubs('basketball', findPlace('באר שבע')!);
+    expect(south[0].km).toBeLessThan(15);
+  });
+});
+
+describe('gradual progress', () => {
+  it('starts without sponsors and with a small following', () => {
+    const s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+    })!;
+    expect(s.player.followers).toBeLessThan(100);
+    expect(SPONSORS.every((sp) => sponsorMissing(s.player, sp).length > 0)).toBe(true);
+  });
+
+  it('raises attributes a fraction at a time', () => {
+    let s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+    })!;
+    const before = s.player.attributes.attack;
+    s = gameReducer(s, { type: 'TRAIN', option: 'skills' })!;
+    const gained = s.player.attributes.attack - before + s.player.progress.attack;
+    expect(gained).toBeGreaterThan(0.1);
+    expect(gained).toBeLessThan(0.7);
+  });
 });
 
 describe('club identity', () => {

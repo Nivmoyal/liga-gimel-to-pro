@@ -5,6 +5,7 @@
 
 import type {
   Agent,
+  AttrKey,
   Attributes,
   Effects,
   GameEvent,
@@ -19,8 +20,9 @@ import type {
   PendingOutcome,
   Player,
   SetupData,
+  SportType,
 } from '../types/game';
-import { getRegion } from '../data/clubs';
+import { clubDistance, clubPlace, commuteCost, findPlace, startingClubs } from '../data/places';
 import { getJob } from '../data/jobs';
 import { AGENT_UNLOCK, getAgent } from '../data/agents';
 import { MAX_SPONSORS, SPONSORS, getSponsor } from '../data/sponsors';
@@ -28,6 +30,7 @@ import type { Sponsor } from '../data/sponsors';
 import { INTERNATIONAL_WINDOWS, NATIONAL_OPPONENTS, NATIONAL_SETUP, NATIONAL_TEAM_NAME } from '../data/national';
 import {
   ATTR_KEYS,
+  ATTR_LABEL,
   CONTRACT_LABEL,
   DIVISION_STRENGTH,
   LIVING_COST,
@@ -84,11 +87,18 @@ import {
   formatMoney,
   pickRandom,
   randInt,
-  trainingGain,
+  scaleFame,
+  addProgress,
+  trainingProgress,
 } from '../services/playerUtils';
 
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 const MAX_NEWS = 60;
+/** New followers per point of "buzz" after a good match, by division. */
+const MATCH_AUDIENCE: Record<SportType, number[]> = {
+  football: [5, 12, 35, 90, 240],
+  basketball: [6, 15, 60, 200],
+};
 const SEEN_MEMORY = 40;
 
 // ------------------------------------------------------------------
@@ -148,26 +158,48 @@ function emptyNational() {
   return { caps: 0, u21Caps: 0, goals: 0, assists: 0, points: 0, ratingSum: 0 };
 }
 
+function emptyProgress(): Attributes {
+  return { attack: 0, technique: 0, playmaking: 0, defense: 0, physical: 0, mental: 0 };
+}
+
+/** Old saves had a region instead of a typed home town. */
+const REGION_HOME: Record<string, string> = {
+  golan: 'קצרין',
+  north: 'נהריה',
+  sharon: 'נתניה',
+  center: 'תל אביב',
+  jerusalem: 'ירושלים',
+  south: 'באר שבע',
+};
+
 /** Upgrades older saves in place so existing careers keep working. */
 export function migrateSave(raw: GameState): GameState | null {
   if (!raw?.player) return null;
   if (raw.version === SAVE_VERSION) return raw;
-  if (raw.version < 1 || raw.version > 3) return null;
-  // Older saves cannot resume a match mid-way: the match restarts from the dashboard.
-  const midMatch = ['preMatch', 'inGame', 'matchSummary', 'postMatch'].includes(raw.phase);
+  if (raw.version < 1 || raw.version > 4) return null;
+  // Saves before v4 cannot resume a match mid-way: the match restarts from the dashboard.
+  const midMatch = raw.version < 4 && ['preMatch', 'inGame', 'matchSummary', 'postMatch'].includes(raw.phase);
+  const legacy = raw.player as Player & { region?: string };
+  const home =
+    legacy.home ??
+    findPlace(REGION_HOME[legacy.region ?? ''] ?? '') ??
+    clubPlace(legacy.club) ?? { name: 'תל אביב', lat: 32.08, lon: 34.78 };
+  const { region: _region, ...player } = legacy;
   return {
     ...raw,
     version: SAVE_VERSION,
     phase: midMatch ? 'dashboard' : raw.phase,
     nationalCallUp: midMatch ? null : (raw.nationalCallUp ?? null),
-    currentMatch: null,
+    currentMatch: raw.version < 4 ? null : raw.currentMatch,
     flags: { ...raw.flags, captainOfferSeason: raw.flags.captainOfferSeason ?? 0 },
     player: {
-      ...raw.player,
-      shirtNumber: raw.player.shirtNumber ?? 10,
-      isCaptain: raw.player.isCaptain ?? false,
-      sponsors: raw.player.sponsors ?? [],
-      national: raw.player.national ?? emptyNational(),
+      ...player,
+      home,
+      progress: player.progress ?? emptyProgress(),
+      shirtNumber: player.shirtNumber ?? 10,
+      isCaptain: player.isCaptain ?? false,
+      sponsors: player.sponsors ?? [],
+      national: player.national ?? emptyNational(),
     },
   };
 }
@@ -206,8 +238,8 @@ function initialAttributes(setup: SetupData, divisionStrength: number): Attribut
 }
 
 export function createNewGame(setup: SetupData): GameState {
-  const region = getRegion(setup.region);
-  const club = region.clubs[setup.sport].find((c) => c.name === setup.club) ?? region.clubs[setup.sport][0];
+  const options = startingClubs(setup.sport);
+  const club = options.find((c) => c.name === setup.club) ?? options[0];
   const division = club.division;
   const divStrength = DIVISION_STRENGTH[setup.sport][division];
   const contract = contractForDivision(setup.sport, division);
@@ -218,21 +250,22 @@ export function createNewGame(setup: SetupData): GameState {
     isCaptain: false,
     sport: setup.sport,
     position: setup.position,
-    region: setup.region,
+    home: setup.home,
     club: club.name,
     division,
     contract,
     weeklySalary: baseSalary(setup.sport, division),
     attributes: initialAttributes(setup, divStrength),
+    progress: emptyProgress(),
     potential: randInt(72, 90),
     age: 19,
     budget: 1500,
     energy: 85,
     coachApproval: 50,
-    fanRep: 30,
+    fanRep: 20,
     teamMorale: 55,
     confidence: 50,
-    followers: randInt(80, 250),
+    followers: randInt(30, 90),
     jobId: setup.jobId,
     agentId: null,
     injuryWeeks: 0,
@@ -315,18 +348,12 @@ export function train(state: GameState, id: TrainingId): GameState {
   if (Object.keys(gains).length === 0) {
     const weights = OVR_WEIGHTS[player.position];
     const top = [...ATTR_KEYS].sort((a, b) => weights[b] - weights[a]).slice(0, 2);
-    gains = { [top[0]]: 2, [top[1]]: 1.5 };
+    gains = { [top[0]]: 0.75, [top[1]]: 0.6 };
   }
-  const attrDelta: Partial<Attributes> = {};
-  const improved: string[] = [];
+  const progressGain: Partial<Attributes> = {};
   for (const key of ATTR_KEYS) {
     const base = gains[key];
-    if (!base) continue;
-    const gain = trainingGain(player.attributes[key], player.potential, base);
-    if (gain > 0) {
-      attrDelta[key] = gain;
-      improved.push(key);
-    }
+    if (base) progressGain[key] = trainingProgress(player, key, base);
   }
 
   const riskyInjury = player.energy < 30 && option.energyCost >= 14 && Math.random() < 0.18;
@@ -335,22 +362,28 @@ export function train(state: GameState, id: TrainingId): GameState {
     budget: -option.budgetCost,
     coachApproval: option.coachApproval,
     confidence: option.confidence,
-    attributes: attrDelta,
     injuryWeeks: riskyInjury ? randInt(1, 2) : undefined,
   });
-  const ovrBefore = calcOvr(player);
-  const ovrAfter = calcOvr(next.player);
   if (riskyInjury) {
     next = addNews(next, [newsNow(next, 'club', `${player.name} נפצע באימון אחרי שהתאמן עייף. הוא יחמיץ את המחזורים הקרובים.`)]);
     return withToast(next, 'התאמנת עייף מדי ונפצעת. צריך לנוח.');
   }
-  const msg =
-    improved.length === 0
-      ? 'אימון טוב, אבל בלי שיפור מורגש הפעם.'
-      : ovrAfter > ovrBefore
-        ? `שיפור! הדירוג הכללי עלה ל-${ovrAfter}.`
-        : 'התכונות השתפרו. ממשיכים לעבוד.';
-  return withToast(next, msg);
+  const { player: trained, raised } = addProgress(next.player, progressGain);
+  next = { ...next, player: trained };
+  return withToast(next, trainingToast(player, trained, progressGain, raised));
+}
+
+/** "+0.4 גימור (70% לנקודה הבאה)" style summary of a session. */
+function trainingToast(before: Player, after: Player, gains: Partial<Attributes>, raised: AttrKey[]): string {
+  const labels = ATTR_LABEL[after.sport];
+  const parts = (Object.keys(gains) as AttrKey[]).map((key) => {
+    if (raised.includes(key)) return `${labels[key]} עלה ל-${after.attributes[key]}`;
+    return `${labels[key]} +${Math.max(1, Math.round(gains[key]! * 100))}% (${Math.round(after.progress[key] * 100)}% לנקודה הבאה)`;
+  });
+  const ovrBefore = calcOvr(before);
+  const ovrAfter = calcOvr(after);
+  const head = ovrAfter > ovrBefore ? `שיפור! הדירוג הכללי עלה ל-${ovrAfter}. ` : raised.length > 0 ? 'עלית נקודה! ' : '';
+  return `${head}${parts.join(' | ')}`;
 }
 
 export function lifestyle(state: GameState, id: LifestyleId): GameState {
@@ -369,6 +402,13 @@ export function lifestyle(state: GameState, id: LifestyleId): GameState {
     attributes: option.attributes,
   });
   if (option.oneTime) next = { ...next, flags: { ...next.flags, ownsBoots: true } };
+  if (option.progress) {
+    const gains: Partial<Attributes> = {};
+    for (const key of Object.keys(option.progress) as AttrKey[]) gains[key] = trainingProgress(next.player, key, option.progress[key]!);
+    const { player, raised } = addProgress(next.player, gains);
+    next = { ...next, player };
+    if (raised.length > 0) return withToast(next, `${option.label}: ${ATTR_LABEL[player.sport][raised[0]]} עלה ל-${player.attributes[raised[0]]}.`);
+  }
   return withToast(next, `${option.label}: בוצע.`);
 }
 
@@ -433,10 +473,12 @@ export function socialPost(state: GameState, id: SocialPostId): GameState {
     case 'sponsored': {
       const pay = Math.min(4000, Math.round(state.player.followers * 0.3));
       effects = { budget: pay, followers: randInt(10, 40), fanRep: -1 };
-      msg = `פוסט ממומן: +${formatMoney(pay)}`;
+      msg = `פוסט ממומן: +${formatMoney(pay)}.`;
       break;
     }
   }
+  effects = scaleFame(effects, state.player);
+  if (effects.followers) msg += ` +${effects.followers} עוקבים.`;
   const next = applyEffects(state, effects);
   return withToast({ ...next, flags: { ...next.flags, postedThisWeek: true } }, msg);
 }
@@ -488,6 +530,7 @@ export function sponsorMissing(player: Player, sponsor: Sponsor): string[] {
   if (r.ovr && calcOvr(player) < r.ovr) missing.push(`OVR ${r.ovr}`);
   if (r.division !== undefined && player.division < r.division) missing.push(divisionName(player.sport, r.division));
   if (r.nationalCaps && player.national.caps < r.nationalCaps) missing.push('הופעה בנבחרת');
+  if (r.apps && player.careerStats.apps < r.apps) missing.push(`${r.apps} הופעות (יש ${player.careerStats.apps})`);
   return missing;
 }
 
@@ -541,6 +584,12 @@ export function getParsedEvent(state: GameState, id: string | null): GameEvent |
   return parseEvent(event, buildContext(state));
 }
 
+/** Resolves a choice; fame gains are scaled to how known the player is. */
+function resolveScaled(choice: Parameters<typeof resolveChoice>[0], player: Player): ReturnType<typeof resolveChoice> {
+  const resolution = resolveChoice(choice, player);
+  return { ...resolution, outcome: { ...resolution.outcome, effects: scaleFame(resolution.outcome.effects, player) } };
+}
+
 function toPending(resolution: ReturnType<typeof resolveChoice>): PendingOutcome {
   return { success: resolution.success, skillCheck: resolution.skillCheck, text: resolution.outcome.text, effects: resolution.outcome.effects };
 }
@@ -550,7 +599,7 @@ export function chooseLife(state: GameState, index: number): GameState {
   const event = getParsedEvent(state, state.pendingLifeEventId);
   const choice = event?.choices[index];
   if (!event || !choice) return state;
-  const resolution = resolveChoice(choice, state.player);
+  const resolution = resolveScaled(choice, state.player);
   let next = applyEffects(state, resolution.outcome.effects);
   next = markSeen(next, event.id);
   return { ...next, lifeOutcome: toPending(resolution) };
@@ -599,7 +648,7 @@ export function choosePreMatch(state: GameState, index: number): GameState {
   const event = getParsedEvent(state, match.preEventId);
   const choice = event?.choices[index];
   if (!event || !choice) return state;
-  const resolution = resolveChoice(choice, state.player);
+  const resolution = resolveScaled(choice, state.player);
   let next = applyEffects(state, resolution.outcome.effects);
   next = markSeen(next, event.id);
   const updatedMatch = applyMatchEffects(match, resolution.outcome.effects);
@@ -709,7 +758,7 @@ export function chooseInGame(state: GameState, index: number): GameState {
   const event = getParsedEvent(state, eventId);
   const choice = event?.choices[index];
   if (!event || !choice) return state;
-  const resolution = resolveChoice(choice, state.player);
+  const resolution = resolveScaled(choice, state.player);
   let next = applyEffects(state, resolution.outcome.effects);
   next = markSeen(next, event.id);
   const ctx = liveContext(state);
@@ -788,7 +837,13 @@ function finishMatch(state: GameState): GameState {
   const ratingSwing = played ? (result.rating! - 6.5) : 0;
   const energyCost = match.role === 'starter' ? 22 : match.role === 'rotation' ? 12 : 0;
   const winBonus = played && result.outcome === 'win' ? Math.round(player.weeklySalary * 0.25) : 0;
+  // People talk about players who perform; how many depends on the league's audience.
+  const scored = player.sport === 'football' ? fin.match.playerGoals + fin.match.playerAssists * 0.5 : fin.match.playerPoints / 10;
+  const buzz = played ? Math.max(0, result.rating! - 6.2) * 2 + (result.motm ? 2.5 : 0) + scored * 0.8 : 0;
+  const audience = MATCH_AUDIENCE[player.sport][player.division] ?? 10;
+  const newFollowers = Math.round(audience * buzz * (0.8 + Math.random() * 0.4));
   nextPlayer = applyPlayerEffects(nextPlayer, {
+    followers: newFollowers,
     energy: -energyCost,
     coachApproval: played ? Math.round(ratingSwing * 3) : match.role === 'bench' ? -1 : 0,
     confidence: played ? Math.round(ratingSwing * 3) : -1,
@@ -796,6 +851,16 @@ function finishMatch(state: GameState): GameState {
     teamMorale: result.outcome === 'win' ? 4 : result.outcome === 'loss' ? -4 : 0,
     budget: winBonus,
   });
+
+  // Minutes on the pitch teach things training cannot
+  if (played) {
+    const weights = OVR_WEIGHTS[player.position];
+    const top = [...ATTR_KEYS].sort((a, b) => weights[b] - weights[a]).slice(0, 2);
+    const base = (match.role === 'starter' ? 0.12 : 0.07) * (result.rating! >= 7 ? 1.3 : 1);
+    const gains: Partial<Attributes> = {};
+    for (const key of [...top, 'mental' as AttrKey]) gains[key] = trainingProgress(nextPlayer, key, base);
+    nextPlayer = addProgress(nextPlayer, gains).player;
+  }
 
   let next: GameState = {
     ...state,
@@ -837,7 +902,7 @@ export function choosePostMatch(state: GameState, index: number): GameState {
   const event = getParsedEvent(state, match.postEventId);
   const choice = event?.choices[index];
   if (!event || !choice) return state;
-  const resolution = resolveChoice(choice, state.player);
+  const resolution = resolveScaled(choice, state.player);
   let next = applyEffects(state, resolution.outcome.effects);
   next = markSeen(next, event.id);
   return { ...next, currentMatch: { ...match, pendingOutcome: toPending(resolution) } };
@@ -860,6 +925,9 @@ function endMatchday(state: GameState): GameState {
   const salaryNet = Math.round(player.weeklySalary * captainBonus * (1 - (agent?.commission ?? 0)));
   const living = LIVING_COST[player.contract];
   player.budget += salaryNet - living;
+  // Driving to training from home (professionals get housing near the club)
+  const commute = isNonPro(player) ? commuteCost(clubDistance(player.home, player.club)) : commuteCost(null);
+  player.budget -= commute.budget;
 
   // Sponsors pay weekly; a sponsor walks away if the fan reputation collapses
   const news: NewsItem[] = [];
@@ -893,12 +961,12 @@ function endMatchday(state: GameState): GameState {
   }
 
   // Recovery and drift
-  player.energy = clamp(player.energy + 20, 0, 100);
+  player.energy = clamp(player.energy + 20 - commute.energy, 0, 100);
   if (player.injuryWeeks > 0) player.injuryWeeks -= 1;
   player.confidence = Math.round(player.confidence + (50 - player.confidence) * 0.08);
   player.teamMorale = Math.round(player.teamMorale + (55 - player.teamMorale) * 0.08);
   player.coachApproval = Math.round(player.coachApproval + (50 - player.coachApproval) * 0.06);
-  player.fanRep = Math.round(player.fanRep + (35 - player.fanRep) * 0.04);
+  player.fanRep = Math.round(player.fanRep + (22 + player.division * 7 - player.fanRep) * 0.06);
 
   // Captaincy: the armband lifts the dressing room, but the coach can take it back
   if (player.isCaptain) {
@@ -913,6 +981,12 @@ function endMatchday(state: GameState): GameState {
   if (player.budget < -1500) {
     player.confidence = clamp(player.confidence - 3, 0, 100);
     news.push(makeNews('rumors', `${player.name} בחובות. הלחץ הכלכלי מתחיל להשפיע`, state.season, matchday));
+  }
+
+  if (!flags.sponsorInterest && player.sponsors.length === 0 && availableSponsorCount(player) > 0) {
+    flags.sponsorInterest = true;
+    const first = SPONSORS.find((sp) => !sponsorBlocked(player, sp) && sponsorMissing(player, sp).length === 0);
+    news.push(makeNews('rumors', `${first?.name ?? 'מותג מקומי'} פונה ל${player.name}: רוצים אותו כפנים של הקמפיין`, state.season, matchday));
   }
 
   flags.shiftsThisWeek = 0;

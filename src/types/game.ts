@@ -10,7 +10,12 @@ export type FootballPosition = 'striker' | 'midfielder' | 'centerBack' | 'fullBa
 export type BasketballPosition = 'PG' | 'SG' | 'SF' | 'PF' | 'C';
 export type Position = FootballPosition | BasketballPosition;
 
-export type RegionId = 'golan' | 'north' | 'sharon' | 'center' | 'jerusalem' | 'south';
+/** Where the player lives (typed by the player, matched to a known town). */
+export interface HomePlace {
+  name: string;
+  lat: number;
+  lon: number;
+}
 
 /** Generic attribute keys. Labels change per sport (see data/sports.ts). */
 export type AttrKey = 'attack' | 'technique' | 'playmaking' | 'defense' | 'physical' | 'mental';
@@ -38,20 +43,6 @@ export interface Agent {
   commission: number;
   description: string;
   minOvr: number;
-}
-
-export interface Club {
-  name: string;
-  sport: SportType;
-  region?: RegionId;
-  division: number;
-}
-
-export interface Region {
-  id: RegionId;
-  name: string;
-  description: string;
-  clubs: Record<SportType, Club[]>;
 }
 
 // ------------------------------------------------------------------
@@ -201,12 +192,14 @@ export interface Player {
   isCaptain: boolean;
   sport: SportType;
   position: Position;
-  region: RegionId;
+  home: HomePlace;
   club: string;
   division: number;
   contract: ContractType;
   weeklySalary: number;
   attributes: Attributes;
+  /** Fractional progress (0..1) towards the next whole point of each attribute. */
+  progress: Attributes;
   potential: number;
   age: number;
   budget: number;
@@ -398,6 +391,8 @@ export interface GameFlags {
   transferPush: boolean;
   ownsBoots: boolean;
   jobRaise: number;
+  /** The first brand has shown interest (news sent once). */
+  sponsorInterest?: boolean;
 }
 
 export interface GameState {
@@ -428,7 +423,7 @@ export interface SetupData {
   shirtNumber: number;
   sport: SportType;
   position: Position;
-  region: RegionId;
+  home: HomePlace;
   club: string;
   jobId: JobId;
 }

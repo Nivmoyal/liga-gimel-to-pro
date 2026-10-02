@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Goal, Hash, MapPin, UserRound, Volleyball, Briefcase } from 'lucide-react';
-import type { JobId, Position, RegionId, SetupData, SportType } from '../types/game';
-import { REGIONS, getRegion } from '../data/clubs';
+import { useEffect, useMemo, useState } from 'react';
+import { Car, ChevronLeft, ChevronRight, Goal, Hash, MapPin, Search, UserRound, Volleyball, Briefcase } from 'lucide-react';
+import type { HomePlace, JobId, Position, SetupData, SportType } from '../types/game';
+import { commuteCost, nearestStartingClubs, searchPlaces } from '../data/places';
 import { DIVISIONS, SPORT_LABEL, divisionName, positionsFor } from '../data/sports';
 import { JobPicker } from './sheets/JobSheet';
 import { GoldButton } from './ui/GoldButton';
@@ -10,7 +10,7 @@ import { Jersey } from './art/Jersey';
 import { Crest } from './art/Crest';
 import { clubIdentity } from '../data/clubIdentity';
 
-const STEPS = ['שחקן וענף', 'עמדה', 'אזור ומועדון', 'עבודה אזרחית'];
+const STEPS = ['שחקן וענף', 'עמדה', 'בית ומועדון', 'עבודה אזרחית'];
 
 export function SetupScreen({ onStart, onBack }: { onStart: (setup: SetupData) => void; onBack: () => void }) {
   const [step, setStep] = useState(0);
@@ -18,7 +18,9 @@ export function SetupScreen({ onStart, onBack }: { onStart: (setup: SetupData) =
   const [number, setNumber] = useState('10');
   const [sport, setSport] = useState<SportType | null>(null);
   const [position, setPosition] = useState<Position | null>(null);
-  const [region, setRegion] = useState<RegionId | null>(null);
+  const [homeQuery, setHomeQuery] = useState('');
+  const [home, setHome] = useState<HomePlace | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const [club, setClub] = useState<string | null>(null);
   const [jobId, setJobId] = useState<JobId | null>(null);
 
@@ -29,7 +31,7 @@ export function SetupScreen({ onStart, onBack }: { onStart: (setup: SetupData) =
   const canNext = [
     name.trim().length >= 2 && sport !== null && number !== '' && Number(number) >= 0 && Number(number) <= 99,
     position !== null,
-    region !== null && club !== null,
+    home !== null && club !== null,
     jobId !== null,
   ][step];
 
@@ -54,15 +56,29 @@ export function SetupScreen({ onStart, onBack }: { onStart: (setup: SetupData) =
     setSport(s);
   };
 
-  const pickRegion = (r: RegionId) => {
-    setRegion(r);
-    const clubs = getRegion(r).clubs[sport!];
-    setClub(clubs.length === 1 ? clubs[0].name : null);
+  const suggestions = useMemo(() => (home && homeQuery === home.name ? [] : searchPlaces(homeQuery)), [homeQuery, home]);
+  const nearby = useMemo(() => (home && sport ? nearestStartingClubs(sport, home) : []), [home, sport]);
+  const visibleClubs = showAll ? nearby : nearby.slice(0, 6);
+  const chosen = nearby.find((c) => c.name === club);
+
+  const pickHome = (place: HomePlace) => {
+    setHome(place);
+    setHomeQuery(place.name);
+    setShowAll(false);
+    setClub(null);
+  };
+
+  const typeHome = (value: string) => {
+    setHomeQuery(value);
+    if (home && value !== home.name) {
+      setHome(null);
+      setClub(null);
+    }
   };
 
   const finish = () => {
-    if (!sport || !position || !region || !club || !jobId) return;
-    onStart({ name: name.trim(), shirtNumber: Number(number), sport, position, region, club, jobId });
+    if (!sport || !position || !home || !club || !jobId) return;
+    onStart({ name: name.trim(), shirtNumber: Number(number), sport, position, home, club, jobId });
   };
 
   return (
@@ -164,21 +180,49 @@ export function SetupScreen({ onStart, onBack }: { onStart: (setup: SetupData) =
 
         {step === 2 && sport && (
           <div className="space-y-4">
-            <div className="space-y-2">
-              {REGIONS.map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => pickRegion(r.id)}
-                  className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-right transition ${region === r.id ? 'border-brand bg-brand/10' : 'border-line bg-card hover:border-brand/50'}`}
-                >
-                  <MapPin size={18} className={region === r.id ? 'text-brand' : 'text-muted'} />
-                  <div className="min-w-0 flex-1">
-                    <div className="font-bold">{r.name}</div>
-                    <div className="truncate text-xs text-muted">{r.description}</div>
-                  </div>
-                </button>
-              ))}
+            <div>
+              <label className="block">
+                <span className="mb-1.5 flex items-center gap-1.5 text-sm font-bold">
+                  <MapPin size={16} className="text-brand" />
+                  איפה אתם גרים, או רוצים לגור?
+                </span>
+                <div className="relative">
+                  <Search size={18} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-muted" />
+                  <input
+                    value={homeQuery}
+                    onChange={(e) => typeHome(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && suggestions[0]) pickHome(suggestions[0]);
+                    }}
+                    maxLength={30}
+                    placeholder="לדוגמה: קריית שמונה, חולון, אופקים"
+                    className="w-full rounded-2xl border border-line bg-card py-3 pl-4 pr-11 text-lg outline-none placeholder:text-muted/60 focus:border-brand"
+                    aria-label="עיר מגורים"
+                  />
+                </div>
+              </label>
+              {suggestions.length > 0 && (
+                <div className="mt-2 overflow-hidden rounded-2xl border border-line bg-card">
+                  {suggestions.map((place) => (
+                    <button
+                      key={place.name}
+                      onClick={() => pickHome(place)}
+                      className="flex w-full items-center gap-2 border-b border-line px-4 py-2.5 text-right last:border-b-0 hover:bg-brand/10"
+                    >
+                      <MapPin size={15} className="text-brand" />
+                      <span className="font-bold">{place.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {!home && homeQuery.trim().length >= 2 && suggestions.length === 0 && (
+                <p className="mt-2 text-xs text-muted">לא מצאנו את המקום. נסו עיר או יישוב קרוב.</p>
+              )}
+              {!home && homeQuery.trim().length < 2 && (
+                <p className="mt-2 text-xs text-muted">נציע לכם את המועדונים הקרובים ביותר. מועדון רחוק אומר נסיעות ארוכות לאימונים.</p>
+              )}
             </div>
+
             {club && (
               <div className="flex items-center gap-4 rounded-2xl border border-brand/30 bg-brand/5 p-3">
                 {shirtPreview(96)}
@@ -186,25 +230,42 @@ export function SetupScreen({ onStart, onBack }: { onStart: (setup: SetupData) =
                   <div className="text-xs text-muted">החולצה החדשה שלך</div>
                   <div className="truncate text-lg font-black">{club}</div>
                   <div className="text-xs text-muted">חסות חולצה: {clubIdentity(club).shirtSponsor}</div>
+                  {chosen && commuteCost(chosen.km).energy > 0 && (
+                    <div className="mt-1 flex items-center gap-1 text-xs text-sun">
+                      <Car size={13} />
+                      {commuteCost(chosen.km).label}: עולה {commuteCost(chosen.km).energy} אנרגיה בשבוע
+                    </div>
+                  )}
                 </div>
               </div>
             )}
-            {region && (
+
+            {home && (
               <div>
-                <span className="mb-1.5 block text-sm font-bold">המועדון הראשון שלך</span>
+                <span className="mb-1.5 block text-sm font-bold">המועדונים הקרובים ל{home.name}</span>
                 <div className="space-y-2">
-                  {getRegion(region).clubs[sport].map((c) => (
+                  {visibleClubs.map((c) => (
                     <button
                       key={c.name}
                       onClick={() => setClub(c.name)}
                       className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-right transition ${club === c.name ? 'border-brand bg-brand/10' : 'border-line bg-card hover:border-brand/50'}`}
                     >
                       <Crest name={c.name} size={30} className="shrink-0" />
-                      <span className="flex-1 font-bold">{c.name}</span>
-                      <span className="text-xs text-muted">{divisionName(sport, c.division)}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-bold">{c.name}</span>
+                        <span className="block text-xs text-muted">{divisionName(sport, c.division)}</span>
+                      </span>
+                      <span className={`shrink-0 text-sm font-black ${c.km <= 15 ? 'text-brand' : 'text-muted'}`}>
+                        {c.km < 3 ? 'בעיר' : `${c.km} ק״מ`}
+                      </span>
                     </button>
                   ))}
                 </div>
+                {nearby.length > visibleClubs.length && (
+                  <button onClick={() => setShowAll(true)} className="mt-2 w-full rounded-xl py-2 text-sm font-bold text-brand hover:bg-brand/10">
+                    הצג את כל {nearby.length} המועדונים
+                  </button>
+                )}
               </div>
             )}
           </div>

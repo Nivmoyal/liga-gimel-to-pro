@@ -12,8 +12,11 @@ export interface Sponsor {
   signingBonus: number;
   seasons: number;
   color: string;
-  /** All must be met. `apps` counts career appearances: brands want a proven player. */
-  requires: { followers?: number; fanRep?: number; ovr?: number; division?: number; nationalCaps?: number; apps?: number };
+  /**
+   * All must be met, and all come from performances: `form` is the average
+   * rating of the recent matches, `motm` counts career games rated 8+.
+   */
+  requires: { form?: number; followers?: number; fanRep?: number; motm?: number; division?: number; nationalCaps?: number };
 }
 
 export const SPONSOR_CATEGORY_LABEL: Record<SponsorCategory, string> = {
@@ -35,7 +38,7 @@ export const SPONSORS: Sponsor[] = [
     signingBonus: 200,
     seasons: 1,
     color: '#e8452c',
-    requires: { fanRep: 45, followers: 500, apps: 10 },
+    requires: { form: 7.0, followers: 200 },
   },
   {
     id: 'sp_water',
@@ -46,7 +49,7 @@ export const SPONSORS: Sponsor[] = [
     signingBonus: 300,
     seasons: 1,
     color: '#1aa3d9',
-    requires: { followers: 900, fanRep: 48, apps: 14 },
+    requires: { form: 7.0, followers: 450, motm: 1 },
   },
   {
     id: 'sp_gym',
@@ -57,7 +60,7 @@ export const SPONSORS: Sponsor[] = [
     signingBonus: 400,
     seasons: 1,
     color: '#7c3aed',
-    requires: { fanRep: 52, followers: 1300, apps: 16 },
+    requires: { form: 7.1, followers: 800, fanRep: 50 },
   },
   {
     id: 'sp_energy',
@@ -68,7 +71,7 @@ export const SPONSORS: Sponsor[] = [
     signingBonus: 800,
     seasons: 1,
     color: '#16a34a',
-    requires: { followers: 1800, fanRep: 55, ovr: 52 },
+    requires: { form: 7.2, followers: 1500, motm: 3 },
   },
   {
     id: 'sp_boots',
@@ -79,7 +82,7 @@ export const SPONSORS: Sponsor[] = [
     signingBonus: 1200,
     seasons: 2,
     color: '#f97316',
-    requires: { ovr: 58, followers: 2500 },
+    requires: { form: 7.2, followers: 2500, motm: 5 },
   },
   {
     id: 'sp_telecom',
@@ -90,7 +93,7 @@ export const SPONSORS: Sponsor[] = [
     signingBonus: 3000,
     seasons: 2,
     color: '#0ea5e9',
-    requires: { followers: 4500, division: 2 },
+    requires: { form: 7.0, followers: 4500, division: 2 },
   },
   {
     id: 'sp_bank',
@@ -101,7 +104,7 @@ export const SPONSORS: Sponsor[] = [
     signingBonus: 5000,
     seasons: 2,
     color: '#1d4ed8',
-    requires: { fanRep: 75, followers: 8000 },
+    requires: { form: 7.0, fanRep: 75, followers: 8000 },
   },
   {
     id: 'sp_car',
@@ -112,7 +115,7 @@ export const SPONSORS: Sponsor[] = [
     signingBonus: 4000,
     seasons: 2,
     color: '#111827',
-    requires: { nationalCaps: 1, followers: 3500 },
+    requires: { form: 7.0, nationalCaps: 1, followers: 3500 },
   },
 ];
 

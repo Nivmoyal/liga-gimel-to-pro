@@ -42,7 +42,8 @@ export interface Agent {
   level: 1 | 2 | 3;
   commission: number;
   description: string;
-  minOvr: number;
+  /** What the agent needs to see before calling: recent form and level. */
+  interest: { form: number; division?: number; motm?: number; nationalCaps?: number };
 }
 
 // ------------------------------------------------------------------
@@ -214,6 +215,8 @@ export interface Player {
   injuryWeeks: number;
   seasonStats: SeasonStats;
   careerStats: SeasonStats;
+  /** Ratings of the most recent matches played (newest last). */
+  form: number[];
   history: SeasonRecord[];
   sponsors: ActiveSponsor[];
   national: NationalStats;

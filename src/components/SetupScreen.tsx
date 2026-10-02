@@ -4,6 +4,7 @@ import type { HomePlace, JobId, Position, SetupData, SportType } from '../types/
 import { commuteCost, nearestStartingClubs, searchPlaces } from '../data/places';
 import { DIVISIONS, SPORT_LABEL, divisionName, positionsFor } from '../data/sports';
 import { JobPicker } from './sheets/JobSheet';
+import { PositionPicker } from './PositionPicker';
 import { GoldButton } from './ui/GoldButton';
 import { ScenePhoto } from './art/ScenePhoto';
 import { Jersey } from './art/Jersey';
@@ -163,18 +164,8 @@ export function SetupScreen({ onStart, onBack }: { onStart: (setup: SetupData) =
 
         {step === 1 && sport && (
           <div>
-            <p className="mb-3 text-sm text-muted">העמדה קובעת אילו תכונות חשובות לדירוג ואילו מצבים תפגוש במשחק.</p>
-            <div className="grid grid-cols-2 gap-2.5">
-              {positionsFor(sport).map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setPosition(p.id)}
-                  className={`rounded-2xl border p-4 text-right font-bold transition ${position === p.id ? 'border-brand bg-brand/10 text-brand' : 'border-line bg-card hover:border-brand/50'}`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
+            <p className="mb-3 text-sm text-muted">איפה אתם משחקים? העמדה קובעת אילו תכונות חשובות לדירוג ואילו מצבים תפגשו במשחק.</p>
+            <PositionPicker sport={sport} value={position} onPick={setPosition} />
           </div>
         )}
 

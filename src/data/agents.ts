@@ -8,7 +8,7 @@ export const AGENTS: Agent[] = [
     level: 1,
     commission: 0.05,
     description: 'סוכן שכונתי שמכיר כל מאמן בליגות הנמוכות. עמלה נמוכה, קשרים מקומיים.',
-    minOvr: 0,
+    interest: { form: 6.9 },
   },
   {
     id: 'agent_roni',
@@ -17,7 +17,7 @@ export const AGENTS: Agent[] = [
     level: 2,
     commission: 0.08,
     description: 'סוכנות בינונית עם קשרים טובים בליגה הלאומית ובליגה א׳.',
-    minOvr: 50,
+    interest: { form: 7.0, division: 1, motm: 2 },
   },
   {
     id: 'agent_michal',
@@ -26,7 +26,7 @@ export const AGENTS: Agent[] = [
     level: 3,
     commission: 0.12,
     description: 'הסוכנת הכי חזקה בארץ. מגיעה רק לשחקנים שכבר מריחים ליגת העל.',
-    minOvr: 60,
+    interest: { form: 7.1, division: 2, motm: 4 },
   },
 ];
 
@@ -35,5 +35,5 @@ export function getAgent(id: string | null | undefined): Agent | null {
   return AGENTS.find((a) => a.id === id) ?? null;
 }
 
-/** Thresholds that unlock the agent system. */
-export const AGENT_UNLOCK = { ovr: 52, fanRep: 55, bigGames: 2 };
+/** Matches needed before anyone judges the player's form. */
+export const FORM_MATCHES = 3;

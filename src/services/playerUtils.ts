@@ -36,6 +36,13 @@ export function averageRating(stats: SeasonStats): number {
   return stats.apps > 0 ? stats.ratingSum / stats.apps : 0;
 }
 
+/** Average rating of the last five matches played, or null before there are enough. */
+export function recentForm(player: Pick<Player, 'form'>, min = 3): number | null {
+  const last = (player.form ?? []).slice(-5);
+  if (last.length < min) return null;
+  return last.reduce((sum, r) => sum + r, 0) / last.length;
+}
+
 export function calcOvr(player: Pick<Player, 'attributes' | 'position'>): number {
   const weights = OVR_WEIGHTS[player.position];
   const total = ATTR_KEYS.reduce((sum, key) => sum + player.attributes[key] * weights[key], 0);

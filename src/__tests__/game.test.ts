@@ -10,7 +10,8 @@ import { CLUB_POOLS } from '../data/clubs';
 import { clubPlace, findPlace, nearestStartingClubs, searchPlaces, startingClubs } from '../data/places';
 import { clubIdentity } from '../data/clubIdentity';
 import { SPONSORS } from '../data/sponsors';
-import { migrateSave, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
+import { agentInterested, migrateSave, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
+import { getAgent } from '../data/agents';
 import { FOOTBALL_POSITIONS, BASKETBALL_POSITIONS, SEASON_MATCHDAYS } from '../data/sports';
 
 function walk(dir: string): string[] {
@@ -218,7 +219,8 @@ describe('save migration', () => {
     const { shirtNumber: _n, sponsors: _s, national: _nat, isCaptain: _c2, home: _h, progress: _p, ...oldPlayer } = fresh.player;
     const { nationalCallUp: _c, ...oldState } = fresh;
     const migrated = migrateSave({ ...oldState, version: 1, player: { ...oldPlayer, region: 'north' } } as unknown as GameState)!;
-    expect(migrated.version).toBe(5);
+    expect(migrated.version).toBe(6);
+    expect(migrated.player.form).toEqual([]);
     expect(migrated.player.home.name).toBe('נהריה');
     expect('region' in migrated.player).toBe(false);
     expect(migrated.player.progress.attack).toBe(0);
@@ -312,6 +314,22 @@ describe('gradual progress', () => {
     expect(SPONSORS.every((sp) => sponsorMissing(s.player, sp).length > 0)).toBe(true);
   });
 
+  it('opens sponsors and agents by recent performances, not by time', () => {
+    const s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+    })!;
+    const pizza = SPONSORS.find((sp) => sp.id === 'sp_pizza')!;
+    const avi = getAgent('agent_avi')!;
+    const hot = { ...s.player, followers: 300, form: [7.6, 7.2, 8.1] };
+    const cold = { ...hot, form: [6.1, 5.8, 6.4, 6.0, 6.2] };
+    expect(sponsorMissing(hot, pizza)).toEqual([]);
+    expect(sponsorMissing(cold, pizza).length).toBeGreaterThan(0);
+    expect(agentInterested(avi, hot)).toBe(true);
+    expect(agentInterested(avi, cold)).toBe(false);
+    expect(agentInterested(avi, { ...hot, form: [9, 9] })).toBe(false);
+  });
+
   it('raises attributes a fraction at a time', () => {
     let s = gameReducer(null, {
       type: 'NEW_GAME',
@@ -320,8 +338,8 @@ describe('gradual progress', () => {
     const before = s.player.attributes.attack;
     s = gameReducer(s, { type: 'TRAIN', option: 'skills' })!;
     const gained = s.player.attributes.attack - before + s.player.progress.attack;
-    expect(gained).toBeGreaterThan(0.1);
-    expect(gained).toBeLessThan(0.7);
+    expect(gained).toBeGreaterThan(0.05);
+    expect(gained).toBeLessThan(0.45);
   });
 });
 

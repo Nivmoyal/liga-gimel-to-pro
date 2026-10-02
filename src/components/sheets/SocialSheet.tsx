@@ -7,6 +7,7 @@ import { SOCIAL_POSTS } from '../../data/activities';
 import type { SocialPostId } from '../../data/activities';
 import { MAX_SPONSORS, SPONSORS, SPONSOR_CATEGORY_LABEL, getSponsor } from '../../data/sponsors';
 import { getAgent } from '../../data/agents';
+import { FormStrip } from './AgentSheet';
 import { availableSponsorCount, sponsorBlocked, sponsorMissing, sponsorWeeklyNet } from '../../state/gameLogic';
 import { formatFollowers, formatMoney } from '../../services/playerUtils';
 import { Sheet } from '../ui/Sheet';
@@ -128,7 +129,7 @@ function SponsorsTab({ state, dispatch }: { state: GameState; dispatch: (a: Game
           <span className="text-sm font-bold text-emerald-400">+{formatMoney(weeklyTotal)} לשבוע</span>
         </div>
         {player.sponsors.length === 0 ? (
-          <p className="text-sm text-muted">אין עדיין ספונסרים. עוקבים, מוניטין ודירוג פותחים מותגים חדשים.</p>
+          <p className="text-sm text-muted">אין עדיין ספונסרים. מותגים רודפים אחרי שחקנים שמופיעים טוב: ציונים גבוהים, משחקים גדולים ועוקבים שבאים בעקבותיהם. רצף חלש, וחסות יכולה להיעלם.</p>
         ) : (
           <ul className="space-y-2">
             {player.sponsors.map((active) => {
@@ -153,6 +154,9 @@ function SponsorsTab({ state, dispatch }: { state: GameState; dispatch: (a: Game
             })}
           </ul>
         )}
+        <div className="mt-3 border-t border-line pt-3">
+          <FormStrip player={player} />
+        </div>
         {agent && <p className="mt-2 text-[11px] text-brand">{agent.name} משפר את התנאים ב-{agent.level * 10}% (לפני עמלה)</p>}
       </section>
 

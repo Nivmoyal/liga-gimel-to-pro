@@ -2,7 +2,7 @@ import { ChartNoAxesColumn, Briefcase, Dumbbell, Lock, Smartphone, Sofa, UserRou
 import type { LucideIcon } from 'lucide-react';
 import type { GameState } from '../types/game';
 import { getJob } from '../data/jobs';
-import { getAgent, AGENT_UNLOCK } from '../data/agents';
+import { getAgent } from '../data/agents';
 import { formatFollowers } from '../services/playerUtils';
 import { availableSponsorCount } from '../state/gameLogic';
 
@@ -41,7 +41,7 @@ export function MainActionGrid({ state, onOpen }: MainActionGridProps) {
     {
       id: 'agent',
       title: 'הסוכן שלי',
-      subtitle: agent ? agent.name : agentLocked ? `נפתח ב-OVR ${AGENT_UNLOCK.ovr}` : 'סוכנים מתעניינים',
+      subtitle: agent ? agent.name : agentLocked ? 'עוד אף סוכן לא התקשר' : 'סוכן מתעניין בך',
       icon: agentLocked ? Lock : UserRound,
       locked: agentLocked,
       alert: !agent && flags.agentDiscovered,

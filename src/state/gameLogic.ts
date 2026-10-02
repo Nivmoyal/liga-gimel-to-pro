@@ -24,7 +24,7 @@ import type {
 } from '../types/game';
 import { clubDistance, clubPlace, commuteCost, findPlace, startingClubs } from '../data/places';
 import { getJob } from '../data/jobs';
-import { AGENT_UNLOCK, getAgent } from '../data/agents';
+import { AGENTS, getAgent } from '../data/agents';
 import { MAX_SPONSORS, SPONSORS, getSponsor } from '../data/sponsors';
 import type { Sponsor } from '../data/sponsors';
 import { INTERNATIONAL_WINDOWS, NATIONAL_OPPONENTS, NATIONAL_SETUP, NATIONAL_TEAM_NAME } from '../data/national';
@@ -88,11 +88,12 @@ import {
   pickRandom,
   randInt,
   scaleFame,
+  recentForm,
   addProgress,
   trainingProgress,
 } from '../services/playerUtils';
 
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 const MAX_NEWS = 60;
 /** New followers per point of "buzz" after a good match, by division. */
 const MATCH_AUDIENCE: Record<SportType, number[]> = {
@@ -154,6 +155,25 @@ function applyEffects(state: GameState, effects: Effects): GameState {
   return next;
 }
 
+/** Keeps the ratings of the last matches played. */
+function pushForm(player: Player, rating: number): number[] {
+  return [...(player.form ?? []), Math.round(rating * 10) / 10].slice(-6);
+}
+
+/**
+ * Minutes on the pitch teach things training cannot, and only good
+ * performances really move a player forward.
+ */
+function matchExperience(player: Player, role: MatchState['role'], rating: number): Player {
+  const weights = OVR_WEIGHTS[player.position];
+  const top = [...ATTR_KEYS].sort((a, b) => weights[b] - weights[a]).slice(0, 2);
+  const base = (role === 'starter' ? 1 : 0.6) * clamp((rating - 5.8) * 0.1, 0, 0.25);
+  if (base <= 0) return player;
+  const gains: Partial<Attributes> = {};
+  for (const key of [...top, 'mental' as AttrKey]) gains[key] = trainingProgress(player, key, base);
+  return addProgress(player, gains).player;
+}
+
 function emptyNational() {
   return { caps: 0, u21Caps: 0, goals: 0, assists: 0, points: 0, ratingSum: 0 };
 }
@@ -176,7 +196,7 @@ const REGION_HOME: Record<string, string> = {
 export function migrateSave(raw: GameState): GameState | null {
   if (!raw?.player) return null;
   if (raw.version === SAVE_VERSION) return raw;
-  if (raw.version < 1 || raw.version > 4) return null;
+  if (raw.version < 1 || raw.version > 5) return null;
   // Saves before v4 cannot resume a match mid-way: the match restarts from the dashboard.
   const midMatch = raw.version < 4 && ['preMatch', 'inGame', 'matchSummary', 'postMatch'].includes(raw.phase);
   const legacy = raw.player as Player & { region?: string };
@@ -196,6 +216,7 @@ export function migrateSave(raw: GameState): GameState | null {
       ...player,
       home,
       progress: player.progress ?? emptyProgress(),
+      form: player.form ?? [],
       shirtNumber: player.shirtNumber ?? 10,
       isCaptain: player.isCaptain ?? false,
       sponsors: player.sponsors ?? [],
@@ -213,8 +234,20 @@ export function playerClubStrength(state: GameState): number {
   return state.league.teams[idx]?.strength ?? DIVISION_STRENGTH[state.player.sport][state.player.division];
 }
 
+/** An agent calls when the player's recent performances and level catch their eye. */
+export function agentInterested(agent: Agent, player: Player): boolean {
+  const form = recentForm(player);
+  const want = agent.interest;
+  if (form === null || form < want.form) return false;
+  const caps = player.national.caps + player.national.u21Caps;
+  if (want.division !== undefined && player.division < want.division && caps === 0) return false;
+  if (want.motm !== undefined && player.careerStats.motm < want.motm) return false;
+  if (want.nationalCaps !== undefined && caps < want.nationalCaps) return false;
+  return true;
+}
+
 export function agentUnlockReady(player: Player): boolean {
-  return calcOvr(player) >= AGENT_UNLOCK.ovr || player.fanRep >= AGENT_UNLOCK.fanRep || player.careerStats.motm >= AGENT_UNLOCK.bigGames;
+  return AGENTS.some((agent) => agentInterested(agent, player));
 }
 
 /** Returns why the matchday cannot start, or null when it can. */
@@ -271,6 +304,7 @@ export function createNewGame(setup: SetupData): GameState {
     injuryWeeks: 0,
     seasonStats: emptyStats(),
     careerStats: emptyStats(),
+    form: [],
     history: [],
     sponsors: [],
     national: emptyNational(),
@@ -348,7 +382,7 @@ export function train(state: GameState, id: TrainingId): GameState {
   if (Object.keys(gains).length === 0) {
     const weights = OVR_WEIGHTS[player.position];
     const top = [...ATTR_KEYS].sort((a, b) => weights[b] - weights[a]).slice(0, 2);
-    gains = { [top[0]]: 0.75, [top[1]]: 0.6 };
+    gains = { [top[0]]: 0.45, [top[1]]: 0.35 };
   }
   const progressGain: Partial<Attributes> = {};
   for (const key of ATTR_KEYS) {
@@ -454,7 +488,9 @@ export function socialPost(state: GameState, id: SocialPostId): GameState {
   if (!option) return state;
   if (state.flags.postedThisWeek) return withToast(state, 'כבר פרסמת השבוע. אל תציף את הפיד.');
   if (state.player.followers < option.minFollowers) return withToast(state, `צריך לפחות ${option.minFollowers} עוקבים.`);
-  const reach = 1 + state.player.fanRep / 100;
+  // A post travels further after strong performances
+  const form = recentForm(state.player);
+  const reach = (1 + state.player.fanRep / 100) * (form === null ? 0.5 : clamp((form - 5.5) / 1.5, 0.3, 1.6));
   let effects: Effects = {};
   let msg = '';
   switch (id) {
@@ -491,7 +527,7 @@ export function signAgent(state: GameState, agentId: string): GameState {
   const agent = getAgent(agentId);
   if (!agent) return state;
   if (!state.flags.agentDiscovered) return withToast(state, 'עוד אף סוכן לא שם לב אליך.');
-  if (calcOvr(state.player) < agent.minOvr) return withToast(state, `${agent.name} עונה שאתה עוד לא ברמה שלה. צריך דירוג ${agent.minOvr}.`);
+  if (!agentInterested(agent, state.player)) return withToast(state, `${agent.name} עוד לא משוכנע. כמה משחקים גדולים וזה ישתנה.`);
   let next: GameState = { ...state, player: { ...state.player, agentId } };
   next = addNews(next, [newsNow(next, 'rumors', `${state.player.name} חתם על הסכם ייצוג עם ${agent.name}`)]);
   return withToast(next, `חתמת עם ${agent.name}.`);
@@ -525,12 +561,16 @@ export function sponsorWeeklyNet(sponsor: Sponsor, agent: Agent | null): number 
 export function sponsorMissing(player: Player, sponsor: Sponsor): string[] {
   const r = sponsor.requires;
   const missing: string[] = [];
+  if (r.form) {
+    const form = recentForm(player);
+    if (form === null) missing.push(`ממוצע ${r.form.toFixed(1)} ב-5 המשחקים האחרונים (עוד אין מספיק משחקים)`);
+    else if (form < r.form) missing.push(`ממוצע ${r.form.toFixed(1)} ב-5 המשחקים האחרונים (כרגע ${form.toFixed(1)})`);
+  }
+  if (r.motm && player.careerStats.motm < r.motm) missing.push(`${r.motm} משחקים בציון 8+ (יש ${player.careerStats.motm})`);
   if (r.followers && player.followers < r.followers) missing.push(`${r.followers.toLocaleString('he-IL')} עוקבים`);
   if (r.fanRep && player.fanRep < r.fanRep) missing.push(`מוניטין ${r.fanRep}`);
-  if (r.ovr && calcOvr(player) < r.ovr) missing.push(`OVR ${r.ovr}`);
   if (r.division !== undefined && player.division < r.division) missing.push(divisionName(player.sport, r.division));
   if (r.nationalCaps && player.national.caps < r.nationalCaps) missing.push('הופעה בנבחרת');
-  if (r.apps && player.careerStats.apps < r.apps) missing.push(`${r.apps} הופעות (יש ${player.careerStats.apps})`);
   return missing;
 }
 
@@ -833,7 +873,7 @@ function finishMatch(state: GameState): GameState {
     }
   }
 
-  let nextPlayer: Player = { ...player, seasonStats: s, careerStats: c };
+  let nextPlayer: Player = { ...player, seasonStats: s, careerStats: c, form: played ? pushForm(player, result.rating!) : player.form };
   const ratingSwing = played ? (result.rating! - 6.5) : 0;
   const energyCost = match.role === 'starter' ? 22 : match.role === 'rotation' ? 12 : 0;
   const winBonus = played && result.outcome === 'win' ? Math.round(player.weeklySalary * 0.25) : 0;
@@ -852,15 +892,7 @@ function finishMatch(state: GameState): GameState {
     budget: winBonus,
   });
 
-  // Minutes on the pitch teach things training cannot
-  if (played) {
-    const weights = OVR_WEIGHTS[player.position];
-    const top = [...ATTR_KEYS].sort((a, b) => weights[b] - weights[a]).slice(0, 2);
-    const base = (match.role === 'starter' ? 0.12 : 0.07) * (result.rating! >= 7 ? 1.3 : 1);
-    const gains: Partial<Attributes> = {};
-    for (const key of [...top, 'mental' as AttrKey]) gains[key] = trainingProgress(nextPlayer, key, base);
-    nextPlayer = addProgress(nextPlayer, gains).player;
-  }
+  if (played) nextPlayer = matchExperience(nextPlayer, match.role, result.rating!);
 
   let next: GameState = {
     ...state,
@@ -936,6 +968,11 @@ function endMatchday(state: GameState): GameState {
     if (!sponsor) return false;
     if (sponsor.requires.fanRep && player.fanRep < sponsor.requires.fanRep - 15) {
       news.push(makeNews('rumors', `${sponsor.name} מפסיקה את החסות של ${player.name} בגלל ירידה בפופולריות`, state.season, matchday));
+      return false;
+    }
+    const form = recentForm(player);
+    if (sponsor.requires.form && form !== null && form < sponsor.requires.form - 0.9) {
+      news.push(makeNews('rumors', `${sponsor.name} מקפיאה את החסות של ${player.name} אחרי רצף משחקים חלש`, state.season, matchday));
       return false;
     }
     player.budget += sponsorWeeklyNet(sponsor, agent);
@@ -1040,7 +1077,7 @@ function queueLifeEvent(state: GameState): GameState {
       flags: { ...flags, agentDiscovered: true },
     };
   }
-  if (player.agentId && player.agentId !== 'agent_michal' && !flags.eliteAgentOffered && calcOvr(player) >= 60) {
+  if (player.agentId && player.agentId !== 'agent_michal' && !flags.eliteAgentOffered && agentInterested(getAgent('agent_michal')!, player)) {
     return {
       ...state,
       pendingLifeEventId: getTriggeredEvent('agent_elite')?.id ?? null,
@@ -1312,7 +1349,7 @@ function finishNationalMatch(state: GameState): GameState {
   const swing = played ? result.rating! - 6.5 : 0;
   const levelBoost = level === 'senior' ? 2 : 1;
   const nextPlayer = applyPlayerEffects(
-    { ...player, national },
+    { ...player, national, form: played ? pushForm(player, result.rating!) : player.form },
     {
       energy: match.role === 'starter' ? -18 : -10,
       confidence: Math.round(4 + swing * 3),
@@ -1322,6 +1359,7 @@ function finishNationalMatch(state: GameState): GameState {
     },
   );
   const teamName = NATIONAL_TEAM_NAME[level];
+  if (played) Object.assign(nextPlayer, matchExperience(nextPlayer, match.role, result.rating!));
   const score = sport === 'basketball' ? `${result.teamScore}:${result.oppScore}` : `${result.teamScore}-${result.oppScore}`;
   const verb = result.outcome === 'win' ? 'ניצחה את' : result.outcome === 'loss' ? 'הפסידה ל' : 'סיימה בתיקו מול';
   const joiner = result.outcome === 'loss' ? '' : ' ';

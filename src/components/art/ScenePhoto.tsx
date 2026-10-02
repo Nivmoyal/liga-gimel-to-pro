@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { SportType } from '../../types/game';
-import { backdropFor, photoFor } from '../../data/photos';
+import { backdropFor, hasInstalledPhotos, photoFor } from '../../data/photos';
 import type { Backdrop } from '../../data/photos';
 import { hashString } from '../../data/clubIdentity';
 import { PORTRAIT_KEYS } from '../../data/photoQueries';
 import { cachedPhotos, loadPhotos, photoKey } from '../../services/photoService';
 import type { RemotePhoto } from '../../services/photoService';
 
-/** Installed photo first, otherwise a live Commons photo (cached), otherwise null. */
+/** Installed photo first, otherwise (only when none are installed) a live Commons photo, otherwise null. */
 function useScenePhoto(scene: string, sport: SportType, seed: string) {
   const local = photoFor(scene, sport, seed);
-  const key = local ? null : photoKey(scene, sport);
+  // Once a local (AI) set is installed, no real photos are fetched from the web.
+  const key = local || hasInstalledPhotos() ? null : photoKey(scene, sport);
   const [remote, setRemote] = useState<RemotePhoto[] | null>(() => (key ? cachedPhotos(key) : null));
   const [failed, setFailed] = useState(0);
   useEffect(() => {
@@ -28,7 +29,7 @@ function useScenePhoto(scene: string, sport: SportType, seed: string) {
       alive = false;
     };
   }, [key, scene]);
-  if (local) return { src: `${import.meta.env.BASE_URL}photos/${local.file}`, author: local.author, title: local.title, onError: () => {} };
+  if (local) return { src: local.file.startsWith('data:') ? local.file : `${import.meta.env.BASE_URL}${local.file}`, author: local.author, title: local.title, onError: () => {} };
   if (!remote || failed >= remote.length) return null;
   const pool = Math.min(remote.length, 10);
   const photo = remote[(hashString(seed || scene) + failed) % pool];

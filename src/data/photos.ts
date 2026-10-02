@@ -1,5 +1,6 @@
-// Real photos for scenes. Files live in public/photos and are listed in
-// photoManifest.json (written by scripts/photos.mjs) together with credits.
+// Scene images. Files live under public/ (AI images in public/images, written
+// by scripts/ai-photos.mjs) and are listed in photoManifest.json with their
+// path relative to public/ and credits.
 
 import type { SportType } from '../types/game';
 import manifest from './photoManifest.json';
@@ -24,6 +25,10 @@ export function photoFor(scene: string, sport: SportType, seed = ''): PhotoInfo 
   const list = PHOTOS[`${scene}_${sport}`] ?? PHOTOS[scene];
   if (!list || list.length === 0) return null;
   return list[hashString(seed || scene) % list.length];
+}
+
+export function hasInstalledPhotos(): boolean {
+  return Object.keys(PHOTOS).length > 0;
 }
 
 export function allPhotoCredits(): Array<PhotoInfo & { key: string }> {

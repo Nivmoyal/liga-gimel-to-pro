@@ -7,6 +7,7 @@ import { ScenePhoto } from './art/ScenePhoto';
 import { Crest } from './art/Crest';
 import { CaptainBadge } from './ui/CaptainBadge';
 import { prefetchPhotos } from '../services/photoService';
+import { hasInstalledPhotos } from '../data/photos';
 import { PHOTO_QUERIES, PORTRAIT_KEYS } from '../data/photoQueries';
 
 interface TitleScreenProps {
@@ -22,6 +23,7 @@ export function TitleScreen({ save, onContinue, onNewGame, onCredits }: TitleScr
   const p = save?.player;
   // Warm the photo cache in the background so match scenes appear instantly.
   useEffect(() => {
+    if (hasInstalledPhotos()) return;
     const sport = p?.sport ?? 'football';
     const keys = Object.keys(PHOTO_QUERIES).filter((k) => !k.endsWith(sport === 'football' ? '_basketball' : '_football'));
     const first = ['title', 'intro_1', 'intro_2', 'intro_3'];

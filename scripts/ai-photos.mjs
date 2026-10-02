@@ -1,11 +1,11 @@
-// Generates AI images for every scene in scripts/ai-photo-prompts.json and
-// installs them in public/photos + src/data/photoManifest.json, so the game
-// shows them instead of fetching real photos.
+// Downloads free AI images from Pollinations.ai (no API key) for every scene
+// in scripts/ai-photo-prompts.json, saves them as public/images/<key>.jpg
+// (9:16 for the title and intro, 16:9 for everything else) and lists them in
+// src/data/photoManifest.json so the game shows them.
 //
-//   OPENAI_API_KEY=... node scripts/ai-photos.mjs            all missing scenes
-//   OPENAI_API_KEY=... node scripts/ai-photos.mjs fb_penalty  only these keys
-//   node scripts/ai-photos.mjs --list                         show prompts
-//   options: --count 2 (images per scene), --force (regenerate existing)
+//   npm run photos:ai                 all scenes that are still missing
+//   npm run photos:ai -- fb_penalty   only these scenes
+//   options: --force (download again), --list (print prompts)
 
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -14,72 +14,81 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = join(ROOT, 'public', 'photos');
+const OUT = join(ROOT, 'public', 'images');
 const MANIFEST = join(ROOT, 'src', 'data', 'photoManifest.json');
 const PROMPTS = JSON.parse(await readFile(join(ROOT, 'scripts', 'ai-photo-prompts.json'), 'utf8'));
-const MODEL = process.env.AI_IMAGE_MODEL ?? 'gpt-image-1';
 
 const args = process.argv.slice(2);
-const flag = (name) => args.includes(name);
-const count = Number(args[args.indexOf('--count') + 1]) || 1;
-const keys = args.filter((a, i) => !a.startsWith('--') && args[i - 1] !== '--count');
+const force = args.includes('--force');
+const keys = args.filter((a) => !a.startsWith('--'));
 
 const portrait = (key) => PROMPTS.portrait.includes(key);
-const promptFor = (key) => `${PROMPTS.scenes[key]} ${PROMPTS.style}`;
+const size = (key) => (portrait(key) ? { width: 720, height: 1280 } : { width: 1280, height: 720 });
+
+/** Stable seed per scene, so a re-run draws the same picture. */
+function seedFor(key) {
+  let h = 0;
+  for (const ch of key) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return h % 1_000_000;
+}
+
+function urlFor(key) {
+  const { width, height } = size(key);
+  const prompt = encodeURIComponent(`${PROMPTS.scenes[key]} ${PROMPTS.style}`);
+  return `https://image.pollinations.ai/prompt/${prompt}?width=${width}&height=${height}&seed=${seedFor(key)}&nologo=true&model=flux`;
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function download(key) {
+  let lastError;
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    try {
+      const res = await fetch(urlFor(key), { signal: AbortSignal.timeout(180_000) });
+      const type = res.headers.get('content-type') ?? '';
+      if (!res.ok || !type.startsWith('image/')) throw new Error(`HTTP ${res.status} ${type}`);
+      return Buffer.from(await res.arrayBuffer());
+    } catch (err) {
+      lastError = err;
+      // The free tier allows one request at a time; back off before retrying.
+      await sleep(2 ** attempt * 2000);
+    }
+  }
+  throw new Error(`${key}: ${lastError?.cause?.message ?? lastError?.message ?? lastError}`);
+}
 
 async function loadManifest() {
   return existsSync(MANIFEST) ? JSON.parse(await readFile(MANIFEST, 'utf8')) : {};
 }
 
-async function generate(key) {
-  const res = await fetch('https://api.openai.com/v1/images/generations', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-    body: JSON.stringify({ model: MODEL, prompt: promptFor(key), size: portrait(key) ? '1024x1536' : '1536x1024', n: 1 }),
-  });
-  if (!res.ok) throw new Error(`${key}: ${res.status} ${await res.text()}`);
-  const json = await res.json();
-  return Buffer.from(json.data[0].b64_json, 'base64');
-}
-
-async function install(manifest, key, buffer) {
-  const n = (manifest[key] ?? []).length;
-  const file = `ai/${key}-${n}.webp`;
-  await mkdir(join(OUT, 'ai'), { recursive: true });
-  await sharp(buffer)
-    .resize(portrait(key) ? { width: 900, height: 1600, fit: 'cover' } : { width: 1200, height: 675, fit: 'cover' })
-    .webp({ quality: 72 })
-    .toFile(join(OUT, file));
-  manifest[key] = [...(manifest[key] ?? []), { file, title: PROMPTS.scenes[key], author: 'תמונת AI', license: 'AI', source: MODEL }];
-  await writeFile(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
-  console.log(`installed ${file}`);
-}
-
-if (flag('--list')) {
-  for (const key of Object.keys(PROMPTS.scenes)) console.log(`${key}${portrait(key) ? ' (portrait)' : ''}: ${PROMPTS.scenes[key]}`);
+if (args.includes('--list')) {
+  for (const key of Object.keys(PROMPTS.scenes)) console.log(`${key}.jpg (${portrait(key) ? '9:16' : '16:9'}): ${urlFor(key)}`);
   process.exit(0);
 }
-if (!process.env.OPENAI_API_KEY) {
-  console.error('Set OPENAI_API_KEY (the environment needs network access to api.openai.com).');
-  process.exit(1);
-}
 
+await mkdir(OUT, { recursive: true });
 const manifest = await loadManifest();
 const todo = (keys.length ? keys : Object.keys(PROMPTS.scenes)).filter((key) => {
   if (!PROMPTS.scenes[key]) throw new Error(`unknown scene ${key}`);
-  if (flag('--force')) {
-    delete manifest[key];
-    return true;
-  }
-  return !(manifest[key] ?? []).some((p) => p.file.startsWith('ai/'));
+  return force || !existsSync(join(OUT, `${key}.jpg`));
 });
-console.log(`${todo.length} scenes x ${count}`);
+console.log(`${todo.length} images to download`);
+
+let done = 0;
+const failed = [];
 for (const key of todo) {
-  for (let i = 0; i < count; i++) {
-    try {
-      await install(manifest, key, await generate(key));
-    } catch (err) {
-      console.error(String(err));
-    }
+  try {
+    const { width, height } = size(key);
+    const raw = await download(key);
+    await sharp(raw).resize({ width, height, fit: 'cover' }).jpeg({ quality: 78, mozjpeg: true }).toFile(join(OUT, `${key}.jpg`));
+    manifest[key] = [{ file: `images/${key}.jpg`, title: PROMPTS.scenes[key], author: 'תמונת AI', license: 'AI', source: 'pollinations.ai' }];
+    await writeFile(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
+    done += 1;
+    console.log(`[${done}/${todo.length}] images/${key}.jpg`);
+  } catch (err) {
+    failed.push(key);
+    console.error(String(err.message ?? err));
   }
 }
+console.log(`downloaded ${done}, failed ${failed.length}${failed.length ? `: ${failed.join(', ')}` : ''}`);
+if (failed.length) process.exitCode = 1;

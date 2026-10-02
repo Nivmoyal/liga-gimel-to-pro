@@ -116,7 +116,7 @@ async function install(key, buffer, info) {
     .resize(portrait ? { width: 900, height: 1600, fit: 'cover' } : { width: 1000, height: 560, fit: 'cover' })
     .jpeg({ quality: 74, mozjpeg: true })
     .toFile(join(OUT, file));
-  manifest[key] = [...(manifest[key] ?? []), { file, ...info }];
+  manifest[key] = [...(manifest[key] ?? []), { file: `photos/${file}`, ...info }];
   await writeFile(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
   console.log(`installed ${file}`);
 }

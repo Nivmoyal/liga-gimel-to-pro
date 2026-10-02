@@ -8,7 +8,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "photos:ai": "node scripts/ai-photos.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.49.0",

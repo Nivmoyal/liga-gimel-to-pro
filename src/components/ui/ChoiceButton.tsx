@@ -1,5 +1,5 @@
 import type { EventChoice, Player } from '../../types/game';
-import { ATTR_LABEL } from '../../data/sports';
+import { attrLabels } from '../../data/sports';
 import { successChance } from '../../services/eventEngine';
 
 interface ChoiceButtonProps {
@@ -22,7 +22,7 @@ export function ChoiceButton({ choice, index, player, onChoose }: ChoiceButtonPr
       <span className="block text-base font-black leading-snug">{choice.label}</span>
       {isCheck && choice.stat && (
         <span className="mt-1 flex items-center justify-center gap-2 text-xs font-bold text-black/70">
-          {ATTR_LABEL[player.sport][choice.stat]} {player.attributes[choice.stat]}
+          {attrLabels(player.sport, player.position)[choice.stat]} {player.attributes[choice.stat]}
           <span className={`rounded bg-black/80 px-1.5 py-0.5 ${chanceColor}`}>סיכוי {chance}%</span>
         </span>
       )}

@@ -151,6 +151,8 @@ export interface FilterExtras {
 export function isEligible(event: GameEvent, player: Player, extras: FilterExtras = {}): boolean {
   if (event.sport !== 'both' && event.sport !== player.sport) return false;
   const c = event.conditions;
+  // A goalkeeper's match moments are keeper moments; outfield moments need an outfield player.
+  if (event.type === 'inGame' && player.sport === 'football' && player.position === 'GK' && !c?.positions?.includes('GK')) return false;
   if (!c) return true;
   if (c.minDivision !== undefined && player.division < c.minDivision) return false;
   if (c.maxDivision !== undefined && player.division > c.maxDivision) return false;

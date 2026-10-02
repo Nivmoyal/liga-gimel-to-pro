@@ -50,7 +50,7 @@ export function PreMatchModal({ state, dispatch }: Props) {
       }
     >
       {outcome ? (
-        <OutcomeBox outcome={outcome} sport={state.player.sport} />
+        <OutcomeBox outcome={outcome} sport={state.player.sport} position={state.player.position} />
       ) : (
         <div className="space-y-2.5">
           {event.choices.map((choice, i) => (

@@ -1,5 +1,5 @@
-import type { AttrKey, Attributes, Effects, Player, SeasonStats, SportType } from '../types/game';
-import { ATTR_KEYS, ATTR_LABEL, OVR_WEIGHTS } from '../data/sports';
+import type { AttrKey, Attributes, Effects, Player, Position, SeasonStats, SportType } from '../types/game';
+import { ATTR_KEYS, OVR_WEIGHTS, attrLabels } from '../data/sports';
 
 export const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -146,7 +146,7 @@ export function addAttributes(attrs: Attributes, delta: Partial<Attributes>): At
 }
 
 /** Human readable list of effect changes, used in outcome boxes. */
-export function describeEffects(effects: Effects, sport: SportType): Array<{ label: string; value: string; positive: boolean }> {
+export function describeEffects(effects: Effects, sport: SportType, position?: Position): Array<{ label: string; value: string; positive: boolean }> {
   const out: Array<{ label: string; value: string; positive: boolean }> = [];
   const push = (label: string, v: number | undefined, suffix = '', invert = false) => {
     if (!v) return;
@@ -167,7 +167,8 @@ export function describeEffects(effects: Effects, sport: SportType): Array<{ lab
   push('ביטחון', effects.confidence);
   push('עוקבים', effects.followers);
   if (effects.attributes) {
-    for (const key of ATTR_KEYS) push(ATTR_LABEL[sport][key], effects.attributes[key]);
+    const labels = attrLabels(sport, position);
+    for (const key of ATTR_KEYS) push(labels[key], effects.attributes[key]);
   }
   if (effects.injuryWeeks) out.push({ label: 'פציעה', value: `${effects.injuryWeeks} מחזורים`, positive: false });
   return out;

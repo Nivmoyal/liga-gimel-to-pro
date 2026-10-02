@@ -30,7 +30,7 @@ import type { Sponsor } from '../data/sponsors';
 import { INTERNATIONAL_WINDOWS, NATIONAL_OPPONENTS, NATIONAL_SETUP, NATIONAL_TEAM_NAME } from '../data/national';
 import {
   ATTR_KEYS,
-  ATTR_LABEL,
+  attrLabels,
   CONTRACT_LABEL,
   DIVISION_STRENGTH,
   LIVING_COST,
@@ -93,7 +93,7 @@ import {
   trainingProgress,
 } from '../services/playerUtils';
 
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 const MAX_NEWS = 60;
 /** New followers per point of "buzz" after a good match, by division. */
 const MATCH_AUDIENCE: Record<SportType, number[]> = {
@@ -182,6 +182,9 @@ function emptyProgress(): Attributes {
   return { attack: 0, technique: 0, playmaking: 0, defense: 0, physical: 0, mental: 0 };
 }
 
+/** Football positions before the full 12-position list. */
+const LEGACY_POSITION: Record<string, string> = { striker: 'ST', midfielder: 'CM', centerBack: 'CB', fullBack: 'LB' };
+
 /** Old saves had a region instead of a typed home town. */
 const REGION_HOME: Record<string, string> = {
   golan: 'קצרין',
@@ -196,7 +199,7 @@ const REGION_HOME: Record<string, string> = {
 export function migrateSave(raw: GameState): GameState | null {
   if (!raw?.player) return null;
   if (raw.version === SAVE_VERSION) return raw;
-  if (raw.version < 1 || raw.version > 5) return null;
+  if (raw.version < 1 || raw.version > 6) return null;
   // Saves before v4 cannot resume a match mid-way: the match restarts from the dashboard.
   const midMatch = raw.version < 4 && ['preMatch', 'inGame', 'matchSummary', 'postMatch'].includes(raw.phase);
   const legacy = raw.player as Player & { region?: string };
@@ -217,6 +220,7 @@ export function migrateSave(raw: GameState): GameState | null {
       home,
       progress: player.progress ?? emptyProgress(),
       form: player.form ?? [],
+      position: (LEGACY_POSITION[player.position as string] ?? player.position) as Player['position'],
       shirtNumber: player.shirtNumber ?? 10,
       isCaptain: player.isCaptain ?? false,
       sponsors: player.sponsors ?? [],
@@ -345,10 +349,18 @@ export function createNewGame(setup: SetupData): GameState {
 
 function positionWord(player: Player): string {
   const map: Record<string, string> = {
-    striker: 'החלוץ',
-    midfielder: 'הקשר',
-    centerBack: 'הבלם',
-    fullBack: 'המגן',
+    GK: 'השוער',
+    LB: 'המגן השמאלי',
+    CB: 'הבלם',
+    RB: 'המגן הימני',
+    LWB: 'מגן הכנף השמאלי',
+    RWB: 'מגן הכנף הימני',
+    CDM: 'הקשר האחורי',
+    CM: 'הקשר המרכזי',
+    CAM: 'הקשר ההתקפי',
+    LW: 'הכנף השמאלית',
+    RW: 'הכנף הימנית',
+    ST: 'החלוץ',
     PG: 'הרכז',
     SG: 'הקלעי',
     SF: 'הסמול פורוורד',
@@ -378,7 +390,7 @@ export function train(state: GameState, id: TrainingId): GameState {
   if (!slotted) return withToast(state, 'נגמר הזמן השבוע. עולים למחזור הבא.');
 
   // Position-based gains for the private coach session
-  let gains = option.gains;
+  let gains = player.position === 'GK' && option.keeperGains ? option.keeperGains : option.gains;
   if (Object.keys(gains).length === 0) {
     const weights = OVR_WEIGHTS[player.position];
     const top = [...ATTR_KEYS].sort((a, b) => weights[b] - weights[a]).slice(0, 2);
@@ -409,7 +421,7 @@ export function train(state: GameState, id: TrainingId): GameState {
 
 /** "+0.4 גימור (70% לנקודה הבאה)" style summary of a session. */
 function trainingToast(before: Player, after: Player, gains: Partial<Attributes>, raised: AttrKey[]): string {
-  const labels = ATTR_LABEL[after.sport];
+  const labels = attrLabels(after.sport, after.position);
   const parts = (Object.keys(gains) as AttrKey[]).map((key) => {
     if (raised.includes(key)) return `${labels[key]} עלה ל-${after.attributes[key]}`;
     return `${labels[key]} +${Math.max(1, Math.round(gains[key]! * 100))}% (${Math.round(after.progress[key] * 100)}% לנקודה הבאה)`;
@@ -441,7 +453,7 @@ export function lifestyle(state: GameState, id: LifestyleId): GameState {
     for (const key of Object.keys(option.progress) as AttrKey[]) gains[key] = trainingProgress(next.player, key, option.progress[key]!);
     const { player, raised } = addProgress(next.player, gains);
     next = { ...next, player };
-    if (raised.length > 0) return withToast(next, `${option.label}: ${ATTR_LABEL[player.sport][raised[0]]} עלה ל-${player.attributes[raised[0]]}.`);
+    if (raised.length > 0) return withToast(next, `${option.label}: ${attrLabels(player.sport, player.position)[raised[0]]} עלה ל-${player.attributes[raised[0]]}.`);
   }
   return withToast(next, `${option.label}: בוצע.`);
 }

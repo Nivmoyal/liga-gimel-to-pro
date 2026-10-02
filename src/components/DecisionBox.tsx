@@ -46,7 +46,7 @@ export function DecisionBox({ state, dispatch }: DecisionBoxProps) {
       </div>
       {state.lifeOutcome ? (
         <div className="space-y-3">
-          <OutcomeBox outcome={state.lifeOutcome} sport={state.player.sport} />
+          <OutcomeBox outcome={state.lifeOutcome} sport={state.player.sport} position={state.player.position} />
           <button
             onClick={() => dispatch({ type: 'LIFE_DISMISS' })}
             className="flex w-full items-center justify-center gap-1 rounded-xl border border-line bg-card py-2.5 text-sm font-bold hover:border-brand/50"

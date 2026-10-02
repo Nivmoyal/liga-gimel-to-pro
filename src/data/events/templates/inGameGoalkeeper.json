@@ -1,0 +1,1615 @@
+[
+ {
+  "key": "gk_penalty",
+  "sport": "football",
+  "scene": "fb_penalty",
+  "title": [
+   "פנדל נגדך",
+   "אתה מול הנקודה הלבנה"
+  ],
+  "text": [
+   "השופט {שופט} מצביע על הנקודה. החלוץ של {יריבה} מניח את הכדור ומסתכל לך בעיניים.",
+   "עבירה ברחבה של {קבוצה}. פנדל, והכול עליך עכשיו."
+  ],
+  "tip": [
+   "הבועט הזה כבש את הפנדל האחרון לפינה השמאלית.",
+   "הוא לוקח תנופה ארוכה, אולי בגלל זה הוא ממהר."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "קופץ לצד שאתה מנחש",
+    "stat": "defense",
+    "difficulty": 60,
+    "success": {
+     "text": [
+      "ניחשת נכון ועפת לפינה! הצלה ענקית!",
+      "הכדור נבלע בכפפות. היציע של {קבוצה} משתגע."
+     ],
+     "effects": {
+      "rating": 1.4,
+      "fanRep": 3,
+      "followers": 120,
+      "confidence": 6
+     }
+    },
+    "fail": {
+     "text": [
+      "קפצת לצד הנכון, אבל הבעיטה חזקה מדי. שער.",
+      "הוא שלח אותך לצד אחד והכדור לצד השני."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.2,
+      "confidence": -2
+     }
+    }
+   },
+   {
+    "label": "מחכה עד הרגע האחרון",
+    "stat": "mental",
+    "difficulty": 58,
+    "success": {
+     "text": [
+      "עמדת במקום, קראת את הבעיטה ועצרת אותה!",
+      "סבלנות של שוער גדול. הכדור בידיים שלך."
+     ],
+     "effects": {
+      "rating": 1.3,
+      "fanRep": 3,
+      "confidence": 5
+     }
+    },
+    "fail": {
+     "text": [
+      "חיכית שנייה יותר מדי, והכדור עובר לידך.",
+      "הבעיטה שטוחה לפינה, לא היה סיכוי."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.2
+     }
+    }
+   },
+   {
+    "label": "משחקי ראש: לוקח זמן ומדבר אליו",
+    "stat": "mental",
+    "difficulty": 52,
+    "success": {
+     "text": [
+      "הבועט נלחץ ובועט אל מחוץ למסגרת!",
+      "הוא מפספס. העצבים שלך ניצחו."
+     ],
+     "effects": {
+      "rating": 1.0,
+      "teamMorale": 3,
+      "confidence": 4
+     }
+    },
+    "fail": {
+     "text": [
+      "השופט נותן לך צהוב על עיכוב, והפנדל נכנס.",
+      "הוא לא התרגש ושם את הכדור ברשת."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.5,
+      "coachApproval": -1
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_1v1",
+  "sport": "football",
+  "scene": "fb_1v1",
+  "title": [
+   "לבד מולך",
+   "פריצה של החלוץ"
+  ],
+  "text": [
+   "כדור עומק עובר את הבלמים, וחלוץ של {יריבה} דוהר לבד לכיוון השער שלך.",
+   "טעות במרכז, והחלוץ של {יריבה} לבד מולך."
+  ],
+  "tip": [
+   "הוא מוביל את הכדור רחוק מהרגל.",
+   "הבלם שלך רץ אחריו, אבל לא יגיע."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "יוצא מהר וסוגר את הזווית",
+    "stat": "physical",
+    "difficulty": 57,
+    "success": {
+     "text": [
+      "יצאת כמו טיל, נשכבת על הכדור לפני הבעיטה!",
+      "סגרת את הזווית והכדור פגע בך."
+     ],
+     "effects": {
+      "rating": 1.2,
+      "fanRep": 2,
+      "confidence": 5,
+      "coachApproval": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "יצאת מאוחר, והוא מעביר מעליך.",
+      "הוא עקף אותך וגלגל לרשת הריקה."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.6,
+      "confidence": -3
+     }
+    }
+   },
+   {
+    "label": "נשאר גדול ומחכה לבעיטה",
+    "stat": "defense",
+    "difficulty": 58,
+    "success": {
+     "text": [
+      "נשארת על הרגליים, והבעיטה פוגעת לך ברגל!",
+      "סבלנות, ואז הצלה ברפלקס."
+     ],
+     "effects": {
+      "rating": 1.2,
+      "confidence": 5
+     }
+    },
+    "fail": {
+     "text": [
+      "הבעיטה עוברת בין הרגליים.",
+      "הוא בחר פינה ולא הגעת."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.5,
+      "confidence": -2
+     }
+    }
+   },
+   {
+    "label": "דוחק אותו לצד וסוגר את הקו",
+    "stat": "mental",
+    "difficulty": 54,
+    "success": {
+     "text": [
+      "דחקת אותו לקו, הזווית נסגרה והבעיטה בחוץ.",
+      "הבלם חזר בזמן בזכותך."
+     ],
+     "effects": {
+      "rating": 0.9,
+      "coachApproval": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "הוא דווקא מצא את הפינה הרחוקה מזווית קשה.",
+      "הוא מסר לחבר שהגיע מאחור. שער."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.4
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_cross",
+  "sport": "football",
+  "scene": "fb_header",
+  "title": [
+   "הגבהה לרחבה",
+   "כדור גבוה מעל כולם"
+  ],
+  "text": [
+   "הכנף של {יריבה} מרים לרחבה צפופה. שלושה שחקנים קופצים, והכדור בדרך לנקודה הקטנה.",
+   "הגבהה מעוקלת מהצד, והכדור תלוי באוויר מול השער."
+  ],
+  "tip": [
+   "החלוץ שלהם חזק מאוד בראש.",
+   "הרוח מושכת את הכדור לכיוון השער."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "יוצא ותופס בשתי ידיים",
+    "stat": "technique",
+    "difficulty": 57,
+    "success": {
+     "text": [
+      "יצאת מעל כולם ותפסת נקי. הקהל מוחא כפיים.",
+      "תפיסה בטוחה בגובה, הלחץ נעלם."
+     ],
+     "effects": {
+      "rating": 0.9,
+      "coachApproval": 2,
+      "confidence": 4
+     }
+    },
+    "fail": {
+     "text": [
+      "הכדור נשמט לך מהידיים ונכנס מהריבאונד.",
+      "פספסת את הכדור באוויר ונגיחה פנימה."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.8,
+      "confidence": -4,
+      "coachApproval": -2
+     }
+    }
+   },
+   {
+    "label": "מאגרף רחוק מהרחבה",
+    "stat": "physical",
+    "difficulty": 53,
+    "success": {
+     "text": [
+      "אגרוף חזק, הכדור יוצא עד קו האמצע.",
+      "הרחקת באגרוף מעל כולם."
+     ],
+     "effects": {
+      "rating": 0.6,
+      "confidence": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "האגרוף חלש, והכדור נופל לרגל של יריב. שער.",
+      "פגעת בכדור בקצה הכפפה והוא נכנס."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.6
+     }
+    }
+   },
+   {
+    "label": "נשאר על הקו וצועק לבלמים",
+    "stat": "mental",
+    "difficulty": 50,
+    "success": {
+     "text": [
+      "הבלם שמע אותך ונגח החוצה.",
+      "ארגנת את ההגנה, הנגיחה שלהם רחבה."
+     ],
+     "effects": {
+      "rating": 0.4,
+      "teamMorale": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "אף אחד לא לקח את הכדור, נגיחה חופשית לרשת.",
+      "נשארת בקו והנגיחה מקרוב לא השאירה סיכוי."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.5
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_longshot",
+  "sport": "football",
+  "scene": "fb_keeper",
+  "title": [
+   "טיל מרחוק",
+   "בעיטה מ-25 מטר"
+  ],
+  "text": [
+   "שחקן של {יריבה} מקבל מקום מחוץ לרחבה ומשחרר בעיטה חזקה לחיבורים.",
+   "הכדור נופל לקשר של {יריבה}, והוא בועט מרחוק בלי לחשוב."
+  ],
+  "tip": [
+   "הכדור מסתובב ויורד בסוף.",
+   "אתה רואה את הבעיטה מוקדם."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "מזנק לפינה העליונה",
+    "stat": "physical",
+    "difficulty": 60,
+    "success": {
+     "text": [
+      "ריחפת באוויר והוצאת לקרן! הצלה של העונה!",
+      "קצות האצבעות. הכדור פוגע במשקוף ויוצא."
+     ],
+     "effects": {
+      "rating": 1.3,
+      "fanRep": 3,
+      "followers": 150,
+      "confidence": 5
+     }
+    },
+    "fail": {
+     "text": [
+      "הכדור מעל הכפפות ובחיבורים.",
+      "קפצת, אבל הבעיטה מושלמת. שער."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.2
+     }
+    }
+   },
+   {
+    "label": "הודף החוצה לצד",
+    "stat": "technique",
+    "difficulty": 55,
+    "success": {
+     "text": [
+      "הדיפה נקייה לצד, אף אחד לא מגיע לריבאונד.",
+      "הוצאת את הכדור רחוק מהשער."
+     ],
+     "effects": {
+      "rating": 0.8,
+      "confidence": 3
+     }
+    },
+    "fail": {
+     "text": [
+      "ההדיפה חוזרת לרחבה, ומישהו משלים.",
+      "הכדור מחליק לך מהידיים פנימה."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.7,
+      "confidence": -3
+     }
+    }
+   },
+   {
+    "label": "קורא את הכדור ותופס",
+    "stat": "defense",
+    "difficulty": 57,
+    "success": {
+     "text": [
+      "קראת את הסיבוב ותפסת בשקט.",
+      "תפיסה כאילו זה אימון."
+     ],
+     "effects": {
+      "rating": 0.9,
+      "coachApproval": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "הכדור משנה כיוון ברגע האחרון ונכנס.",
+      "ניסית לתפוס והכדור קפץ פנימה."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.6
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_freekick",
+  "sport": "football",
+  "scene": "fb_freekick",
+  "title": [
+   "בעיטה חופשית נגדך",
+   "החומה והפינה"
+  ],
+  "text": [
+   "עבירה 20 מטר מהשער שלך. הבועט של {יריבה} מסדר את הכדור.",
+   "בעיטה חופשית ל{יריבה} בזווית טובה. אתה צריך לסדר חומה."
+  ],
+  "tip": [
+   "הבועט שלהם רגל ימין, מעקם מעל החומה.",
+   "החומה שלך קטנה."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "מסדר חומה של חמישה ומכסה את הצד השני",
+    "stat": "mental",
+    "difficulty": 54,
+    "success": {
+     "text": [
+      "החומה עוצרת, ואתה תופס את הריבאונד.",
+      "הבעיטה פוגעת בחומה. סידור מושלם."
+     ],
+     "effects": {
+      "rating": 0.7,
+      "coachApproval": 2,
+      "teamMorale": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "הבעיטה עוקפת את החומה בדיוק במקום שהשארת.",
+      "חור בחומה, והכדור עובר דרכו."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.6
+     }
+    }
+   },
+   {
+    "label": "מהמר על הפינה הרחוקה",
+    "stat": "defense",
+    "difficulty": 58,
+    "success": {
+     "text": [
+      "הימור נכון, הוצאת את הבעיטה לקרן!",
+      "זינקת לרחוקה ועצרת."
+     ],
+     "effects": {
+      "rating": 1.1,
+      "fanRep": 2,
+      "confidence": 4
+     }
+    },
+    "fail": {
+     "text": [
+      "הוא בעט לפינה שלך. שער מביך.",
+      "הלכת מוקדם, והוא שם בפינה הקרובה."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.8,
+      "confidence": -3
+     }
+    }
+   },
+   {
+    "label": "נשאר במרכז ומגיב",
+    "stat": "physical",
+    "difficulty": 56,
+    "success": {
+     "text": [
+      "תגובה מהירה, הכדור בידיים.",
+      "הגבת מאוחר אבל מספיק טוב."
+     ],
+     "effects": {
+      "rating": 0.8,
+      "confidence": 3
+     }
+    },
+    "fail": {
+     "text": [
+      "הבעיטה מדויקת מדי. שער.",
+      "הגעת, אבל הכדור עובר מעל הכפפה."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.3
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_distribution",
+  "sport": "football",
+  "scene": "fb_counter",
+  "title": [
+   "הכדור בידיים שלך",
+   "פתיחת מתפרצת"
+  ],
+  "text": [
+   "תפסת כדור, ו{יריבה} עדיין עם הרבה שחקנים קדימה. הכנף שלך פנוי במרכז המגרש.",
+   "אחרי הצלה, יש לך שנייה להחליט: מהר קדימה או להרגיע."
+  ],
+  "tip": [
+   "הכנף שלך מהיר יותר מהמגן שלהם.",
+   "היריבה עולה גבוה ומשאירה מקום מאחור."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "זריקה מהירה לכנף",
+    "stat": "playmaking",
+    "difficulty": 54,
+    "success": {
+     "text": [
+      "זריקה כמו חץ, הכנף בורח ומבשל שער!",
+      "פתחת מתפרצת, ו{קבוצה} כובשת!"
+     ],
+     "effects": {
+      "teamScore": 1,
+      "playerAssists": 1,
+      "rating": 1.0,
+      "coachApproval": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "הזריקה נחטפת במרכז, ו{יריבה} כמעט כובשת.",
+      "הכדור לא מגיע לכנף."
+     ],
+     "effects": {
+      "rating": -0.4
+     }
+    }
+   },
+   {
+    "label": "בעיטה ארוכה לחלוץ",
+    "stat": "attack",
+    "difficulty": 52,
+    "success": {
+     "text": [
+      "בעיטה מדויקת על הראש של החלוץ, שמוריד ומבשל.",
+      "הכדור נוחת בדיוק במקום, מצב מסוכן ל{קבוצה}."
+     ],
+     "effects": {
+      "rating": 0.6,
+      "teamMorale": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "הבעיטה יוצאת ישר החוצה.",
+      "הכדור חוזר מהר, ואתה שוב תחת לחץ."
+     ],
+     "effects": {
+      "rating": -0.3
+     }
+    }
+   },
+   {
+    "label": "מרגיע את המשחק ומוסר קצר",
+    "stat": "mental",
+    "difficulty": 45,
+    "success": {
+     "text": [
+      "שקט ושליטה. הקבוצה נושמת.",
+      "המאמן מהנהן מהקווים."
+     ],
+     "effects": {
+      "rating": 0.3,
+      "coachApproval": 1
+     }
+    },
+    "fail": {
+     "text": [
+      "המסירה הקצרה לא מדויקת, והיריב חוטף.",
+      "הלחץ שלהם תופס את הבלם עם הכדור."
+     ],
+     "effects": {
+      "rating": -0.4
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_sweeper",
+  "sport": "football",
+  "scene": "fb_defense",
+  "title": [
+   "כדור לעומק מאחורי ההגנה",
+   "הקו הגבוה נפרץ"
+  ],
+  "text": [
+   "ההגנה של {קבוצה} עומדת גבוה, וכדור ארוך עובר מעליה. החלוץ של {יריבה} רץ אליו.",
+   "כדור עומק מתגלגל לכיוון הרחבה שלך, והבלמים רחוקים."
+  ],
+  "tip": [
+   "אתה קרוב לכדור יותר ממנו.",
+   "אם תאחר, הוא לבד."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "יוצא מהרחבה ומרחיק ברגל",
+    "stat": "physical",
+    "difficulty": 56,
+    "success": {
+     "text": [
+      "ספרינט ובעיטה לאוב לפני החלוץ.",
+      "יצאת כמו בלם והרחקת."
+     ],
+     "effects": {
+      "rating": 0.9,
+      "coachApproval": 2,
+      "confidence": 3
+     }
+    },
+    "fail": {
+     "text": [
+      "הגעת שנייה מאוחר, הוא עקף אותך לשער ריק.",
+      "ההרחקה פגעה בו והתגלגלה פנימה."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.8,
+      "confidence": -3
+     }
+    }
+   },
+   {
+    "label": "תיקול גלישה מחוץ לרחבה",
+    "stat": "defense",
+    "difficulty": 61,
+    "success": {
+     "text": [
+      "תיקול נקי מחוץ לרחבה! האצטדיון מריע.",
+      "לקחת את הכדור לפני הרגל. מושלם."
+     ],
+     "effects": {
+      "rating": 1.0,
+      "fanRep": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "פגעת ברגל שלו. כרטיס צהוב ובעיטה חופשית שנכנסת.",
+      "עבירה, צהוב, ו{יריבה} מנצלת את הבעיטה."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -1.0,
+      "coachApproval": -3
+     }
+    }
+   },
+   {
+    "label": "נשאר בשער ומחכה לו",
+    "stat": "defense",
+    "difficulty": 55,
+    "success": {
+     "text": [
+      "חיכית, והבעיטה שלו ישר עליך.",
+      "החלוץ לחוץ ובועט חלש."
+     ],
+     "effects": {
+      "rating": 0.6
+     }
+    },
+    "fail": {
+     "text": [
+      "חיכית, והוא הגיע לבד מול השער. שער.",
+      "הוא הספיק להסתדר ולבחור פינה."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.4
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_backpass",
+  "sport": "football",
+  "scene": "fb_dive",
+  "title": [
+   "מסירה חוזרת בלחץ",
+   "החלוץ לוחץ עליך"
+  ],
+  "text": [
+   "הבלם מחזיר אליך כדור איטי, והחלוץ של {יריבה} רץ עליך בלחץ.",
+   "מסירה חוזרת קשה, והחלוץ שלהם במרחק שני מטרים."
+  ],
+  "tip": [
+   "אסור לך לתפוס את הכדור ביד.",
+   "הוא רץ חזק, אבל לא מאוזן."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "מרחיק בנגיעה ראשונה",
+    "stat": "attack",
+    "difficulty": 48,
+    "success": {
+     "text": [
+      "בעיטה חזקה ראשונה, הכדור עף לחצי של {יריבה}.",
+      "הרחקה בטוחה בלי לחשוב."
+     ],
+     "effects": {
+      "rating": 0.3
+     }
+    },
+    "fail": {
+     "text": [
+      "הבעיטה פוגעת בחלוץ ומתגלגלת לשער.",
+      "ההרחקה חלשה ויוצאת לקרן מסוכנת."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -1.0,
+      "confidence": -4
+     }
+    }
+   },
+   {
+    "label": "מכדרר את החלוץ",
+    "stat": "technique",
+    "difficulty": 61,
+    "success": {
+     "text": [
+      "עקפת אותו בתנועה אחת, והקהל מריע!",
+      "קור רוח מטורף. הכדור עדיין שלך."
+     ],
+     "effects": {
+      "rating": 0.9,
+      "fanRep": 3,
+      "followers": 120,
+      "confidence": 4
+     }
+    },
+    "fail": {
+     "text": [
+      "הוא חוטף ממך וכובש לשער ריק. טעות קשה.",
+      "הכדרור נכשל, והטעות הזאת תשודר בכל התקצירים."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -1.4,
+      "coachApproval": -4,
+      "confidence": -5
+     }
+    }
+   },
+   {
+    "label": "מסירה קצרה לבלם השני",
+    "stat": "playmaking",
+    "difficulty": 52,
+    "success": {
+     "text": [
+      "מסירה נקייה, ו{קבוצה} בונה מאחור.",
+      "יצאת מהלחץ במסירה אחת."
+     ],
+     "effects": {
+      "rating": 0.5,
+      "coachApproval": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "המסירה נחטפת ברחבה.",
+      "הבלם לא מוכן והכדור אובד."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.9
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_corner",
+  "sport": "football",
+  "scene": "fb_corner",
+  "title": [
+   "קרן נגדך",
+   "הרחבה עמוסה"
+  ],
+  "text": [
+   "קרן ל{יריבה}. שחקן גבוה שלהם עומד צמוד אליך וחוסם.",
+   "קרן מסוכנת, והבלמים של {יריבה} עלו לרחבה."
+  ],
+  "tip": [
+   "הבועט שלהם מעקם לכיוון השער.",
+   "השחקן שעליך מנסה למנוע ממך לצאת."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "יוצא לכדור דרך כולם",
+    "stat": "technique",
+    "difficulty": 58,
+    "success": {
+     "text": [
+      "יצאת מעל הראשים ותפסת. הקרן נגמרה.",
+      "תפיסה גבוהה, ואתה כבר מחפש מתפרצת."
+     ],
+     "effects": {
+      "rating": 0.9,
+      "coachApproval": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "יצאת ולא הגעת. נגיחה לשער ריק.",
+      "הכדור נפל לך מהידיים בתוך הצפיפות."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.9,
+      "confidence": -3
+     }
+    }
+   },
+   {
+    "label": "מאגרף בכוח",
+    "stat": "physical",
+    "difficulty": 54,
+    "success": {
+     "text": [
+      "אגרוף רחוק, הסכנה עברה.",
+      "הרחקה באגרוף מעל כולם."
+     ],
+     "effects": {
+      "rating": 0.5
+     }
+    },
+    "fail": {
+     "text": [
+      "האגרוף קצר, ונגיחה חוזרת פנימה.",
+      "החוסם הפריע לך והכדור נכנס."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.6
+     }
+    }
+   },
+   {
+    "label": "נשאר בקו ומסדר שמירה",
+    "stat": "mental",
+    "difficulty": 52,
+    "success": {
+     "text": [
+      "סידרת את השמירה, והנגיחה שלהם רחבה.",
+      "כולם שמרו, והכדור יצא."
+     ],
+     "effects": {
+      "rating": 0.4,
+      "teamMorale": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "שחקן של {יריבה} נשאר בלי שמירה ונגח.",
+      "הנגיחה מקרוב לא השאירה סיכוי."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.4
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_reflex",
+  "sport": "football",
+  "scene": "fb_keeper",
+  "title": [
+   "נגיחה מקרוב",
+   "רפלקס של שנייה"
+  ],
+  "text": [
+   "כדור חוזר ברחבה, ושחקן של {יריבה} נוגח מארבעה מטרים.",
+   "מהומה ברחבה של {קבוצה}, והכדור קופץ לחלוץ שלהם מקרוב."
+  ],
+  "tip": [
+   "אין זמן לחשוב, רק להגיב.",
+   "הוא נוגח למטה."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "רפלקס ביד אחת",
+    "stat": "physical",
+    "difficulty": 60,
+    "success": {
+     "text": [
+      "הצלה בלתי אפשרית ביד אחת! כולם עם הידיים על הראש.",
+      "הרפלקס הכי מהיר שלך העונה."
+     ],
+     "effects": {
+      "rating": 1.3,
+      "fanRep": 3,
+      "followers": 100,
+      "confidence": 5
+     }
+    },
+    "fail": {
+     "text": [
+      "הכדור עובר מתחת ליד.",
+      "מקרוב מדי. שער."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.1
+     }
+    }
+   },
+   {
+    "label": "פותח את הגוף ונעשה גדול",
+    "stat": "defense",
+    "difficulty": 56,
+    "success": {
+     "text": [
+      "הכדור פוגע בך ויוצא לקרן.",
+      "חסמת עם כל הגוף."
+     ],
+     "effects": {
+      "rating": 1.0,
+      "confidence": 4
+     }
+    },
+    "fail": {
+     "text": [
+      "הכדור עובר מעל הכתף.",
+      "נשארת גדול, אבל הוא מצא חור."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.2
+     }
+    }
+   },
+   {
+    "label": "נשאר על הרגליים ומחכה",
+    "stat": "mental",
+    "difficulty": 54,
+    "success": {
+     "text": [
+      "לא קפצת מוקדם, והנגיחה ישר אליך.",
+      "קור רוח, תפיסה מקרוב."
+     ],
+     "effects": {
+      "rating": 0.8,
+      "confidence": 3
+     }
+    },
+    "fail": {
+     "text": [
+      "חיכית, והוא נגח לפינה.",
+      "מקרוב מדי, הכדור עבר."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.2
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_screened",
+  "sport": "football",
+  "scene": "fb_longshot",
+  "title": [
+   "בעיטה מבין הרגליים",
+   "לא רואה את הכדור"
+  ],
+  "text": [
+   "בעיטה של {יריבה} יוצאת מתוך קבוצה של שחקנים. אתה רואה את הכדור רק ברגע האחרון.",
+   "יש לך הסתרה מלאה. הבעיטה עוברת דרך יער של רגליים."
+  ],
+  "tip": [
+   "הכדור עלול לשנות כיוון מרגל של מגן.",
+   "הדשא מהיר."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "מגיב מאוחר אבל חד",
+    "stat": "physical",
+    "difficulty": 58,
+    "success": {
+     "text": [
+      "תגובה מאוחרת ועדיין מושלמת. הצלה!",
+      "זינקת ברגע האחרון ועצרת."
+     ],
+     "effects": {
+      "rating": 1.1,
+      "confidence": 4
+     }
+    },
+    "fail": {
+     "text": [
+      "הכדור שינה כיוון ונכנס.",
+      "לא ראית אותו עד שהיה ברשת."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.1
+     }
+    }
+   },
+   {
+    "label": "יורד נמוך ושומר על המרכז",
+    "stat": "technique",
+    "difficulty": 54,
+    "success": {
+     "text": [
+      "הכדור בבטן, תפיסה בטוחה.",
+      "נשארת נמוך ותפסת."
+     ],
+     "effects": {
+      "rating": 0.7,
+      "coachApproval": 1
+     }
+    },
+    "fail": {
+     "text": [
+      "הכדור קפץ מעל הידיים.",
+      "התפיסה לא נקייה ומישהו משלים."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.5
+     }
+    }
+   },
+   {
+    "label": "צועק לבלם לזוז מקו הראייה",
+    "stat": "mental",
+    "difficulty": 50,
+    "success": {
+     "text": [
+      "הבלם זז, ראית את הכדור ותפסת.",
+      "קו ראייה נקי, הצלה פשוטה."
+     ],
+     "effects": {
+      "rating": 0.6,
+      "teamMorale": 1
+     }
+    },
+    "fail": {
+     "text": [
+      "הבלם זז מאוחר מדי, והכדור בפנים.",
+      "הצעקה לא עזרה, שער."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.3
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_organise",
+  "sport": "football",
+  "scene": "coach_board",
+  "title": [
+   "ההגנה מתפרקת",
+   "צריך לדבר"
+  ],
+  "text": [
+   "{יריבה} לוחצת, וההגנה של {קבוצה} עומדת בלי סדר. הבלמים מתווכחים ביניהם.",
+   "שלוש התקפות ברצף של {יריבה}, והקו האחורי שלך מבולגן."
+  ],
+  "tip": [
+   "השוער רואה את כל המגרש.",
+   "הקשר האחורי לא חוזר."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "צועק, מסדר את הקו ולוקח פיקוד",
+    "stat": "mental",
+    "difficulty": 50,
+    "success": {
+     "text": [
+      "ההגנה מתיישרת, והלחץ של {יריבה} נשבר.",
+      "כולם הקשיבו לך. סדר בהגנה."
+     ],
+     "effects": {
+      "rating": 0.5,
+      "teamMorale": 3,
+      "coachApproval": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "אף אחד לא שומע ברעש, ו{יריבה} כובשת ממהלך מסודר.",
+      "הצעקות לא עזרו, החור בהגנה נשאר."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.4
+     }
+    }
+   },
+   {
+    "label": "משחק גבוה כדי לכסות מאחור",
+    "stat": "physical",
+    "difficulty": 54,
+    "success": {
+     "text": [
+      "יצאת לקצה הרחבה וסגרת שני כדורי עומק.",
+      "שוער-בלם. הקבוצה נרגעת."
+     ],
+     "effects": {
+      "rating": 0.6,
+      "coachApproval": 1
+     }
+    },
+    "fail": {
+     "text": [
+      "כדור מעל הראש שלך מ-30 מטר. שער מביך.",
+      "עמדת גבוה מדי, והם ניצלו."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.9,
+      "confidence": -3
+     }
+    }
+   },
+   {
+    "label": "מבקש מהקשר האחורי לרדת לקו",
+    "stat": "playmaking",
+    "difficulty": 52,
+    "success": {
+     "text": [
+      "הקשר יורד, שלושה בלמים, והחורים נסגרים.",
+      "שינוי קטן שעצר את הלחץ."
+     ],
+     "effects": {
+      "rating": 0.5,
+      "coachApproval": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "הקשר לא הבין, והמסירה של {יריבה} עוברת בין כולם. שער.",
+      "הבלבול רק גדל."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.4
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "first_half",
+   "second_half",
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_time",
+  "sport": "football",
+  "scene": "fb_dive",
+  "title": [
+   "שומרים על היתרון",
+   "הדקות האחרונות"
+  ],
+  "text": [
+   "{תוצאה}, ו{קבוצה} מחזיקה. הכדור אצלך אחרי תפיסה, והשופט מסתכל עליך.",
+   "הדקות האחרונות. יש לך כדור ביד ואוהדי {יריבה} שורקים."
+  ],
+  "tip": [
+   "השופט כבר הזהיר על בזבוז זמן.",
+   "הקבוצה שלך עייפה."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "לוקח את הזמן בחוכמה",
+    "stat": "mental",
+    "difficulty": 50,
+    "success": {
+     "text": [
+      "עוד חצי דקה ירדה מהשעון, בלי כרטיס.",
+      "האוהדים שורקים, והשעון רץ."
+     ],
+     "effects": {
+      "rating": 0.3,
+      "coachApproval": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "צהוב על עיכוב, והבעיטה החופשית שלהם מסוכנת.",
+      "השופט מוסיף דקות ומזהיר אותך."
+     ],
+     "effects": {
+      "rating": -0.4,
+      "coachApproval": -1
+     }
+    }
+   },
+   {
+    "label": "מוציא מהר לשחקן פנוי",
+    "stat": "playmaking",
+    "difficulty": 53,
+    "success": {
+     "text": [
+      "הוצאה מהירה, ו{קבוצה} מחזיקה את הכדור בחצי שלהם.",
+      "החלטה אמיצה ונכונה."
+     ],
+     "effects": {
+      "rating": 0.5,
+      "teamMorale": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "הכדור נחטף מיד, ו{יריבה} כמעט משווה.",
+      "הוצאה לא מדויקת, עוד גל התקפה."
+     ],
+     "effects": {
+      "rating": -0.3
+     }
+    }
+   },
+   {
+    "label": "מבקש טיפול רפואי על הדשא",
+    "stat": "mental",
+    "difficulty": 56,
+    "success": {
+     "text": [
+      "הפיזיותרפיסט נכנס, והקבוצה נושמת דקה.",
+      "עצרת את המומנטום של {יריבה}."
+     ],
+     "effects": {
+      "rating": 0.2,
+      "teamMorale": 2
+     }
+    },
+    "fail": {
+     "text": [
+      "השופט לא קונה את זה ונותן צהוב.",
+      "אוהדי {יריבה} שורקים, והשופט מוסיף זמן."
+     ],
+     "effects": {
+      "rating": -0.5,
+      "fanRep": -1
+     }
+    }
+   }
+  ],
+  "contexts": [
+   "late",
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ },
+ {
+  "key": "gk_last_save",
+  "sport": "football",
+  "scene": "fb_keeper",
+  "title": [
+   "ההתקפה האחרונה",
+   "הכול עליך"
+  ],
+  "text": [
+   "{תוצאה}, השנייה האחרונה. {יריבה} בהתקפה אחרונה, והחלוץ שלהם בועט מתוך הרחבה.",
+   "{תוצאה}. כדור אחרון לרחבה של {קבוצה}, ובעיטה חזקה לכיוון הפינה."
+  ],
+  "tip": [
+   "אם תעצור את זה, המשחק נגמר.",
+   "הבועט שלהם בועט נמוך."
+  ],
+  "conditions": {
+   "positions": [
+    "GK"
+   ]
+  },
+  "choices": [
+   {
+    "label": "זינוק לפינה הנמוכה",
+    "stat": "physical",
+    "difficulty": 58,
+    "success": {
+     "text": [
+      "הצלה של שנייה אחרונה! השופט שורק לסיום!",
+      "עצרת את הבעיטה האחרונה. גיבור."
+     ],
+     "effects": {
+      "rating": 1.5,
+      "fanRep": 5,
+      "followers": 250,
+      "confidence": 6,
+      "teamMorale": 4
+     }
+    },
+    "fail": {
+     "text": [
+      "הכדור עובר מתחת לגוף. שער בשנייה האחרונה.",
+      "קפצת, הוא שם לפינה השנייה."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.5,
+      "confidence": -4
+     }
+    }
+   },
+   {
+    "label": "יוצא לחסום את הבעיטה",
+    "stat": "defense",
+    "difficulty": 56,
+    "success": {
+     "text": [
+      "יצאת וחסמת עם הגוף. סיום!",
+      "הכדור פוגע בך ויוצא, ונגמר."
+     ],
+     "effects": {
+      "rating": 1.4,
+      "fanRep": 4,
+      "confidence": 5
+     }
+    },
+    "fail": {
+     "text": [
+      "הוא הרים מעליך לרשת.",
+      "יצאת מוקדם מדי, ושער."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.6,
+      "confidence": -4
+     }
+    }
+   },
+   {
+    "label": "קורא את הבעיטה ונשאר במרכז",
+    "stat": "mental",
+    "difficulty": 56,
+    "success": {
+     "text": [
+      "קראת אותו, והבעיטה ישר לידיים. ניצחת את המשחק.",
+      "קור רוח בשנייה האחרונה."
+     ],
+     "effects": {
+      "rating": 1.3,
+      "fanRep": 4,
+      "coachApproval": 3
+     }
+    },
+    "fail": {
+     "text": [
+      "הבעיטה הלכה לפינה, לא למרכז.",
+      "הניחוש לא יצא. שער."
+     ],
+     "effects": {
+      "oppScore": 1,
+      "rating": -0.5
+     }
+    }
+   }
+  ],
+  "clutch": true,
+  "clock": "דקה 90+4",
+  "contexts": [
+   "rain",
+   "wind",
+   "heat",
+   "cold",
+   "derby",
+   "tired_job",
+   "bad_pitch",
+   "big_crowd",
+   "captain"
+  ]
+ }
+]

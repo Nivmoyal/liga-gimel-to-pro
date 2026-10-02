@@ -9,6 +9,7 @@
 import type { AttrKey, Effects, EventChoice, EventConditions, GameEvent, SportType } from '../types/game';
 import inGameFootball from '../data/events/templates/inGameFootball.json';
 import inGameBasketball from '../data/events/templates/inGameBasketball.json';
+import inGameGoalkeeper from '../data/events/templates/inGameGoalkeeper.json';
 import preMatchTemplates from '../data/events/templates/preMatchTemplates.json';
 import postMatchTemplates from '../data/events/templates/postMatchTemplates.json';
 import lifeTemplates from '../data/events/templates/lifeTemplates.json';
@@ -190,6 +191,7 @@ export function generatedEvents() {
   cached = {
     inGame: [
       ...expandMatchTemplates(inGameFootball as unknown as Template[], 'inGame', () => 'inGameFootball'),
+      ...expandMatchTemplates(inGameGoalkeeper as unknown as Template[], 'inGame', () => 'inGameFootball'),
       ...expandMatchTemplates(inGameBasketball as unknown as Template[], 'inGame', () => 'inGameBasketball'),
     ],
     preMatch: [

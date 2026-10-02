@@ -1,14 +1,15 @@
 import { CircleCheck, CircleX, MessageSquare } from 'lucide-react';
-import type { PendingOutcome, SportType } from '../../types/game';
+import type { PendingOutcome, Position, SportType } from '../../types/game';
 import { describeEffects } from '../../services/playerUtils';
 
 interface OutcomeBoxProps {
   outcome: PendingOutcome;
   sport: SportType;
+  position?: Position;
 }
 
-export function OutcomeBox({ outcome, sport }: OutcomeBoxProps) {
-  const effects = describeEffects(outcome.effects, sport);
+export function OutcomeBox({ outcome, sport, position }: OutcomeBoxProps) {
+  const effects = describeEffects(outcome.effects, sport, position);
   const tone = !outcome.skillCheck
     ? { border: 'border-line', icon: <MessageSquare size={18} className="text-brand" />, label: 'התוצאה' }
     : outcome.success

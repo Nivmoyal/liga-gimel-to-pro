@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { BadgeDollarSign, House, CalendarDays, Coins, Flag, Heart, History, RotateCcw, Smile, Users } from 'lucide-react';
 import type { GameState } from '../../types/game';
 import { clubDistance } from '../../data/places';
-import { ATTR_KEYS, ATTR_LABEL, CONTRACT_LABEL, SPORT_LABEL, divisionName, positionLabel } from '../../data/sports';
+import { ATTR_KEYS, attrLabels, CONTRACT_LABEL, SPORT_LABEL, divisionName, positionLabel } from '../../data/sports';
 import { getAgent } from '../../data/agents';
 import { averageRating, calcOvr, formatFollowers, formatMoney } from '../../services/playerUtils';
 import { StatBar } from '../ui/StatBar';
@@ -80,7 +80,7 @@ export function CareerView({ state, onReset, onHome }: { state: GameState; onRes
       <section className="space-y-2.5 rounded-2xl border border-line bg-card p-4">
         <h2 className="font-extrabold">תכונות</h2>
         {ATTR_KEYS.map((k) => (
-          <StatBar key={k} label={ATTR_LABEL[player.sport][k]} value={player.attributes[k]} max={99} tone="gold" next={player.progress?.[k] ?? 0} />
+          <StatBar key={k} label={attrLabels(player.sport, player.position)[k]} value={player.attributes[k]} max={99} tone="gold" next={player.progress?.[k] ?? 0} />
         ))}
       </section>
 

@@ -11,8 +11,12 @@
     "tip": "השוער של {יריבה} יוצא מוקדם ונוטה להשכיב את עצמו. בעיטה מעל או עקיפה עובדות טוב מולו.",
     "conditions": {
       "positions": [
-        "striker",
-        "midfielder"
+        "ST",
+        "LW",
+        "RW",
+        "CM",
+        "CDM",
+        "CAM"
       ]
     },
     "choices": [
@@ -94,9 +98,16 @@
     "tip": "השחקנים של {יריבה} עייפים. מסירה קצרה תמצא שחקן חופשי, אבל בעיטה מהירה תפתיע את השוער.",
     "conditions": {
       "positions": [
-        "striker",
-        "midfielder",
-        "fullBack"
+        "ST",
+        "LW",
+        "RW",
+        "CM",
+        "CDM",
+        "CAM",
+        "LB",
+        "RB",
+        "LWB",
+        "RWB"
       ]
     },
     "choices": [
@@ -327,9 +338,16 @@
     "tip": "הבלמים של {יריבה} נמוכים יחסית. כדור גבוה לקורה הרחוקה הוא הסיכוי הכי טוב.",
     "conditions": {
       "positions": [
-        "fullBack",
-        "midfielder",
-        "striker"
+        "LB",
+        "RB",
+        "LWB",
+        "RWB",
+        "CM",
+        "CDM",
+        "CAM",
+        "ST",
+        "LW",
+        "RW"
       ]
     },
     "choices": [
@@ -405,8 +423,10 @@
     "tip": "הבלם של {יריבה} קופץ מאוחר. תזמון נכון חשוב יותר מגובה.",
     "conditions": {
       "positions": [
-        "striker",
-        "centerBack"
+        "ST",
+        "LW",
+        "RW",
+        "CB"
       ]
     },
     "choices": [
@@ -485,9 +505,14 @@
     "tip": "החלוץ של {יריבה} תמיד מנסה לחתוך לרגל ימין. לא חייבים להיכנס לתיקול כדי לעצור אותו.",
     "conditions": {
       "positions": [
-        "centerBack",
-        "fullBack",
-        "midfielder"
+        "CB",
+        "LB",
+        "RB",
+        "LWB",
+        "RWB",
+        "CM",
+        "CDM",
+        "CAM"
       ]
     },
     "choices": [
@@ -566,8 +591,11 @@
     "tip": "החלוץ של {יריבה} עם הכדור חלש ברגל שמאל. לכוון אותו החוצה יקנה זמן לחברים.",
     "conditions": {
       "positions": [
-        "centerBack",
-        "fullBack"
+        "CB",
+        "LB",
+        "RB",
+        "LWB",
+        "RWB"
       ]
     },
     "choices": [
@@ -707,8 +735,10 @@
     "tip": "השומר שלך מסתכל על הכדור ולא עליך. ריצה מאוחרת לנקודה הראשונה תשחרר אותך.",
     "conditions": {
       "positions": [
-        "centerBack",
-        "striker"
+        "CB",
+        "ST",
+        "LW",
+        "RW"
       ]
     },
     "choices": [
@@ -781,9 +811,16 @@
     "tip": "המגינים של {יריבה} נסוגים לאט. מסירה לצד ימין תפתח את כל ההגנה.",
     "conditions": {
       "positions": [
-        "midfielder",
-        "striker",
-        "fullBack"
+        "CM",
+        "CDM",
+        "CAM",
+        "ST",
+        "LW",
+        "RW",
+        "LB",
+        "RB",
+        "LWB",
+        "RWB"
       ]
     },
     "choices": [
@@ -858,8 +895,11 @@
     "tip": "החלוץ של {יריבה} מתחיל ריצות מוקדם מדי. עלייה מתואמת של הקו תתפוס אותו.",
     "conditions": {
       "positions": [
-        "centerBack",
-        "fullBack"
+        "CB",
+        "LB",
+        "RB",
+        "LWB",
+        "RWB"
       ]
     },
     "choices": [

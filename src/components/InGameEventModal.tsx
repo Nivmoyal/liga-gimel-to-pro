@@ -60,7 +60,7 @@ export function InGameEventModal({ state, dispatch }: Props) {
       }
     >
       {outcome ? (
-        <OutcomeBox outcome={outcome} sport={state.player.sport} />
+        <OutcomeBox outcome={outcome} sport={state.player.sport} position={state.player.position} />
       ) : (
         <>
           {event.tip && (

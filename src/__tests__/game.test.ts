@@ -102,7 +102,7 @@ describe('live match timeline', () => {
       for (let run = 0; run < 30; run++) {
         let s: GameState | null = gameReducer(null, {
           type: 'NEW_GAME',
-          setup: { name: 'בדיקה', shirtNumber: 8, sport, position: sport === 'football' ? 'striker' : 'SG', home: findPlace('תל אביב')!, club: sport === 'football' ? 'השקמה רמת חן' : 'אליצור גבעתיים', jobId: 'pizza' },
+          setup: { name: 'בדיקה', shirtNumber: 8, sport, position: sport === 'football' ? 'ST' : 'SG', home: findPlace('תל אביב')!, club: sport === 'football' ? 'השקמה רמת חן' : 'אליצור גבעתיים', jobId: 'pizza' },
         });
         s = gameReducer(s, { type: 'START_MATCHDAY' });
         let guard = 0;
@@ -214,12 +214,12 @@ describe('save migration', () => {
   it('upgrades a version 1 save', () => {
     const fresh = gameReducer(null, {
       type: 'NEW_GAME',
-      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'ST', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
     })!;
     const { shirtNumber: _n, sponsors: _s, national: _nat, isCaptain: _c2, home: _h, progress: _p, ...oldPlayer } = fresh.player;
     const { nationalCallUp: _c, ...oldState } = fresh;
     const migrated = migrateSave({ ...oldState, version: 1, player: { ...oldPlayer, region: 'north' } } as unknown as GameState)!;
-    expect(migrated.version).toBe(6);
+    expect(migrated.version).toBe(7);
     expect(migrated.player.form).toEqual([]);
     expect(migrated.player.home.name).toBe('נהריה');
     expect('region' in migrated.player).toBe(false);
@@ -241,7 +241,7 @@ describe('long careers', () => {
     let captains = 0;
     for (let run = 0; run < 6; run++) {
       const { state, callUps: c } = autoplay(
-        { name: 'נועה לוי', shirtNumber: 7, sport: run % 2 ? 'basketball' : 'football', position: run % 2 ? 'SG' : 'striker', home: findPlace('תל אביב')!, club: run % 2 ? 'אליצור גבעתיים' : 'השקמה רמת חן', jobId: 'security' },
+        { name: 'נועה לוי', shirtNumber: 7, sport: run % 2 ? 'basketball' : 'football', position: run % 2 ? 'SG' : 'ST', home: findPlace('תל אביב')!, club: run % 2 ? 'אליצור גבעתיים' : 'השקמה רמת חן', jobId: 'security' },
         6,
       );
       callUps += c;
@@ -258,9 +258,9 @@ describe('long careers', () => {
 
 describe('full playthrough', () => {
   const cases: SetupData[] = [
-    { name: 'דני כהן', shirtNumber: 9, sport: 'football', position: 'striker', home: findPlace('קצרין')!, club: 'הפועל קצרין', jobId: 'pizza' },
+    { name: 'דני כהן', shirtNumber: 9, sport: 'football', position: 'ST', home: findPlace('קצרין')!, club: 'הפועל קצרין', jobId: 'pizza' },
     { name: 'נועה לוי', shirtNumber: 7, sport: 'basketball', position: 'PG', home: findPlace('ערד')!, club: 'הפועל ערד', jobId: 'instructor' },
-    { name: 'יוסי ביטון', shirtNumber: 4, sport: 'football', position: 'centerBack', home: findPlace('ירושלים')!, club: 'מ.ס. ירושלים', jobId: 'factory' },
+    { name: 'יוסי ביטון', shirtNumber: 4, sport: 'football', position: 'CB', home: findPlace('ירושלים')!, club: 'מ.ס. ירושלים', jobId: 'factory' },
     { name: 'עומר חסון', shirtNumber: 13, sport: 'basketball', position: 'C', home: findPlace('קצרין')!, club: 'מ.ס. חצור', jobId: 'mechanic' },
   ];
   for (const setup of cases) {
@@ -308,7 +308,7 @@ describe('gradual progress', () => {
   it('starts without sponsors and with a small following', () => {
     const s = gameReducer(null, {
       type: 'NEW_GAME',
-      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'ST', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
     })!;
     expect(s.player.followers).toBeLessThan(100);
     expect(SPONSORS.every((sp) => sponsorMissing(s.player, sp).length > 0)).toBe(true);
@@ -317,7 +317,7 @@ describe('gradual progress', () => {
   it('opens sponsors and agents by recent performances, not by time', () => {
     const s = gameReducer(null, {
       type: 'NEW_GAME',
-      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'ST', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
     })!;
     const pizza = SPONSORS.find((sp) => sp.id === 'sp_pizza')!;
     const avi = getAgent('agent_avi')!;
@@ -333,13 +333,42 @@ describe('gradual progress', () => {
   it('raises attributes a fraction at a time', () => {
     let s = gameReducer(null, {
       type: 'NEW_GAME',
-      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'striker', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'ST', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
     })!;
     const before = s.player.attributes.attack;
     s = gameReducer(s, { type: 'TRAIN', option: 'skills' })!;
     const gained = s.player.attributes.attack - before + s.player.progress.attack;
     expect(gained).toBeGreaterThan(0.05);
     expect(gained).toBeLessThan(0.45);
+  });
+});
+
+describe('goalkeepers', () => {
+  it('only get keeper moments in matches, and plenty of them', () => {
+    const s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'שוער', shirtNumber: 1, sport: 'football', position: 'GK', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+    })!;
+    const moments = filterEvents('inGame', s.player);
+    expect(moments.length).toBeGreaterThan(50);
+    for (const e of moments) expect(e.conditions?.positions).toContain('GK');
+    const outfield = { ...s.player, position: 'ST' as Position };
+    expect(filterEvents('inGame', outfield).some((e) => e.conditions?.positions?.includes('GK'))).toBe(false);
+  });
+
+  it('plays full seasons as a keeper', () => {
+    const { state } = autoplay({ name: 'שוער', shirtNumber: 1, sport: 'football', position: 'GK', home: findPlace('חיפה')!, club: 'הפועל יקנעם', jobId: 'security' }, 2);
+    expect(state.season).toBe(3);
+    expect(state.player.careerStats.goals).toBeLessThanOrEqual(1);
+  });
+
+  it('migrates old football positions', () => {
+    const fresh = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 5, sport: 'football', position: 'CB', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+    })!;
+    const old = { ...fresh, version: 6, player: { ...fresh.player, position: 'fullBack' } } as unknown as GameState;
+    expect(migrateSave(old)!.player.position).toBe('LB');
   });
 });
 

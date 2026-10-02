@@ -1,5 +1,5 @@
 import type { Position, SportType } from '../types/game';
-import { ATTR_LABEL, OVR_WEIGHTS, positionsFor } from '../data/sports';
+import { OVR_WEIGHTS, attrLabels, positionsFor } from '../data/sports';
 import type { AttrKey } from '../types/game';
 
 interface Spot {
@@ -11,15 +11,39 @@ interface Spot {
   y: number;
 }
 
-// Our team attacks upwards.
+// Our team attacks upwards. One marker per position (a back four with two
+// centre-backs shares the CB choice).
 const FOOTBALL_SPOTS: Spot[] = [
-  { id: 'striker', num: 9, x: 50, y: 20 },
-  { id: 'midfielder', num: 8, x: 50, y: 46 },
-  { id: 'fullBack', num: 3, x: 15, y: 66 },
-  { id: 'fullBack', num: 2, x: 85, y: 66 },
-  { id: 'centerBack', num: 4, x: 36, y: 77 },
-  { id: 'centerBack', num: 5, x: 64, y: 77 },
+  { id: 'ST', x: 50, y: 12 },
+  { id: 'LW', x: 15, y: 21 },
+  { id: 'RW', x: 85, y: 21 },
+  { id: 'CAM', x: 50, y: 30 },
+  { id: 'CM', x: 50, y: 44 },
+  { id: 'LWB', x: 13, y: 49 },
+  { id: 'RWB', x: 87, y: 49 },
+  { id: 'CDM', x: 50, y: 57 },
+  { id: 'LB', x: 15, y: 70 },
+  { id: 'RB', x: 85, y: 70 },
+  { id: 'CB', x: 36, y: 76 },
+  { id: 'CB', x: 64, y: 76 },
+  { id: 'GK', x: 50, y: 90 },
 ];
+
+/** Short tags under the football markers (full names appear below the pitch). */
+const FIELD_TAG: Partial<Record<Position, string>> = {
+  GK: 'שוער',
+  LB: 'מגן ש׳',
+  CB: 'בלם',
+  RB: 'מגן י׳',
+  LWB: 'כנף אחורי',
+  RWB: 'כנף אחורי',
+  CDM: 'קשר אחורי',
+  CM: 'קשר',
+  CAM: 'קשר התקפי',
+  LW: 'כנף ש׳',
+  RW: 'כנף י׳',
+  ST: 'חלוץ',
+};
 
 // Half court, basket at the top.
 const BASKETBALL_SPOTS: Spot[] = [
@@ -31,10 +55,18 @@ const BASKETBALL_SPOTS: Spot[] = [
 ];
 
 const ROLE_TEXT: Record<Position, string> = {
-  striker: 'מסיים את ההתקפות. נמדד בשערים, במצבים ובקור רוח מול השוער.',
-  midfielder: 'המנוע של הקבוצה. מחלק כדורים, מכתיב קצב ועוזר גם בהגנה.',
-  centerBack: 'הלב של ההגנה. נגיחות, תיקולים וקריאת משחק.',
-  fullBack: 'עולה ויורד על הקו. רץ הרבה, מגן ומרים לרחבה.',
+  GK: 'השומר האחרון. הצלות, יציאות לכדורים גבוהים, פנדלים ופתיחת התקפות. טעות אחת שלך היא שער.',
+  LB: 'מגן בצד שמאל. עוצר את הכנף של היריבה, עולה לחפות ומרים לרחבה.',
+  CB: 'הלב של ההגנה. נגיחות, תיקולים, קריאת משחק ופתיחת כדור מאחור.',
+  RB: 'מגן בצד ימין. עוצר את הכנף של היריבה, עולה לחפות ומרים לרחבה.',
+  LWB: 'מגן כנף שמאלי במערך של שלושה בלמים. אחראי על כל הקו: גם הגנה וגם הגבהות.',
+  RWB: 'מגן כנף ימני במערך של שלושה בלמים. אחראי על כל הקו: גם הגנה וגם הגבהות.',
+  CDM: 'המגן שלפני ההגנה. חוטף כדורים, סוגר מעברים ומחלק את הכדור הראשון.',
+  CM: 'המנוע של הקבוצה. מחלק כדורים, מכתיב קצב ועוזר גם בהגנה.',
+  CAM: 'מספר 10. מאחורי החלוץ: מסירה אחרונה, בעיטות מרחוק ורגעי קסם.',
+  LW: 'כנף שמאל. מהירות, דריבלים, חדירה פנימה ובעיטה או הגבהה.',
+  RW: 'כנף ימין. מהירות, דריבלים, חדירה פנימה ובעיטה או הגבהה.',
+  ST: 'מסיים את ההתקפות. נמדד בשערים, במצבים ובקור רוח מול השוער.',
   PG: 'מוביל הכדור. מריץ מהלכים, מחלק אסיסטים ומנהל את הקצב.',
   SG: 'הקלעי. זריקות מחוץ לקשת וחדירות לסל.',
   SF: 'השחקן הכי רב גוני: קולע, מגן על הכנפיים ותורם בכל מקום.',
@@ -47,7 +79,7 @@ function topAttributes(position: Position, sport: SportType): string {
   return (Object.keys(weights) as AttrKey[])
     .sort((a, b) => weights[b] - weights[a])
     .slice(0, 3)
-    .map((k) => ATTR_LABEL[sport][k])
+    .map((k) => attrLabels(sport, position)[k])
     .join(' | ');
 }
 
@@ -91,7 +123,7 @@ export function PositionPicker({ sport, value, onPick }: { sport: SportType; val
       : 'repeating-linear-gradient(90deg, #6b4a2b 0 6%, #73502f 6% 12%)';
   return (
     <div>
-      <div className="relative mx-auto w-full max-w-[300px] overflow-hidden rounded-2xl border border-line shadow-lg shadow-black/40" style={{ aspectRatio: '100 / 140', background: fieldBg }}>
+      <div className="relative mx-auto w-full max-w-[330px] overflow-hidden rounded-2xl border border-line shadow-lg shadow-black/40" style={{ aspectRatio: '100 / 140', background: fieldBg }}>
         <svg viewBox="0 0 100 140" className="absolute inset-0 h-full w-full" aria-hidden>
           {sport === 'football' ? <FootballLines /> : <CourtLines />}
         </svg>
@@ -107,13 +139,15 @@ export function PositionPicker({ sport, value, onPick }: { sport: SportType; val
               aria-pressed={active}
             >
               <span
-                className={`flex h-9 w-9 items-center justify-center rounded-full border-2 text-[11px] font-black shadow-md transition ${
+                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 text-[10px] font-black shadow-md transition ${
                   active ? 'scale-110 border-white bg-brand text-black shadow-brand/50' : 'border-white/80 bg-black/60 text-white'
                 }`}
               >
                 {spot.num ?? spot.id}
               </span>
-              <span className={`whitespace-nowrap rounded px-1.5 text-[11px] font-bold ${active ? 'bg-brand text-black' : 'bg-black/55 text-white'}`}>{labels[spot.id].short}</span>
+              <span className={`whitespace-nowrap rounded px-1 text-[10px] font-bold ${active ? 'bg-brand text-black' : 'bg-black/55 text-white'}`}>
+                {sport === 'football' ? FIELD_TAG[spot.id] : labels[spot.id].short}
+              </span>
             </button>
           );
         })}

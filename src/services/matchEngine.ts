@@ -163,8 +163,12 @@ export function scoreAt(timeline: TimelineEntry[], minute: number) {
 // Kickoff: build the base timeline
 // ------------------------------------------------------------------
 
-const FOOTBALL_GOAL_FACTOR: Partial<Record<Position, number>> = { striker: 1, midfielder: 0.55, fullBack: 0.2, centerBack: 0.15 };
-const FOOTBALL_ASSIST_FACTOR: Partial<Record<Position, number>> = { striker: 0.5, midfielder: 1, fullBack: 0.6, centerBack: 0.15 };
+const FOOTBALL_GOAL_FACTOR: Partial<Record<Position, number>> = {
+  GK: 0, LB: 0.15, RB: 0.15, CB: 0.15, LWB: 0.22, RWB: 0.22, CDM: 0.25, CM: 0.5, CAM: 0.75, LW: 0.8, RW: 0.8, ST: 1,
+};
+const FOOTBALL_ASSIST_FACTOR: Partial<Record<Position, number>> = {
+  GK: 0.03, LB: 0.55, RB: 0.55, CB: 0.15, LWB: 0.75, RWB: 0.75, CDM: 0.55, CM: 1, CAM: 1.2, LW: 0.9, RW: 0.9, ST: 0.5,
+};
 const BB_POINTS_FACTOR: Partial<Record<Position, number>> = { PG: 0.9, SG: 1.1, SF: 1, PF: 0.85, C: 0.8 };
 const BB_REB_FACTOR: Partial<Record<Position, number>> = { PG: 0.4, SG: 0.5, SF: 0.8, PF: 1.2, C: 1.5 };
 const BB_AST_FACTOR: Partial<Record<Position, number>> = { PG: 1.4, SG: 0.7, SF: 0.6, PF: 0.4, C: 0.35 };
@@ -210,7 +214,8 @@ export function kickoff(match: MatchState, params: KickoffParams): MatchState {
   const mates = rosterNames(teamRoster);
   const attackers = rosterNames(teamRoster, (p) => ['חלוץ', 'קשר', 'קיצוני', 'קלעי', 'סמול פורוורד', 'רכז', 'פאוור פורוורד'].includes(p.pos));
   const oppAttackers = rosterNames(oppRoster, (p) => p.pos !== 'שוער');
-  const keeper = rosterNames(teamRoster, (p) => p.pos === 'שוער')[0];
+  const teamKeeper = rosterNames(teamRoster, (p) => p.pos === 'שוער')[0];
+  const iAmKeeper = player.position === 'GK';
   const timeline: TimelineEntry[] = [];
   const add = (e: Omit<TimelineEntry, 'base'>) => timeline.push({ ...e, base: true });
   const busy = (m: number) => decisionMinutes.some((d) => Math.abs(d - m) < 1.5);
@@ -277,7 +282,7 @@ export function kickoff(match: MatchState, params: KickoffParams): MatchState {
     }
     // Chances, cards, subs, crowd
     for (let i = 0; i < randInt(2, 4); i++) add({ minute: freeMinute(5, 88), kind: 'chance', side: 'team', text: fill(pickOne(FB.chanceTeam), { ...vars, שם: pickOne(attackers) }), team: 0, opp: 0 });
-    for (let i = 0; i < randInt(2, 4); i++) add({ minute: freeMinute(5, 88), kind: 'chance', side: 'opp', text: fill(pickOne(FB.chanceOpp), { ...vars, שם: pickOne(oppAttackers), שוער: keeper }), team: 0, opp: 0 });
+    for (let i = 0; i < randInt(2, 4); i++) add({ minute: freeMinute(5, 88), kind: 'chance', side: 'opp', text: fill(pickOne(FB.chanceOpp), { ...vars, שם: pickOne(oppAttackers), שוער: iAmKeeper && playing ? me : teamKeeper }), team: 0, opp: 0 });
     for (let i = 0; i < randInt(1, 4); i++) {
       const ours = Math.random() < 0.5;
       add({ minute: freeMinute(15, 88), kind: 'card', side: ours ? 'team' : 'opp', text: fill(pickOne(FB.card), { ...vars, שם: ours ? pickOne(mates) : pickOne(oppAttackers) }), team: 0, opp: 0 });
@@ -455,6 +460,9 @@ export function finalizeFromTimeline(match: MatchState, player: Player): Finaliz
     let r = 5.9 + match.ratingDelta * 0.6 + randFloat(-0.4, 0.4);
     r += outcome === 'win' ? 0.4 : outcome === 'loss' ? -0.3 : 0;
     r += sport === 'football' ? b.goals * 0.8 + b.assists * 0.5 : (b.points - 8) * 0.05 + b.rebounds * 0.03 + b.assists * 0.05;
+    // Keepers and defenders are judged by the goals against
+    if (sport === 'football' && player.position === 'GK') r += opp === 0 ? 1.0 : opp === 1 ? 0.6 : 0.45 - (opp - 2) * 0.15;
+    else if (sport === 'football' && ['CB', 'LB', 'RB', 'CDM'].includes(player.position)) r += opp === 0 ? 0.3 : 0;
     if (match.role === 'rotation') r -= 0.2;
     rating = Math.round(clamp(r, 3, 10) * 10) / 10;
   }

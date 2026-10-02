@@ -2015,8 +2015,12 @@
   ],
   "conditions": {
    "positions": [
-    "striker",
-    "midfielder"
+    "ST",
+    "LW",
+    "RW",
+    "CM",
+    "CDM",
+    "CAM"
    ]
   },
   "choices": [

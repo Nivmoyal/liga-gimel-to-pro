@@ -6,7 +6,19 @@ export type SportType = 'football' | 'basketball';
 
 export type NationalLevel = 'u21' | 'senior';
 
-export type FootballPosition = 'striker' | 'midfielder' | 'centerBack' | 'fullBack';
+export type FootballPosition =
+  | 'GK'
+  | 'LB'
+  | 'CB'
+  | 'RB'
+  | 'LWB'
+  | 'RWB'
+  | 'CDM'
+  | 'CM'
+  | 'CAM'
+  | 'LW'
+  | 'RW'
+  | 'ST';
 export type BasketballPosition = 'PG' | 'SG' | 'SF' | 'PF' | 'C';
 export type Position = FootballPosition | BasketballPosition;
 

@@ -12,6 +12,9 @@ export interface TrainingOption {
   gains: Partial<Record<AttrKey, number>>;
   coachApproval: number;
   confidence: number;
+  /** Goalkeepers train different things in the same slot. */
+  keeperLabel?: string;
+  keeperGains?: Partial<Record<AttrKey, number>>;
 }
 
 export const TRAINING_OPTIONS: TrainingOption[] = [
@@ -32,6 +35,8 @@ export const TRAINING_OPTIONS: TrainingOption[] = [
     energyCost: 14,
     budgetCost: 0,
     gains: { attack: 0.25, technique: 0.25 },
+    keeperLabel: 'אימון שוערים: הצלות ותפיסות',
+    keeperGains: { defense: 0.25, technique: 0.25 },
     coachApproval: 1,
     confidence: 2,
   },
@@ -42,6 +47,8 @@ export const TRAINING_OPTIONS: TrainingOption[] = [
     energyCost: 12,
     budgetCost: 0,
     gains: { playmaking: 0.22, defense: 0.22 },
+    keeperLabel: 'אימון יציאות ומשחק רגל',
+    keeperGains: { playmaking: 0.22, mental: 0.22 },
     coachApproval: 4,
     confidence: 0,
   },

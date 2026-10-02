@@ -17,10 +17,18 @@ export const CTA_LABEL: Record<SportType, string> = {
 };
 
 export const FOOTBALL_POSITIONS: { id: FootballPosition; label: string; short: string }[] = [
-  { id: 'striker', label: 'חלוץ', short: 'חלוץ' },
-  { id: 'midfielder', label: 'קשר', short: 'קשר' },
-  { id: 'centerBack', label: 'בלם', short: 'בלם' },
-  { id: 'fullBack', label: 'מגן', short: 'מגן' },
+  { id: 'GK', label: 'שוער (GK)', short: 'שוער' },
+  { id: 'LB', label: 'מגן שמאלי (LB)', short: 'מגן שמאלי' },
+  { id: 'CB', label: 'בלם (CB)', short: 'בלם' },
+  { id: 'RB', label: 'מגן ימני (RB)', short: 'מגן ימני' },
+  { id: 'LWB', label: 'מגן כנף שמאלי (LWB)', short: 'מגן כנף שמאלי' },
+  { id: 'RWB', label: 'מגן כנף ימני (RWB)', short: 'מגן כנף ימני' },
+  { id: 'CDM', label: 'קשר אחורי (CDM)', short: 'קשר אחורי' },
+  { id: 'CM', label: 'קשר מרכזי (CM)', short: 'קשר מרכזי' },
+  { id: 'CAM', label: 'קשר התקפי (CAM)', short: 'קשר התקפי' },
+  { id: 'LW', label: 'כנף שמאל (LW)', short: 'כנף שמאל' },
+  { id: 'RW', label: 'כנף ימין (RW)', short: 'כנף ימין' },
+  { id: 'ST', label: 'חלוץ (ST)', short: 'חלוץ' },
 ];
 
 export const BASKETBALL_POSITIONS: { id: BasketballPosition; label: string; short: string }[] = [
@@ -96,12 +104,35 @@ export const ATTR_LABEL: Record<SportType, Record<AttrKey, string>> = {
   },
 };
 
+/** Goalkeepers use the same six attributes under keeper names. */
+const GK_ATTR_LABEL: Record<AttrKey, string> = {
+  attack: 'בעיטות',
+  technique: 'תפיסה',
+  playmaking: 'משחק רגל',
+  defense: 'הצלות',
+  physical: 'זריזות',
+  mental: 'ריכוז',
+};
+
+/** Attribute names for a player (keepers get their own). */
+export function attrLabels(sport: SportType, position?: Position): Record<AttrKey, string> {
+  return sport === 'football' && position === 'GK' ? GK_ATTR_LABEL : ATTR_LABEL[sport];
+}
+
 /** OVR weights per position. Each row sums to 1. */
 export const OVR_WEIGHTS: Record<Position, Record<AttrKey, number>> = {
-  striker: { attack: 0.35, technique: 0.2, playmaking: 0.1, defense: 0.02, physical: 0.18, mental: 0.15 },
-  midfielder: { attack: 0.15, technique: 0.22, playmaking: 0.3, defense: 0.1, physical: 0.1, mental: 0.13 },
-  centerBack: { attack: 0.02, technique: 0.08, playmaking: 0.1, defense: 0.45, physical: 0.22, mental: 0.13 },
-  fullBack: { attack: 0.05, technique: 0.15, playmaking: 0.15, defense: 0.3, physical: 0.25, mental: 0.1 },
+  GK: { attack: 0, technique: 0.15, playmaking: 0.1, defense: 0.4, physical: 0.17, mental: 0.18 },
+  LB: { attack: 0.05, technique: 0.15, playmaking: 0.15, defense: 0.3, physical: 0.25, mental: 0.1 },
+  RB: { attack: 0.05, technique: 0.15, playmaking: 0.15, defense: 0.3, physical: 0.25, mental: 0.1 },
+  CB: { attack: 0.02, technique: 0.08, playmaking: 0.1, defense: 0.45, physical: 0.22, mental: 0.13 },
+  LWB: { attack: 0.12, technique: 0.15, playmaking: 0.15, defense: 0.2, physical: 0.28, mental: 0.1 },
+  RWB: { attack: 0.12, technique: 0.15, playmaking: 0.15, defense: 0.2, physical: 0.28, mental: 0.1 },
+  CDM: { attack: 0.03, technique: 0.12, playmaking: 0.22, defense: 0.33, physical: 0.17, mental: 0.13 },
+  CM: { attack: 0.15, technique: 0.22, playmaking: 0.3, defense: 0.1, physical: 0.1, mental: 0.13 },
+  CAM: { attack: 0.27, technique: 0.25, playmaking: 0.28, defense: 0.02, physical: 0.06, mental: 0.12 },
+  LW: { attack: 0.3, technique: 0.27, playmaking: 0.15, defense: 0.02, physical: 0.16, mental: 0.1 },
+  RW: { attack: 0.3, technique: 0.27, playmaking: 0.15, defense: 0.02, physical: 0.16, mental: 0.1 },
+  ST: { attack: 0.35, technique: 0.2, playmaking: 0.1, defense: 0.02, physical: 0.18, mental: 0.15 },
   PG: { attack: 0.2, technique: 0.25, playmaking: 0.3, defense: 0.1, physical: 0.05, mental: 0.1 },
   SG: { attack: 0.35, technique: 0.2, playmaking: 0.1, defense: 0.12, physical: 0.1, mental: 0.13 },
   SF: { attack: 0.25, technique: 0.15, playmaking: 0.12, defense: 0.18, physical: 0.18, mental: 0.12 },

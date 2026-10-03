@@ -19,7 +19,7 @@ import type {
 } from '../types/game';
 import { calcOvr, clamp, randFloat, randInt } from './playerUtils';
 import { simulateScore } from './leagueEngine';
-import { BB, FB, fill } from '../data/commentary';
+import { BB, FB, fill, freshLine } from '../data/commentary';
 import type { RosterPlayer } from './rosterEngine';
 
 export function determineRole(player: Player): MatchRole {
@@ -174,6 +174,7 @@ const BB_REB_FACTOR: Partial<Record<Position, number>> = { PG: 0.4, SG: 0.5, SF:
 const BB_AST_FACTOR: Partial<Record<Position, number>> = { PG: 1.4, SG: 0.7, SF: 0.6, PF: 0.4, C: 0.35 };
 
 const pickOne = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)];
+const QUARTER_NAMES = ['', 'ראשון', 'שני', 'שלישי', 'רביעי'];
 
 export interface KickoffParams {
   player: Player;
@@ -250,9 +251,9 @@ export function kickoff(match: MatchState, params: KickoffParams): MatchState {
   if (sport === 'football') {
     const stoppage = randInt(2, 6);
     const total = 90 + stoppage;
-    add({ minute: 0, kind: 'info', side: 'neutral', text: fill(pickOne(FB.kickoff), vars), team: 0, opp: 0 });
+    add({ minute: 0, kind: 'info', side: 'neutral', text: fill(freshLine('fb.kickoff', FB.kickoff), vars), team: 0, opp: 0 });
     const weatherLine = (FB as Record<string, string[]>)[match.info?.weather ?? ''];
-    if (weatherLine) add({ minute: freeMinute(20, 40), kind: 'info', side: 'neutral', text: fill(weatherLine[0], vars), team: 0, opp: 0 });
+    if (weatherLine) add({ minute: freeMinute(20, 40), kind: 'info', side: 'neutral', text: fill(freshLine(`fb.${match.info?.weather}`, weatherLine), vars), team: 0, opp: 0 });
 
     // Goals
     let playerGoalsLeft = base.goals;
@@ -262,7 +263,7 @@ export function kickoff(match: MatchState, params: KickoffParams): MatchState {
       const byMe = playerGoalsLeft > 0 && playerOnPitch(minute);
       if (byMe) playerGoalsLeft--;
       const scorer = byMe ? me : pickOne(attackers);
-      let text = fill(pickOne(FB.goalTeam), { ...vars, שם: scorer });
+      let text = fill(freshLine('fb.goalTeam', FB.goalTeam), { ...vars, שם: scorer });
       let mine = byMe;
       if (!byMe && playerAssistsLeft > 0 && playerOnPitch(minute)) {
         playerAssistsLeft--;
@@ -278,23 +279,29 @@ export function kickoff(match: MatchState, params: KickoffParams): MatchState {
     base.goals -= playerGoalsLeft;
     base.assists -= playerAssistsLeft;
     for (let i = 0; i < opp; i++) {
-      add({ minute: freeMinute(3, Math.min(total - 1, lastBase - 2)), kind: 'goal', side: 'opp', text: fill(pickOne(FB.goalOpp), { ...vars, שם: pickOne(oppAttackers) }), team: 0, opp: 1 });
+      add({ minute: freeMinute(3, Math.min(total - 1, lastBase - 2)), kind: 'goal', side: 'opp', text: fill(freshLine('fb.goalOpp', FB.goalOpp), { ...vars, שם: pickOne(oppAttackers) }), team: 0, opp: 1 });
     }
     // Chances, cards, subs, crowd
-    for (let i = 0; i < randInt(2, 4); i++) add({ minute: freeMinute(5, 88), kind: 'chance', side: 'team', text: fill(pickOne(FB.chanceTeam), { ...vars, שם: pickOne(attackers) }), team: 0, opp: 0 });
-    for (let i = 0; i < randInt(2, 4); i++) add({ minute: freeMinute(5, 88), kind: 'chance', side: 'opp', text: fill(pickOne(FB.chanceOpp), { ...vars, שם: pickOne(oppAttackers), שוער: iAmKeeper && playing ? me : teamKeeper }), team: 0, opp: 0 });
+    for (let i = 0; i < randInt(2, 4); i++) add({ minute: freeMinute(5, 88), kind: 'chance', side: 'team', text: fill(freshLine('fb.chanceTeam', FB.chanceTeam), { ...vars, שם: pickOne(attackers) }), team: 0, opp: 0 });
+    for (let i = 0; i < randInt(2, 4); i++) add({ minute: freeMinute(5, 88), kind: 'chance', side: 'opp', text: fill(freshLine('fb.chanceOpp', FB.chanceOpp), { ...vars, שם: pickOne(oppAttackers), שוער: iAmKeeper && playing ? me : teamKeeper }), team: 0, opp: 0 });
     for (let i = 0; i < randInt(1, 4); i++) {
       const ours = Math.random() < 0.5;
-      add({ minute: freeMinute(15, 88), kind: 'card', side: ours ? 'team' : 'opp', text: fill(pickOne(FB.card), { ...vars, שם: ours ? pickOne(mates) : pickOne(oppAttackers) }), team: 0, opp: 0 });
+      add({ minute: freeMinute(15, 88), kind: 'card', side: ours ? 'team' : 'opp', text: fill(freshLine('fb.card', FB.card), { ...vars, שם: ours ? pickOne(mates) : pickOne(oppAttackers) }), team: 0, opp: 0 });
     }
     if (match.role === 'rotation') {
-      add({ minute: rotationIn, kind: 'sub', side: 'team', text: fill(pickOne(FB.sub), { ...vars, שם: me, יוצא: pickOne(mates) }), team: 0, opp: 0, mine: true });
+      add({ minute: rotationIn, kind: 'sub', side: 'team', text: fill(freshLine('fb.sub', FB.sub), { ...vars, שם: me, יוצא: pickOne(mates) }), team: 0, opp: 0, mine: true });
     }
-    for (let i = 0; i < randInt(1, 2); i++) add({ minute: freeMinute(60, 85), kind: 'sub', side: Math.random() < 0.5 ? 'team' : 'opp', text: fill(pickOne(FB.sub), { ...vars, שם: pickOne(mates), יוצא: pickOne(mates) }), team: 0, opp: 0 });
-    add({ minute: freeMinute(25, 80), kind: 'info', side: 'neutral', text: fill(pickOne(FB.crowd), vars), team: 0, opp: 0 });
-    add({ minute: 45.5, kind: 'period', side: 'neutral', text: pickOne(FB.halftime), team: 0, opp: 0 });
-    add({ minute: 46, kind: 'info', side: 'neutral', text: FB.secondHalf[0], team: 0, opp: 0 });
-    add({ minute: 89.6, kind: 'info', side: 'neutral', text: fill(FB.stoppage[0], { תוספת: stoppage }), team: 0, opp: 0 });
+    for (let i = 0; i < randInt(1, 2); i++) add({ minute: freeMinute(60, 85), kind: 'sub', side: Math.random() < 0.5 ? 'team' : 'opp', text: fill(freshLine('fb.sub', FB.sub), { ...vars, שם: pickOne(mates), יוצא: pickOne(mates) }), team: 0, opp: 0 });
+    add({ minute: freeMinute(25, 80), kind: 'info', side: 'neutral', text: fill(freshLine('fb.crowd', FB.crowd), vars), team: 0, opp: 0 });
+    // Flavor that changes from match to match: who controls the game, derby noise, stoppages, offsides.
+    const flowTeam = ts >= match.opponentStrength ? Math.random() < 0.75 : Math.random() < 0.3;
+    add({ minute: freeMinute(10, 75), kind: 'info', side: flowTeam ? 'team' : 'opp', text: fill(freshLine(flowTeam ? 'fb.flowTeam' : 'fb.flowOpp', flowTeam ? FB.flowTeam : FB.flowOpp), vars), team: 0, opp: 0 });
+    if (match.info?.derby) add({ minute: freeMinute(2, 20), kind: 'info', side: 'neutral', text: fill(freshLine('fb.derby', FB.derby), vars), team: 0, opp: 0 });
+    if (Math.random() < 0.35) add({ minute: freeMinute(10, 85), kind: 'info', side: 'neutral', text: fill(freshLine('fb.injury', FB.injury), { ...vars, שם: pickOne(Math.random() < 0.5 ? mates : oppAttackers) }), team: 0, opp: 0 });
+    if (Math.random() < 0.3) add({ minute: freeMinute(10, 85), kind: 'info', side: 'neutral', text: fill(freshLine('fb.offside', FB.offside), { ...vars, שם: pickOne(oppAttackers) }), team: 0, opp: 0 });
+    add({ minute: 45.5, kind: 'period', side: 'neutral', text: fill(freshLine('fb.halftime', FB.halftime), vars), team: 0, opp: 0 });
+    add({ minute: 46, kind: 'info', side: 'neutral', text: fill(freshLine('fb.secondHalf', FB.secondHalf), vars), team: 0, opp: 0 });
+    add({ minute: 89.6, kind: 'info', side: 'neutral', text: fill(freshLine('fb.stoppage', FB.stoppage), { תוספת: stoppage }), team: 0, opp: 0 });
     timeline.sort((a, b) => a.minute - b.minute);
     const possession = clamp(Math.round(50 + (ts - match.opponentStrength) * 0.6 + randInt(-5, 5)), 28, 72);
     return {
@@ -308,9 +315,9 @@ export function kickoff(match: MatchState, params: KickoffParams): MatchState {
   }
 
   // Basketball: hidden scoring buckets per minute plus highlight lines
-  add({ minute: 0, kind: 'info', side: 'neutral', text: fill(pickOne(BB.kickoff), vars), team: 0, opp: 0 });
+  add({ minute: 0, kind: 'info', side: 'neutral', text: fill(freshLine('bb.kickoff', BB.kickoff), vars), team: 0, opp: 0 });
   const hallLine = (BB as Record<string, string[]>)[match.info?.weather ?? ''];
-  if (hallLine) add({ minute: 2.5, kind: 'info', side: 'neutral', text: fill(hallLine[0], vars), team: 0, opp: 0 });
+  if (hallLine) add({ minute: 2.5, kind: 'info', side: 'neutral', text: fill(freshLine(`bb.${match.info?.weather}`, hallLine), vars), team: 0, opp: 0 });
   const distribute = (total: number) => {
     const weights = Array.from({ length: 40 }, () => 0.5 + Math.random());
     const sum = weights.reduce((a, b) => a + b, 0);
@@ -338,23 +345,24 @@ export function kickoff(match: MatchState, params: KickoffParams): MatchState {
     const minute = freeMinute(1, 39.5);
     const ours = Math.random() < 0.55;
     const r = Math.random();
-    const key = r < 0.4 ? 'three' : r < 0.6 ? 'dunk' : r < 0.75 ? 'steal' : r < 0.88 ? 'run' : 'timeout';
+    const key = r < 0.3 ? 'three' : r < 0.5 ? 'two' : r < 0.63 ? 'dunk' : r < 0.77 ? 'steal' : r < 0.89 ? 'run' : 'timeout';
     const name = ours ? (playerOnPitch(minute) && Math.random() < 0.3 ? me : pickOne(attackers)) : pickOne(oppAttackers);
     const lines = (BB as Record<string, string[]>)[`${key}${ours ? 'Team' : 'Opp'}`];
     add({
       minute,
       kind: key === 'run' ? 'run' : 'highlight',
       side: ours ? 'team' : 'opp',
-      text: fill(pickOne(lines), { ...vars, שם: name, ריצה: `${randInt(7, 12)}:${randInt(0, 2)}` }),
+      text: fill(freshLine(`bb.${key}${ours ? 'Team' : 'Opp'}`, lines), { ...vars, שם: name, ריצה: `${randInt(7, 12)}:${randInt(0, 2)}` }),
       team: 0,
       opp: 0,
       mine: name === me,
     });
   }
-  if (Math.random() < 0.5) add({ minute: freeMinute(5, 35), kind: 'card', side: 'opp', text: fill(pickOne(BB.foul), { שם: pickOne(oppAttackers) }), team: 0, opp: 0 });
+  if (Math.random() < 0.5) add({ minute: freeMinute(5, 35), kind: 'card', side: 'opp', text: fill(freshLine('bb.foul', BB.foul), { שם: pickOne(oppAttackers) }), team: 0, opp: 0 });
   if (match.role === 'rotation') add({ minute: rotationIn, kind: 'sub', side: 'team', text: `${me} נכנס מהספסל`, team: 0, opp: 0, mine: true });
-  add({ minute: freeMinute(10, 35), kind: 'info', side: 'neutral', text: fill(pickOne(BB.crowd), vars), team: 0, opp: 0 });
-  for (const q of [1, 2, 3]) add({ minute: q * 10 + 0.01, kind: 'period', side: 'neutral', text: q === 2 ? BB.halftime[0] : fill(BB.quarter[0], { רבע: q }), team: 0, opp: 0 });
+  add({ minute: freeMinute(10, 35), kind: 'info', side: 'neutral', text: fill(freshLine('bb.crowd', BB.crowd), vars), team: 0, opp: 0 });
+  if (Math.random() < 0.5) add({ minute: freeMinute(25, 38), kind: 'info', side: 'neutral', text: fill(freshLine('bb.crowd', BB.crowd), vars), team: 0, opp: 0 });
+  for (const q of [1, 2, 3]) add({ minute: q * 10 + 0.01, kind: 'period', side: 'neutral', text: q === 2 ? fill(freshLine('bb.halftime', BB.halftime), vars) : fill(freshLine('bb.quarter', BB.quarter), { רבע: QUARTER_NAMES[q] }), team: 0, opp: 0 });
   timeline.sort((a, b) => a.minute - b.minute);
   return { ...match, timeline, totalMinutes: 40, base, decisionMinutes, extra: null };
 }
@@ -372,8 +380,8 @@ export function prepareClutch(match: MatchState, minute: number, sport: SportTyp
   const vars = { קבוצה: teamName, יריבה: match.opponent };
   if (sport === 'football') {
     if (Math.abs(diff) > 1) return null;
-    if (diff === 1) timeline.push({ minute: minute - 2, kind: 'goal', side: 'opp', text: fill('{יריבה} משווה! {שם} מכניס והמשחק נפתח מחדש', { ...vars, שם: pickOne(oppRoster).name }), team: 0, opp: 1, base: true });
-    if (diff === -1) timeline.push({ minute: minute - 2, kind: 'goal', side: 'team', text: fill('{קבוצה} משווה! {שם} מכניס והאצטדיון מתפוצץ', { ...vars, שם: pickOne(teamRoster).name }), team: 1, opp: 0, base: true });
+    if (diff === 1) timeline.push({ minute: minute - 2, kind: 'goal', side: 'opp', text: fill(freshLine('fb.equalizerOpp', FB.equalizerOpp), { ...vars, שם: pickOne(oppRoster).name }), team: 0, opp: 1, base: true });
+    if (diff === -1) timeline.push({ minute: minute - 2, kind: 'goal', side: 'team', text: fill(freshLine('fb.equalizerTeam', FB.equalizerTeam), { ...vars, שם: pickOne(teamRoster).name }), team: 1, opp: 0, base: true });
   } else {
     if (Math.abs(diff + 1) > 9) return null;
     const need = opp + 1 - team; // positive: team needs points, negative: opponent needs points
@@ -401,14 +409,22 @@ export function decisionEntries(
   const out: TimelineEntry[] = [];
   const mate = pickOne(teamRoster).name;
   const rival = pickOne(oppRoster.filter((p) => p.pos !== 'שוער')).name;
+  const v = { שם: me, מבשל: me, יריבה: oppName };
   if (sport === 'football') {
-    if (effects.playerGoals) out.push({ minute, kind: 'goal', side: 'team', text: `שער! ${me} כובש`, team: effects.playerGoals, opp: 0, mine: true });
-    if (effects.teamScore) out.push({ minute: minute + 0.01, kind: 'goal', side: 'team', text: effects.playerAssists ? `שער! ${mate} מסיים (בישול: ${me})` : `שער! ${mate} מנצל את המצב`, team: effects.teamScore, opp: 0, mine: Boolean(effects.playerAssists) });
-    if (effects.oppScore) out.push({ minute: minute + 0.02, kind: 'goal', side: 'opp', text: `שער ל${oppName}: ${rival} מעניש מיד אחרי המהלך`, team: 0, opp: effects.oppScore });
+    if (effects.playerGoals) out.push({ minute, kind: 'goal', side: 'team', text: fill(freshLine('fb.myGoal', FB.myGoal), v), team: effects.playerGoals, opp: 0, mine: true });
+    if (effects.teamScore) {
+      const text = effects.playerAssists ? fill(freshLine('fb.mateGoalAssist', FB.mateGoalAssist), { ...v, שם: mate }) : fill(freshLine('fb.mateGoal', FB.mateGoal), { ...v, שם: mate });
+      out.push({ minute: minute + 0.01, kind: 'goal', side: 'team', text, team: effects.teamScore, opp: 0, mine: Boolean(effects.playerAssists) });
+    }
+    if (effects.oppScore) out.push({ minute: minute + 0.02, kind: 'goal', side: 'opp', text: fill(freshLine('fb.oppPunish', FB.oppPunish), { ...v, שם: rival }), team: 0, opp: effects.oppScore });
   } else {
-    if (effects.playerPoints) out.push({ minute, kind: 'score', side: 'team', text: `${me} קולע ${effects.playerPoints} נקודות`, team: effects.playerPoints, opp: 0, mine: true });
-    if (effects.teamScore) out.push({ minute: minute + 0.01, kind: 'score', side: 'team', text: effects.playerAssists ? `${mate} קולע ${effects.teamScore} (אסיסט: ${me})` : `${mate} קולע ${effects.teamScore}`, team: effects.teamScore, opp: 0, mine: Boolean(effects.playerAssists) });
-    if (effects.oppScore) out.push({ minute: minute + 0.02, kind: 'score', side: 'opp', text: `${rival} מ${oppName} מעניש: ${effects.oppScore} נקודות`, team: 0, opp: effects.oppScore });
+    if (effects.playerPoints) out.push({ minute, kind: 'score', side: 'team', text: fill(freshLine('bb.myScore', BB.myScore), { ...v, נקודות: effects.playerPoints }), team: effects.playerPoints, opp: 0, mine: true });
+    if (effects.teamScore) {
+      const lines = effects.playerAssists ? BB.mateScoreAssist : BB.mateScore;
+      const text = fill(freshLine(effects.playerAssists ? 'bb.mateScoreAssist' : 'bb.mateScore', lines), { ...v, שם: mate, נקודות: effects.teamScore });
+      out.push({ minute: minute + 0.01, kind: 'score', side: 'team', text, team: effects.teamScore, opp: 0, mine: Boolean(effects.playerAssists) });
+    }
+    if (effects.oppScore) out.push({ minute: minute + 0.02, kind: 'score', side: 'opp', text: fill(freshLine('bb.oppPunish', BB.oppPunish), { ...v, שם: rival, נקודות: effects.oppScore }), team: 0, opp: effects.oppScore });
   }
   out.unshift({ minute: minute - 0.01, kind: 'moment', side: 'team', text: `${event.title}: ${success ? 'הצלחה' : 'לא הצליח'}. ${outcomeText}`, team: 0, opp: 0, mine: true });
   return out;
@@ -420,7 +436,7 @@ export function overtimeIfTied(match: MatchState, sport: SportType, teamName: st
   const { team, opp } = scoreAt(match.timeline, match.totalMinutes);
   if (team !== opp) return null;
   const start = match.totalMinutes;
-  const timeline = [...match.timeline, { minute: start + 0.01, kind: 'period' as const, side: 'neutral' as const, text: BB.overtime[0], team: 0, opp: 0 }];
+  const timeline = [...match.timeline, { minute: start + 0.01, kind: 'period' as const, side: 'neutral' as const, text: freshLine('bb.overtime', BB.overtime), team: 0, opp: 0 }];
   let t = 0;
   let o = 0;
   for (let m = 0; m < 5; m++) {

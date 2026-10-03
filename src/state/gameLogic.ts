@@ -21,7 +21,6 @@ import type {
   Player,
   SetupData,
   SportType,
-  WeekPlan,
 } from '../types/game';
 import { clubDistance, clubPlace, commuteCost, findPlace, startingClubs } from '../data/places';
 import { getJob } from '../data/jobs';
@@ -708,8 +707,6 @@ export function nextFixtureInfo(state: GameState): MatchInfoState {
   return matchInfo(state.player.sport, state.player.division, home, away, state.season, state.matchday);
 }
 
-export const DEFAULT_WEEK_PLAN: WeekPlan = { training: 'auto', shifts: 1, recovery: 'rest' };
-
 /** The free training session that adds the most to this player's rating. */
 export function bestTrainingFor(player: Player): TrainingId {
   const weights = OVR_WEIGHTS[player.position];
@@ -727,33 +724,26 @@ export function bestTrainingFor(player: Player): TrainingId {
   return best;
 }
 
-export function setWeekPlan(state: GameState, plan: Partial<WeekPlan>): GameState {
-  return { ...state, weekPlan: { ...DEFAULT_WEEK_PLAN, ...state.weekPlan, ...plan } };
-}
-
 /**
- * Fills the week's unused time slots from the weekly routine: the planned
- * shifts first, then training while there is energy for it, then recovery.
- * Returns the new state and a short line per activity.
+ * Fills the week's unused time slots with a sensible routine: one shift at the
+ * day job if none was worked, then the training that fits the position while
+ * there is energy for it, then rest. Returns the new state and a short line per
+ * activity.
  */
 export function runWeekPlan(state: GameState): { state: GameState; recap: string[] } {
-  const plan = { ...DEFAULT_WEEK_PLAN, ...state.weekPlan };
   const recap: string[] = [];
   let next = state;
   for (let guard = 0; next.weekSlots > 0 && guard < 6; guard++) {
     const { player, flags } = next;
     const job = getJob(player.jobId);
-    const trainingId = plan.training === 'auto' ? bestTrainingFor(player) : plan.training;
-    const option = TRAINING_OPTIONS.find((o) => o.id === trainingId) ?? TRAINING_OPTIONS[1];
+    const option = TRAINING_OPTIONS.find((o) => o.id === bestTrainingFor(player)) ?? TRAINING_OPTIONS[1];
     let attempt: GameState;
-    if (job && isNonPro(player) && flags.shiftsThisWeek < Math.max(plan.shifts, 1) && player.energy >= job.energyCost + 10) {
+    if (job && isNonPro(player) && flags.shiftsThisWeek < 1 && player.energy >= job.energyCost + 10) {
       attempt = workShift(next);
     } else if (player.injuryWeeks === 0 && player.energy - option.energyCost >= 30 && player.budget >= option.budgetCost) {
       attempt = train(next, option.id);
     } else {
-      const recovery = LIFESTYLE_OPTIONS.find((o) => o.id === plan.recovery);
-      attempt = recovery && player.budget >= recovery.budgetCost ? lifestyle(next, recovery.id) : next;
-      if (attempt.weekSlots === next.weekSlots) attempt = lifestyle(next, 'rest');
+      attempt = lifestyle(next, 'rest');
     }
     if (attempt.weekSlots === next.weekSlots) break;
     if (attempt.toast) recap.push(attempt.toast);

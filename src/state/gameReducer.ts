@@ -1,4 +1,4 @@
-import type { GameState, JobId, SetupData, WeekPlan } from '../types/game';
+import type { GameState, JobId, SetupData } from '../types/game';
 import type { LifestyleId, SocialPostId, TrainingId } from '../data/activities';
 import * as logic from './gameLogic';
 
@@ -33,8 +33,7 @@ export type GameAction =
   | { type: 'ACCEPT_OFFER'; offerId: string }
   | { type: 'DECLINE_OFFERS' }
   | { type: 'SEASON_CONTINUE' }
-  | { type: 'CLEAR_TOAST' }
-  | { type: 'SET_WEEK_PLAN'; plan: Partial<WeekPlan> };
+  | { type: 'CLEAR_TOAST' };
 
 /** `null` state means the setup screen is shown. */
 export function gameReducer(state: GameState | null, action: GameAction): GameState | null {
@@ -45,8 +44,6 @@ export function gameReducer(state: GameState | null, action: GameAction): GameSt
   switch (action.type) {
     case 'TRAIN':
       return logic.train(state, action.option);
-    case 'SET_WEEK_PLAN':
-      return logic.setWeekPlan(state, action.plan);
     case 'LIFESTYLE':
       return logic.lifestyle(state, action.option);
     case 'WORK_SHIFT':

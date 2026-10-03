@@ -7,6 +7,7 @@ import { gameReducer } from '../state/gameReducer';
 import type { GameAction } from '../state/gameReducer';
 import type { GameEvent, GameState, Position, SetupData, SportType } from '../types/game';
 import { CLUB_POOLS } from '../data/clubs';
+import { BB, FB, fill, freshLine } from '../data/commentary';
 import localities from '../data/localities.json';
 import { clubPlace, findPlace, nearestStartingClubs, searchPlaces, startingClubs } from '../data/places';
 import { clubIdentity } from '../data/clubIdentity';
@@ -479,6 +480,23 @@ describe('variety over a long career', () => {
   });
 });
 
+describe('live commentary', () => {
+  it('fills every line and keeps big pools', () => {
+    const vars = { שם: 'דני', מבשל: 'יוסי', שוער: 'אבי', יוצא: 'משה', קבוצה: 'הפועל', יריבה: 'מכבי', אצטדיון: 'האצטדיון', קהל: 500, שופט: 'רון', מזג: 'נעים', תוספת: 3, רבע: 'ראשון', ריצה: '8:0', נקודות: 2 };
+    for (const [key, lines] of [...Object.entries(FB), ...Object.entries(BB)]) {
+      for (const line of lines) expect(fill(line, vars), key).not.toMatch(/[{}]/);
+    }
+    for (const key of ['goalTeam', 'goalOpp', 'chanceTeam', 'chanceOpp', 'crowd'] as const) expect(FB[key].length).toBeGreaterThanOrEqual(10);
+    for (const key of ['threeTeam', 'dunkTeam', 'twoTeam', 'crowd'] as const) expect(BB[key].length).toBeGreaterThanOrEqual(7);
+  });
+
+  it('does not repeat a line before most of its pool was used', () => {
+    const heard: string[] = [];
+    for (let i = 0; i < 10; i++) heard.push(freshLine('test.goals', FB.goalTeam));
+    expect(new Set(heard).size).toBe(10);
+  });
+});
+
 describe('weekly routine', () => {
   it('fills unused slots before the match, with position-based training by default', () => {
     let s = gameReducer(null, {
@@ -493,15 +511,14 @@ describe('weekly routine', () => {
     expect(s.player.progress.defense + s.player.attributes.defense).toBeGreaterThan(before);
   });
 
-  it('keeps the planned shifts and respects the chosen training', () => {
-    let s = gameReducer(null, {
+  it('works the shift the job needs when it was not worked by hand', () => {
+    const s = gameReducer(null, {
       type: 'NEW_GAME',
       setup: { name: 'בדיקה', shirtNumber: 9, sport: 'basketball', position: 'SG', home: findPlace('חולון')!, club: 'אליצור גבעתיים', jobId: 'security' },
     })!;
-    s = gameReducer(s, { type: 'SET_WEEK_PLAN', plan: { shifts: 2, training: 'fitness' } })!;
     const budget = s.player.budget;
     const week = runWeekPlan(s);
-    expect(week.state.flags.shiftsThisWeek).toBe(2);
+    expect(week.state.flags.shiftsThisWeek).toBe(1);
     expect(week.state.player.budget).toBeGreaterThan(budget);
   });
 });

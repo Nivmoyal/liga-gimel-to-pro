@@ -433,15 +433,6 @@ export interface GameFlags {
   storiesUsed?: string[];
 }
 
-/** What the player does with the week's free time when not choosing by hand. */
-export interface WeekPlan {
-  /** 'auto' picks the free session that helps the player's position most. */
-  training: 'auto' | 'fitness' | 'skills' | 'tactical' | 'mental' | 'private';
-  /** Shifts at the day job each week (only while not a full professional). */
-  shifts: number;
-  recovery: 'rest' | 'physio' | 'family' | 'friends';
-}
-
 export interface GameState {
   version: number;
   phase: GamePhase;
@@ -463,8 +454,6 @@ export interface GameState {
   flags: GameFlags;
   /** Short toast-like message after a dashboard action. */
   toast: string | null;
-  /** The weekly routine that fills unused time slots before each match. */
-  weekPlan?: WeekPlan;
   /** What happened during the week (shown before the match). */
   weekRecap?: string[];
 }

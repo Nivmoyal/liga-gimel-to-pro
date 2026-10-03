@@ -11,7 +11,7 @@ import localities from '../data/localities.json';
 import { clubPlace, findPlace, nearestStartingClubs, searchPlaces, startingClubs } from '../data/places';
 import { clubIdentity } from '../data/clubIdentity';
 import { SPONSORS } from '../data/sponsors';
-import { agentInterested, migrateSave, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
+import { agentInterested, bestTrainingFor, migrateSave, runWeekPlan, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
 import { getAgent } from '../data/agents';
 import { FOOTBALL_POSITIONS, BASKETBALL_POSITIONS, SEASON_MATCHDAYS } from '../data/sports';
 
@@ -374,7 +374,7 @@ describe('gradual progress', () => {
     s = gameReducer(s, { type: 'TRAIN', option: 'skills' })!;
     const gained = s.player.attributes.attack - before + s.player.progress.attack;
     expect(gained).toBeGreaterThan(0.05);
-    expect(gained).toBeLessThan(0.45);
+    expect(gained).toBeLessThan(0.55);
   });
 });
 
@@ -411,6 +411,33 @@ describe('situations fit the career stage', () => {
       expect(e.speaker, e.id).not.toMatch(/ערוץ הספורט|העיתון הארצי|פודקאסט/);
       expect(textOf(e), e.id).not.toMatch(/סוכן|נבחרת|ויראלי/);
     }
+  });
+});
+
+describe('weekly routine', () => {
+  it('fills unused slots before the match, with position-based training by default', () => {
+    let s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 4, sport: 'football', position: 'CB', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+    })!;
+    expect(bestTrainingFor(s.player)).toBe('tactical');
+    const before = s.player.progress.defense + s.player.attributes.defense;
+    s = gameReducer(s, { type: 'START_MATCHDAY' })!;
+    expect(s.weekSlots).toBe(0);
+    expect(s.weekRecap?.length).toBe(3);
+    expect(s.player.progress.defense + s.player.attributes.defense).toBeGreaterThan(before);
+  });
+
+  it('keeps the planned shifts and respects the chosen training', () => {
+    let s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 9, sport: 'basketball', position: 'SG', home: findPlace('חולון')!, club: 'אליצור גבעתיים', jobId: 'security' },
+    })!;
+    s = gameReducer(s, { type: 'SET_WEEK_PLAN', plan: { shifts: 2, training: 'fitness' } })!;
+    const budget = s.player.budget;
+    const week = runWeekPlan(s);
+    expect(week.state.flags.shiftsThisWeek).toBe(2);
+    expect(week.state.player.budget).toBeGreaterThan(budget);
   });
 });
 

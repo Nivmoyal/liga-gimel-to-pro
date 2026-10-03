@@ -5,7 +5,7 @@ import { ScenePhoto } from './art/ScenePhoto';
 const SLIDES = [
   { scene: 'intro_1', text: 'כל קריירה מתחילה על ספסל עץ, במגרש שכונתי, כשאף אחד עוד לא יודע איך קוראים לך.' },
   { scene: 'intro_2', text: 'בבוקר עבודה. בערב אימון. בשבת משחק בליגה ג׳, מול שלושים אוהדים וכלב אחד.' },
-  { scene: 'intro_3', text: 'מכאן אפשר להגיע לליגת העל, לסרט הקפטן ולמדי הנבחרת. הדרך שלך מתחילה עכשיו.' },
+  { scene: 'intro_3', text: 'מכאן אפשר להגיע לליגת העל, לתפקיד הקפטן ולמדי הנבחרת. הדרך שלך מתחילה עכשיו.' },
 ];
 
 /** Short cinematic intro before creating a new career. Tap to advance, "דלג" to skip. */

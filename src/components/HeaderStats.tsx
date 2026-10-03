@@ -6,7 +6,7 @@ import type { GameState } from '../types/game';
 import { getJob } from '../data/jobs';
 import { getAgent } from '../data/agents';
 import { SEASON_MATCHDAYS, divisionName } from '../data/sports';
-import { calcOvr, formatMoney } from '../services/playerUtils';
+import { calcOvrExact, formatMoney } from '../services/playerUtils';
 
 interface ChipProps {
   icon: LucideIcon;
@@ -44,7 +44,8 @@ export function HeaderStats({ state }: { state: GameState }) {
   const { player } = state;
   const job = getJob(player.jobId);
   const agent = getAgent(player.agentId);
-  const ovr = calcOvr(player);
+  // One decimal so every training session visibly moves the rating.
+  const ovr = calcOvrExact(player).toFixed(1);
   const jobLabel = player.contract === 'pro' ? 'מקצוען' : job ? job.name : 'מובטל';
 
   return (

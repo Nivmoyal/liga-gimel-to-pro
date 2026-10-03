@@ -10,6 +10,7 @@ import { MainActionGrid } from './components/MainActionGrid';
 import type { ActionSheetId } from './components/MainActionGrid';
 import { SocialFeed } from './components/SocialFeed';
 import { MainCTA } from './components/MainCTA';
+import { WeekPlanCard } from './components/WeekPlanCard';
 import { BottomNav } from './components/BottomNav';
 import type { ViewId } from './components/BottomNav';
 import { PreMatchModal } from './components/PreMatchModal';
@@ -108,6 +109,7 @@ export default function App() {
             <>
               <SportIndicator state={state} />
               <DecisionBox state={state} dispatch={dispatch} />
+              <WeekPlanCard state={state} dispatch={dispatch} />
               <MainActionGrid state={state} onOpen={openSheet} />
               <SocialFeed news={state.news} limit={6} />
             </>

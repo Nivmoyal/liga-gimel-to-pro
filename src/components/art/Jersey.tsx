@@ -76,7 +76,8 @@ export function Jersey({ primary, secondary, name, number, sport, sponsor, capta
       >
         {number}
       </text>
-      {captain && (
+      {/* Football captains wear an armband; basketball has no armband. */}
+      {captain && sport === 'football' && (
         <g transform={sport === 'football' ? 'rotate(-18 40 64)' : 'rotate(-12 44 60)'}>
           <rect x={sport === 'football' ? 22 : 30} y="56" width="34" height="15" rx="2" fill="#e3b24c" stroke="#120d02" strokeOpacity="0.5" />
           <text x={sport === 'football' ? 39 : 47} y="68" textAnchor="middle" fontSize="12" fontWeight="900" fill="#120d02" fontFamily="Heebo, sans-serif">

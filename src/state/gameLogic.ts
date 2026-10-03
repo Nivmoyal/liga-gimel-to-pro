@@ -21,6 +21,7 @@ import type {
   Player,
   SetupData,
   SportType,
+  WeekPlan,
 } from '../types/game';
 import { clubDistance, clubPlace, commuteCost, findPlace, startingClubs } from '../data/places';
 import { getJob } from '../data/jobs';
@@ -151,7 +152,7 @@ function applyEffects(state: GameState, effects: Effects): GameState {
   if (effects.setCaptain && !state.player.isCaptain) {
     next = addNews(next, [
       newsNow(next, 'club', `רשמי: ${next.player.name} נבחר לקפטן של ${next.player.club}`),
-      newsNow(next, 'fans', `סרט הקפטן על הזרוע של ${next.player.name}. האוהדים מתרגשים`),
+      newsNow(next, 'fans', next.player.sport === 'football' ? `סרט הקפטן על הזרוע של ${next.player.name}. האוהדים מתרגשים` : `${next.player.name} הוא הקפטן החדש. האוהדים מתרגשים`),
     ]);
   }
   return next;
@@ -174,6 +175,13 @@ function matchExperience(player: Player, role: MatchState['role'], rating: numbe
   const gains: Partial<Attributes> = {};
   for (const key of [...top, 'mental' as AttrKey]) gains[key] = trainingProgress(player, key, base);
   return addProgress(player, gains).player;
+}
+
+/** The most important attribute for the position that still has room to grow. */
+function breakthroughAttr(player: Player): AttrKey | null {
+  const weights = OVR_WEIGHTS[player.position];
+  const ranked = [...ATTR_KEYS].sort((a, b) => weights[b] - weights[a]);
+  return ranked.slice(0, 3).find((k) => player.attributes[k] < Math.min(99, player.potential + 3)) ?? null;
 }
 
 function emptyNational() {
@@ -396,7 +404,7 @@ export function train(state: GameState, id: TrainingId): GameState {
   if (Object.keys(gains).length === 0) {
     const weights = OVR_WEIGHTS[player.position];
     const top = [...ATTR_KEYS].sort((a, b) => weights[b] - weights[a]).slice(0, 2);
-    gains = { [top[0]]: 0.45, [top[1]]: 0.35 };
+    gains = { [top[0]]: 0.55, [top[1]]: 0.42 };
   }
   const progressGain: Partial<Attributes> = {};
   for (const key of ATTR_KEYS) {
@@ -676,11 +684,68 @@ export function nextFixtureInfo(state: GameState): MatchInfoState {
   return matchInfo(state.player.sport, state.player.division, home, away, state.season, state.matchday);
 }
 
+export const DEFAULT_WEEK_PLAN: WeekPlan = { training: 'auto', shifts: 1, recovery: 'rest' };
+
+/** The free training session that adds the most to this player's rating. */
+export function bestTrainingFor(player: Player): TrainingId {
+  const weights = OVR_WEIGHTS[player.position];
+  let best: TrainingId = 'skills';
+  let bestScore = -1;
+  for (const o of TRAINING_OPTIONS) {
+    if (o.budgetCost > 0) continue;
+    const gains = player.position === 'GK' && o.keeperGains ? o.keeperGains : o.gains;
+    const score = (Object.keys(gains) as AttrKey[]).reduce((sum, k) => sum + (gains[k] ?? 0) * weights[k], 0);
+    if (score > bestScore) {
+      bestScore = score;
+      best = o.id;
+    }
+  }
+  return best;
+}
+
+export function setWeekPlan(state: GameState, plan: Partial<WeekPlan>): GameState {
+  return { ...state, weekPlan: { ...DEFAULT_WEEK_PLAN, ...state.weekPlan, ...plan } };
+}
+
+/**
+ * Fills the week's unused time slots from the weekly routine: the planned
+ * shifts first, then training while there is energy for it, then recovery.
+ * Returns the new state and a short line per activity.
+ */
+export function runWeekPlan(state: GameState): { state: GameState; recap: string[] } {
+  const plan = { ...DEFAULT_WEEK_PLAN, ...state.weekPlan };
+  const recap: string[] = [];
+  let next = state;
+  for (let guard = 0; next.weekSlots > 0 && guard < 6; guard++) {
+    const { player, flags } = next;
+    const job = getJob(player.jobId);
+    const trainingId = plan.training === 'auto' ? bestTrainingFor(player) : plan.training;
+    const option = TRAINING_OPTIONS.find((o) => o.id === trainingId) ?? TRAINING_OPTIONS[1];
+    let attempt: GameState;
+    if (job && isNonPro(player) && flags.shiftsThisWeek < Math.max(plan.shifts, 1) && player.energy >= job.energyCost + 10) {
+      attempt = workShift(next);
+    } else if (player.injuryWeeks === 0 && player.energy - option.energyCost >= 30 && player.budget >= option.budgetCost) {
+      attempt = train(next, option.id);
+    } else {
+      const recovery = LIFESTYLE_OPTIONS.find((o) => o.id === plan.recovery);
+      attempt = recovery && player.budget >= recovery.budgetCost ? lifestyle(next, recovery.id) : next;
+      if (attempt.weekSlots === next.weekSlots) attempt = lifestyle(next, 'rest');
+    }
+    if (attempt.weekSlots === next.weekSlots) break;
+    if (attempt.toast) recap.push(attempt.toast);
+    next = attempt;
+  }
+  return { state: { ...next, toast: null }, recap };
+}
+
 export function startMatchday(state: GameState): GameState {
   if (state.phase !== 'dashboard') return state;
   const blocker = matchdayBlocker(state);
   if (blocker) return withToast(state, blocker);
   if (state.matchday >= SEASON_MATCHDAYS) return state;
+  // Whatever was not done by hand this week happens by the weekly routine.
+  const week = runWeekPlan(state);
+  state = { ...week.state, weekRecap: week.recap };
 
   const fixture = fixtureFor(state.league, state.matchday);
   const opponent = state.league.teams[fixture.opponentIndex];
@@ -907,6 +972,11 @@ function finishMatch(state: GameState): GameState {
   });
 
   if (played) nextPlayer = matchExperience(nextPlayer, match.role, result.rating!);
+  // A big game is a breakthrough: the key attribute for the position jumps a point.
+  const breakthrough = played && result.rating! >= 8 ? breakthroughAttr(nextPlayer) : null;
+  if (breakthrough) {
+    nextPlayer = { ...nextPlayer, attributes: { ...nextPlayer.attributes, [breakthrough]: nextPlayer.attributes[breakthrough] + 1 } };
+  }
 
   let next: GameState = {
     ...state,
@@ -916,6 +986,10 @@ function finishMatch(state: GameState): GameState {
     phase: 'matchSummary',
   };
   const md = state.matchday + 1;
+  if (breakthrough) {
+    const label = attrLabels(sport, player.position)[breakthrough];
+    next = addNews(next, [makeNews('club', `קפיצת מדרגה: אחרי משחק בציון ${result.rating} ה${label} של ${player.name} עלה ל-${nextPlayer.attributes[breakthrough]}`, state.season, md)]);
+  }
   next = addNews(next, [
     ...matchNews(player, match.opponent, result, {
       goals: fin.match.playerGoals,
@@ -1023,7 +1097,7 @@ function endMatchday(state: GameState): GameState {
   if (player.isCaptain) {
     if (player.coachApproval < 35) {
       player.isCaptain = false;
-      news.push(makeNews('club', `המאמן לקח מ${player.name} את סרט הקפטן אחרי תקופה חלשה`, state.season, matchday));
+      news.push(makeNews('club', player.sport === 'football' ? `המאמן לקח מ${player.name} את סרט הקפטן אחרי תקופה חלשה` : `${player.name} כבר לא הקפטן: המאמן החליט אחרי תקופה חלשה`, state.season, matchday));
     } else {
       player.teamMorale = clamp(player.teamMorale + 2, 0, 100);
     }
@@ -1042,7 +1116,7 @@ function endMatchday(state: GameState): GameState {
 
   flags.shiftsThisWeek = 0;
   flags.postedThisWeek = false;
-  next = { ...next, player, flags, weekSlots: WEEK_SLOTS };
+  next = { ...next, player, flags, weekSlots: WEEK_SLOTS, weekRecap: undefined };
 
   // Rumors
   const ovr = calcOvr(player);
@@ -1102,7 +1176,7 @@ function queueLifeEvent(state: GameState): GameState {
   if (captainOfferReady(state)) {
     return {
       ...state,
-      pendingLifeEventId: getTriggeredEvent('captain_offer')?.id ?? null,
+      pendingLifeEventId: pickTriggeredEvent('captain_offer', player, state.seenEvents)?.id ?? null,
       lifeOutcome: null,
       flags: { ...flags, captainOfferSeason: state.season },
     };

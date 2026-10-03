@@ -49,6 +49,12 @@ export function calcOvr(player: Pick<Player, 'attributes' | 'position'>): number
   return Math.round(total);
 }
 
+/** Rating including the progress towards each attribute's next point. */
+export function calcOvrExact(player: Pick<Player, 'attributes' | 'position' | 'progress'>): number {
+  const weights = OVR_WEIGHTS[player.position];
+  return ATTR_KEYS.reduce((sum, key) => sum + (player.attributes[key] + (player.progress?.[key] ?? 0)) * weights[key], 0);
+}
+
 export function formatMoney(value: number): string {
   const sign = value < 0 ? '-' : '';
   return `${sign}₪${Math.abs(Math.round(value)).toLocaleString('he-IL')}`;
@@ -113,7 +119,7 @@ export function scaleFame(effects: Effects, player: Parameters<typeof fameFactor
 export function trainingProgress(player: Pick<Player, 'attributes' | 'potential' | 'age' | 'energy'>, key: AttrKey, base: number): number {
   const room = player.potential - player.attributes[key];
   const roomFactor = room <= 0 ? 0.05 : clamp(room / 30, 0.12, 1);
-  const ageFactor = player.age <= 21 ? 1.1 : player.age <= 24 ? 1 : player.age <= 28 ? 0.8 : player.age <= 31 ? 0.55 : 0.35;
+  const ageFactor = player.age <= 20 ? 1.25 : player.age <= 22 ? 1.1 : player.age <= 24 ? 1 : player.age <= 28 ? 0.8 : player.age <= 31 ? 0.55 : 0.35;
   const fatigue = player.energy < 40 ? 0.7 : 1;
   return base * roomFactor * ageFactor * fatigue * randFloat(0.8, 1.2);
 }

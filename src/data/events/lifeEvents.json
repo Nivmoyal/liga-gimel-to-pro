@@ -1207,7 +1207,7 @@
   {
     "id": "life_captain_offer",
     "type": "life",
-    "sport": "both",
+    "sport": "football",
     "trigger": "captain_offer",
     "scene": "coach_board",
     "speaker": "המאמן",
@@ -1218,6 +1218,50 @@
         "label": "מקבל בגאווה",
         "success": {
           "text": "המאמן מושיט לך את הסרט. מהיום אתה הקול של הקבוצה ב{משטח}.",
+          "effects": {
+            "setCaptain": true,
+            "confidence": 6,
+            "teamMorale": 5
+          }
+        }
+      },
+      {
+        "label": "מקבל, אבל רק אם החבר׳ה מסכימים",
+        "success": {
+          "text": "המאמן מעלה את זה מול כל הקבוצה. מחיאות כפיים מכל הכיוונים. אתה הקפטן.",
+          "effects": {
+            "setCaptain": true,
+            "teamMorale": 9,
+            "coachApproval": 2
+          }
+        }
+      },
+      {
+        "label": "עוד לא מוכן לזה",
+        "success": {
+          "text": "המאמן מכבד את ההחלטה. 'הדלת פתוחה. אולי בעונה הבאה.'",
+          "effects": {
+            "coachApproval": -3,
+            "confidence": -2
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "life_captain_offer_bb",
+    "type": "life",
+    "sport": "basketball",
+    "trigger": "captain_offer",
+    "scene": "coach_board",
+    "speaker": "המאמן",
+    "title": "קפטן הקבוצה",
+    "text": "המאמן מזמין אותך לשיחה אחרי האימון: 'החדר מקשיב לך, {שחקן}. אני רוצה שתהיה הקפטן של {קבוצה}.'",
+    "choices": [
+      {
+        "label": "מקבל בגאווה",
+        "success": {
+          "text": "המאמן לוחץ לך את היד מול כולם. מהיום אתה הקול של הקבוצה ב{משטח}.",
           "effects": {
             "setCaptain": true,
             "confidence": 6,

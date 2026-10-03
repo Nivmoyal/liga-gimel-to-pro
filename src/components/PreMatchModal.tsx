@@ -35,6 +35,16 @@ export function PreMatchModal({ state, dispatch }: Props) {
               {match.info.derby ? ' | דרבי!' : ''}
             </div>
           )}
+          {state.weekRecap && state.weekRecap.length > 0 && (
+            <details className="mt-2 rounded-lg border border-line bg-black/30 px-2.5 py-1.5 text-right text-[11px] text-muted">
+              <summary className="cursor-pointer font-bold text-ink">השבוע שלך ({state.weekRecap.length} פעולות)</summary>
+              <ul className="mt-1 space-y-0.5">
+                {state.weekRecap.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
+              </ul>
+            </details>
+          )}
           <div className="mt-2 text-brand">{event.speaker}</div>
         </>
       }

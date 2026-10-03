@@ -1,0 +1,325 @@
+[
+  {
+    "key": "bb_g_pnr_read", "sport": "basketball", "scene": "bb_pnr",
+    "conditions": { "positions": ["PG", "SG", "SF"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "hot_hand", "marked"],
+    "title": ["קריאת הפיק אנד רול", "הגבוה נסוג"],
+    "text": ["הגבוה של {קבוצה} מציב לך חסימה, והגבוה של {יריבה} נסוג לעומק הצבע. יש לך שתי שניות להחליט.", "פיק אנד רול בראש הקשת. השומר שלך נתקע בחסימה, והגבוה של {יריבה} מחכה מתחת לסל."],
+    "tip": ["הגבוה של {יריבה} לא יוצא לזריקות מחצי מרחק.", "הגבוה של {קבוצה} מתגלגל לסל מהר."],
+    "choices": [
+      { "label": "זריקה מעצירה מחצי מרחק", "stat": "attack", "difficulty": 54,
+        "success": { "text": ["עצרת, עלית וקלעת מחצי מרחק. הגבוה שלהם רק הסתכל.", "זריקה נקייה מהקו של ה-5 מטר. שתיים."], "effects": { "playerPoints": 2, "rating": 0.8 } },
+        "fail": { "text": ["הזריקה קצרה וקופצת מהטבעת.", "מיהרת, והכדור פגע בקרש וברח."], "effects": { "rating": -0.2 } } },
+      { "label": "מסירה מתחת לרגליים לגבוה", "stat": "playmaking", "difficulty": 56,
+        "success": { "text": ["מסירה קטנה בין הרגליים, והגבוה של {קבוצה} מטביע. אסיסט!", "חיכית שנייה, והמסירה הגיעה בדיוק לידיים של הגבוה."], "effects": { "playerAssists": 1, "teamScore": 2, "rating": 0.8 } },
+        "fail": { "text": ["השומר השני חטף את המסירה.", "המסירה חזקה מדי ויצאה."], "effects": { "rating": -0.3 } } },
+      { "label": "מוותר על החסימה וחודר", "stat": "technique", "difficulty": 58,
+        "success": { "text": ["השומר שלך ציפה לחסימה, ואתה חדרת לצד השני. לייאפ!", "הטעיה לחסימה ושינוי כיוון, שתיים קלות."], "effects": { "playerPoints": 2, "rating": 0.9, "fanRep": 1 } },
+        "fail": { "text": ["השומר לא התבלבל ועצר אותך.", "נכנסת לשלושה שחקנים ואיבדת."], "effects": { "rating": -0.3 } } }
+    ]
+  },
+  {
+    "key": "bb_g_iso", "sport": "basketball", "scene": "bb_drive",
+    "conditions": { "positions": ["PG", "SG", "SF"] },
+    "contexts": ["q2", "q3", "q4", "hall_loud", "derby", "hot_hand", "big_crowd", "captain"],
+    "title": ["אחד על אחד", "פינו לך את הצד"],
+    "text": ["המאמן מסמן: כולם לצד אחד. אתה מול השומר של {יריבה}, ושש שניות על שעון ההתקפה.", "החברים פינו את הצד, והשחקן האיטי של {יריבה} שומר עליך אחרי החלפה."],
+    "tip": ["השומר שלך נשען על רגל שמאל.", "הוא פוחד לקבל עבירה חמישית."],
+    "choices": [
+      { "label": "קרוס אובר וחדירה", "stat": "technique", "difficulty": 58,
+        "success": { "text": ["קרוס אובר אחד, והשומר על הרצפה. לייאפ קל.", "שינוי כיוון חד, ואתה כבר מתחת לסל. שתיים."], "effects": { "playerPoints": 2, "rating": 1, "fanRep": 2, "followers": 70 } },
+        "fail": { "text": ["הוא לא קנה את ההטעיה וחטף.", "הכדור ברח לך מהיד."], "effects": { "rating": -0.4 } } },
+      { "label": "סטפ בק לשלוש", "stat": "attack", "difficulty": 62,
+        "success": { "text": ["סטפ בק, שלשה, רשת! האולם מתפוצץ.", "יצרת מרחק ושחררת. שלוש נקודות יפות."], "effects": { "playerPoints": 3, "rating": 1.2, "fanRep": 2, "followers": 90 } },
+        "fail": { "text": ["הזריקה קצרה. ריבאונד ל{יריבה}.", "השומר נגע בכדור והוא נופל רחוק."], "effects": { "rating": -0.3 } } },
+      { "label": "חודר ומוסר החוצה", "stat": "playmaking", "difficulty": 52,
+        "success": { "text": ["משכת אליך שניים ומסרת לפינה. שלשה! אסיסט.", "חדירה ומסירה, ו{קבוצה} קולעת שלוש."], "effects": { "playerAssists": 1, "teamScore": 3, "rating": 0.8 } },
+        "fail": { "text": ["המסירה נחטפה בדרך.", "החבר החטיא את השלשה הפנויה."], "effects": { "rating": -0.1 } } }
+    ]
+  },
+  {
+    "key": "bb_g_catch_shoot", "sport": "basketball", "scene": "bb_three",
+    "conditions": { "positions": ["SG", "SF", "PG", "PF"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_cold", "derby", "hot_hand", "marked"],
+    "title": ["תופס וזורק", "הכדור מגיע לפינה"],
+    "text": ["חדירה של חבר, מסירה החוצה, ואתה בפינה עם הכדור. השומר של {יריבה} רץ אליך עם יד מורמת.", "הכדור עובר מהר מצד לצד, ומגיע אליך פנוי מאחורי הקשת. השומר בדרך."],
+    "tip": ["השומר של {יריבה} רץ עליך מהר מדי וחסר איזון.", "זריקה מהפינה היא הזריקה הקצרה ביותר לשלוש."],
+    "choices": [
+      { "label": "זורק מיד", "stat": "attack", "difficulty": 56,
+        "success": { "text": ["תפסת, שחררת, רשת. שלוש.", "בלי לחשוב פעמיים, שלשה נקייה."], "effects": { "playerPoints": 3, "rating": 1, "fanRep": 1 } },
+        "fail": { "text": ["הכדור פוגע בקדמת הטבעת.", "יד בפנים שלך, והזריקה החטיאה."], "effects": { "rating": -0.2 } } },
+      { "label": "הטעיית זריקה וחדירה", "stat": "technique", "difficulty": 54,
+        "success": { "text": ["הוא קפץ על ההטעיה, ואתה עברת לזריקה מחצי מרחק. שתיים.", "הטעיה, צעד, ולייאפ בקו הבסיס."], "effects": { "playerPoints": 2, "rating": 0.8 } },
+        "fail": { "text": ["הוא לא קפץ, ואתה נתקעת.", "צעדים. השופט שורק."], "effects": { "rating": -0.3 } } },
+      { "label": "מסירה נוספת לחבר פנוי יותר", "stat": "playmaking", "difficulty": 50,
+        "success": { "text": ["מסירה נוספת, והחבר פנוי לגמרי. שלוש! אסיסט.", "ויתרת על זריקה טובה בשביל זריקה מצוינת."], "effects": { "playerAssists": 1, "teamScore": 3, "rating": 0.7, "teamMorale": 2 } },
+        "fail": { "text": ["הכדור נחטף במסירה.", "השעון נגמר בלי זריקה."], "effects": { "rating": -0.2 } } }
+    ]
+  },
+  {
+    "key": "bb_g_on_ball", "sport": "basketball", "scene": "bb_block",
+    "conditions": { "positions": ["PG", "SG", "SF"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "tired_job", "captain"],
+    "title": ["שומר על הכוכב", "הגארד שלהם עם הכדור"],
+    "text": ["הגארד הכי טוב של {יריבה} מעלה את הכדור, ואתה צמוד אליו. הגבוה שלהם בא להציב לך חסימה.", "השחקן שקלע ל{קבוצה} כבר 14 נקודות מתחיל שוב לכדרר מולך."],
+    "tip": ["הגארד של {יריבה} זורק רק אחרי כדרור ימינה.", "המאמן של {קבוצה} רוצה שתעבור מעל החסימות."],
+    "choices": [
+      { "label": "לחץ צמוד על הכדרור", "stat": "defense", "difficulty": 56,
+        "success": { "text": ["לחצת עליו כל הדרך, והוא איבד את הכדור. חטיפה!", "שמירה צמודה, והוא נאלץ למסור."], "effects": { "rating": 0.9, "coachApproval": 3, "fanRep": 1 } },
+        "fail": { "text": ["הוא עבר אותך עם צעד ראשון ולייאפ.", "לחצת חזק מדי והוא נכנס לסל."], "effects": { "oppScore": 2, "rating": -0.4 } } },
+      { "label": "עובר מתחת לחסימה", "stat": "mental", "difficulty": 50,
+        "success": { "text": ["ויתרת על השלשה, והוא החטיא אותה.", "חכם. הוא זרק מרחוק והחטיא."], "effects": { "rating": 0.5 } },
+        "fail": { "text": ["נתת לו מקום, והוא קלע שלשה.", "בדיוק מה שהוא רצה. שלוש."], "effects": { "oppScore": 3, "rating": -0.4 } } },
+      { "label": "עומד לספוג עבירת תוקף", "stat": "physical", "difficulty": 58,
+        "success": { "text": ["עמדת חזק בדרך שלו ונפלת. עבירת תוקף!", "ספגת את המכה, והשופט שורק לטובתך."], "effects": { "rating": 0.9, "teamMorale": 3, "coachApproval": 3 } },
+        "fail": { "text": ["הרגליים לא היו מחוץ לחצי העיגול. סל ועבירה.", "השופט שורק עליך. שלוש נקודות להם."], "effects": { "oppScore": 3, "rating": -0.5 } } }
+    ]
+  },
+  {
+    "key": "bb_g_floater", "sport": "basketball", "scene": "bb_drive",
+    "conditions": { "positions": ["PG", "SG"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "hot_hand", "marked"],
+    "title": ["בין הגבוהים", "חדירה לצבע"],
+    "text": ["חדרת לצבע, ושני גבוהים של {יריבה} קופצים לקראתך. אתה באוויר.", "החדירה שלך מגיעה עד הצבע, והסנטר של {יריבה} מחכה שם עם ידיים מורמות."],
+    "tip": ["הסנטר של {יריבה} קופץ על כל הטעיה.", "הגבוה של {קבוצה} פנוי ליד הטבעת."],
+    "choices": [
+      { "label": "זריקה רכה מעל הידיים", "stat": "technique", "difficulty": 58,
+        "success": { "text": ["זריקה רכה וגבוהה, מעל הסנטר, ופנימה. שתיים.", "הכדור מתגלגל על הטבעת ונכנס."], "effects": { "playerPoints": 2, "rating": 0.9, "fanRep": 1 } },
+        "fail": { "text": ["הזריקה ארוכה מדי.", "הסנטר נגע בכדור באוויר."], "effects": { "rating": -0.3 } } },
+      { "label": "מסירה באוויר לגבוה", "stat": "playmaking", "difficulty": 56,
+        "success": { "text": ["הסנטר קפץ אליך ומסרת לגבוה שלך. הטבעה! אסיסט.", "מסירה מעל הראש, וסל קל."], "effects": { "playerAssists": 1, "teamScore": 2, "rating": 0.8 } },
+        "fail": { "text": ["המסירה נחטפה.", "הגבוה לא ציפה למסירה."], "effects": { "rating": -0.3 } } },
+      { "label": "מחפש מגע ועבירה", "stat": "physical", "difficulty": 54,
+        "success": { "text": ["נכנסת לגוף שלו והשופט שורק. שתי זריקות עונשין, ושתיהן בפנים.", "מגע, שריקה, ושתי נקודות מהקו."], "effects": { "playerPoints": 2, "rating": 0.6 } },
+        "fail": { "text": ["השופט לא שורק, והכדור נחסם.", "עבירת תוקף עליך."], "effects": { "rating": -0.4 } } }
+    ]
+  },
+  {
+    "key": "bb_g_steal", "sport": "basketball", "scene": "bb_fastbreak",
+    "conditions": { "positions": ["PG", "SG", "SF"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "tired_job", "captain"],
+    "title": ["נתיב המסירה", "הזדמנות לחטיפה"],
+    "text": ["ההתקפה של {יריבה} מעבירה את הכדור לאט מצד לצד. אתה רואה את המסירה הבאה לפני שהיא יוצאת.", "הגארד של {יריבה} מסתכל רק לכיוון אחד. אתה קרוב לנתיב המסירה."],
+    "tip": ["הגארד שלהם מוסר תמיד באותו כיוון.", "אם תפספס, השחקן שלך פנוי לשלוש."],
+    "choices": [
+      { "label": "קופץ לחטיפה", "stat": "defense", "difficulty": 58,
+        "success": { "text": ["חטיפה! ואתה לבד בדרך לסל. הטבעה במתפרצת.", "קראת את המסירה, וסיימת בלייאפ."], "effects": { "playerPoints": 2, "rating": 1.1, "fanRep": 2, "followers": 70 } },
+        "fail": { "text": ["פספסת, והשחקן שלך פנוי. שלשה.", "הוא ראה אותך בא ומסר מעליך."], "effects": { "oppScore": 3, "rating": -0.5 } } },
+      { "label": "נשאר בעמדה", "stat": "mental", "difficulty": 46,
+        "success": { "text": ["הגנה ממושמעת. השעון נגמר להם.", "שמרת על המבנה, והם זרקו זריקה קשה ומחטיאה."], "effects": { "rating": 0.4, "coachApproval": 2 } },
+        "fail": { "text": ["הם מצאו פתרון בכל זאת. שתיים.", "החבר שלך נתקע בחסימה, וסל."], "effects": { "oppScore": 2, "rating": -0.1 } } },
+      { "label": "מעמיד פנים שאתה רחוק", "stat": "technique", "difficulty": 56,
+        "success": { "text": ["נתת לו להרגיש בטוח, וחטפת. {קבוצה} רצה לסל.", "פיתיון מושלם. חטיפה."], "effects": { "teamScore": 2, "rating": 0.9 } },
+        "fail": { "text": ["הוא לא נפל בפח.", "השחקן שלך חתך מאחוריך לסל."], "effects": { "oppScore": 2, "rating": -0.3 } } }
+    ]
+  },
+  {
+    "key": "bb_b_seal", "sport": "basketball", "scene": "bb_post",
+    "conditions": { "positions": ["PF", "C"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "foul_trouble", "marked"],
+    "title": ["עמדה עמוקה בצבע", "השומר מאחוריך"],
+    "text": ["החזקת את השומר של {יריבה} מאחוריך, מטר מהסל, ומבקש את הכדור. הגארד מוסר.", "הכדור מגיע אליך בפוסט נמוך, והגבוה של {יריבה} נשען עליך בכל הכוח."],
+    "tip": ["הגבוה של {יריבה} כבד וקשה לו להסתובב.", "השומר השני מגיע לעזור מהצד החזק."],
+    "choices": [
+      { "label": "דרופ סטפ לסל", "stat": "physical", "difficulty": 56,
+        "success": { "text": ["צעד אחד אחורה סביבו, והטבעה בשתי ידיים!", "סיבוב חזק, והכדור בסל. שתיים."], "effects": { "playerPoints": 2, "rating": 1, "fanRep": 2 } },
+        "fail": { "text": ["הוא עמד חזק והכדור נחסם.", "עבירת תוקף. הסתובבת לתוכו."], "effects": { "rating": -0.4 } } },
+      { "label": "זריקת הוק", "stat": "technique", "difficulty": 56,
+        "success": { "text": ["הוק רך מעל היד שלו. שתיים.", "זריקה קלאסית של גבוה, רשת."], "effects": { "playerPoints": 2, "rating": 0.9 } },
+        "fail": { "text": ["ההוק ארוך מדי.", "הוא נגע בכדור."], "effects": { "rating": -0.2 } } },
+      { "label": "מוסר החוצה כשמגיע שומר שני", "stat": "playmaking", "difficulty": 52,
+        "success": { "text": ["שני שומרים עליך, ומסרת לחבר הפנוי. שלשה! אסיסט.", "קראת את העזרה, וסל של שלוש."], "effects": { "playerAssists": 1, "teamScore": 3, "rating": 0.7 } },
+        "fail": { "text": ["המסירה נחטפה בדרך החוצה.", "החבר החטיא."], "effects": { "rating": -0.1 } } }
+    ]
+  },
+  {
+    "key": "bb_b_rim_protect", "sport": "basketball", "scene": "bb_block",
+    "conditions": { "positions": ["PF", "C"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "foul_trouble", "captain"],
+    "title": ["שומר על הטבעת", "חדירה לעברך"],
+    "text": ["הגארד של {יריבה} עבר את השומר שלו ועף לסל. אתה האחרון מתחת לטבעת.", "חדירה מהירה של {יריבה}, ואתה צריך להחליט אם לעזוב את השחקן שלך."],
+    "tip": ["הגארד של {יריבה} מוסר לגבוה כשמגיעה עזרה.", "השופטים שורקים היום על כל מגע."],
+    "choices": [
+      { "label": "מרים ידיים ישר למעלה", "stat": "defense", "difficulty": 54,
+        "success": { "text": ["עמדת עם ידיים למעלה, והוא החטיא מול הגובה שלך.", "בלי עבירה, רק גובה. הזריקה נכשלת."], "effects": { "rating": 0.8, "coachApproval": 3 } },
+        "fail": { "text": ["הוא הסתובב סביבך וקלע.", "לייאפ מעל הכתף שלך."], "effects": { "oppScore": 2, "rating": -0.3 } } },
+      { "label": "קופץ לחסימה", "stat": "physical", "difficulty": 58,
+        "success": { "text": ["חסימה לתוך היציע! האולם עומד.", "תפסת את הכדור באוויר מול הקרש."], "effects": { "rating": 1.2, "fanRep": 3, "followers": 100 } },
+        "fail": { "text": ["עבירה, סל ועבירה.", "קפצת על ההטעיה, והוא מסר לגבוה שלו."], "effects": { "oppScore": 3, "rating": -0.5 } } },
+      { "label": "עומד לספוג עבירת תוקף", "stat": "mental", "difficulty": 56,
+        "success": { "text": ["עמדת במקום, ספגת את המכה. עבירת תוקף!", "השופט מסמן עבירת תוקף. ניצחון קטן."], "effects": { "rating": 0.9, "teamMorale": 3 } },
+        "fail": { "text": ["היית בתוך חצי העיגול. סל ועבירה.", "השופט שורק עליך."], "effects": { "oppScore": 3, "rating": -0.4 } } }
+    ]
+  },
+  {
+    "key": "bb_b_short_roll", "sport": "basketball", "scene": "bb_pnr",
+    "conditions": { "positions": ["PF", "C"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "hot_hand", "marked"],
+    "title": ["מקבל בקו העונשין", "ארבעה על שלושה"],
+    "text": ["{יריבה} שלחה שניים על הגארד שלך, והוא מוסר לך בקו העונשין. יש לכם ארבעה על שלושה.", "הצבת חסימה, התגלגלת, והכדור מגיע אליך באמצע הצבע עם הגנה מבולבלת."],
+    "tip": ["הפינה החלשה פנויה.", "השומר האחרון של {יריבה} לא יודע את מי לקחת."],
+    "choices": [
+      { "label": "זריקה מהקו", "stat": "attack", "difficulty": 54,
+        "success": { "text": ["עצרת וזרקת מקו העונשין. שתיים.", "זריקה פשוטה מחצי מרחק, רשת."], "effects": { "playerPoints": 2, "rating": 0.7 } },
+        "fail": { "text": ["הזריקה פוגעת בטבעת ויוצאת.", "מיהרת ופספסת."], "effects": { "rating": -0.2 } } },
+      { "label": "מסירה לפינה הפנויה", "stat": "playmaking", "difficulty": 54,
+        "success": { "text": ["גבוה שקורא את המשחק. מסירה לפינה, שלשה! אסיסט.", "מסירה חדה, וסל של שלוש."], "effects": { "playerAssists": 1, "teamScore": 3, "rating": 0.9 } },
+        "fail": { "text": ["המסירה לא מדויקת ויוצאת החוצה.", "השומר חתך."], "effects": { "rating": -0.3 } } },
+      { "label": "שני כדרורים להטבעה", "stat": "physical", "difficulty": 58,
+        "success": { "text": ["שני כדרורים והטבעה בשתי ידיים! הספסל קופץ.", "כוח טהור, הטבעה מעל השומר."], "effects": { "playerPoints": 2, "rating": 1.1, "fanRep": 3, "followers": 90 } },
+        "fail": { "text": ["הכדרור נחטף.", "עבירת תוקף בדרך לסל."], "effects": { "rating": -0.4 } } }
+    ]
+  },
+  {
+    "key": "bb_b_pick_pop", "sport": "basketball", "scene": "bb_three",
+    "conditions": { "positions": ["PF", "SF", "C"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_cold", "derby", "hot_hand", "marked"],
+    "title": ["חסימה ויציאה לשלוש", "הגבוה שלהם נשאר בצבע"],
+    "text": ["הצבת חסימה לגארד ויצאת אחורה לקשת. הגבוה של {יריבה} נשאר מתחת לסל.", "אחרי החסימה אתה פנוי מאחורי הקשת. הגבוה של {יריבה} מגיע לאט."],
+    "tip": ["הגבוה של {יריבה} לא יוצא לשמור על השלוש.", "אחרי יציאה מהירה עליך, נשאר לך מקום לחדור."],
+    "choices": [
+      { "label": "זורק שלוש", "stat": "attack", "difficulty": 58,
+        "success": { "text": ["גבוה שקולע מבחוץ. שלוש!", "שחררת בלי היסוס, רשת."], "effects": { "playerPoints": 3, "rating": 1.1, "fanRep": 2 } },
+        "fail": { "text": ["הזריקה ארוכה וקופצת רחוק.", "החטאה. ריבאונד להם."], "effects": { "rating": -0.2 } } },
+      { "label": "חודר מול השומר שרץ אליך", "stat": "technique", "difficulty": 56,
+        "success": { "text": ["הוא רץ אליך מהר, ואתה עברת אותו. לייאפ.", "הטעיה וחדירה, שתיים."], "effects": { "playerPoints": 2, "rating": 0.8 } },
+        "fail": { "text": ["הכדור נחטף בכדרור.", "נכנסת לעזרה ואיבדת."], "effects": { "rating": -0.3 } } },
+      { "label": "מעביר הלאה", "stat": "playmaking", "difficulty": 48,
+        "success": { "text": ["העברת את הכדור, וההגנה של {יריבה} מאחרת. סל קל.", "התנועה של הכדור שברה אותם."], "effects": { "playerAssists": 1, "teamScore": 2, "rating": 0.6 } },
+        "fail": { "text": ["המסירה נחטפה.", "השעון נגמר."], "effects": { "rating": -0.2 } } }
+    ]
+  },
+  {
+    "key": "bb_b_screen", "sport": "basketball", "scene": "bb_pnr",
+    "conditions": { "positions": ["PF", "C"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "foul_trouble", "captain"],
+    "title": ["חסימה לכוכב", "השופט מזהיר"],
+    "text": ["המאמן רוצה חסימה חזקה לגארד של {קבוצה}. השופט {שופט} כבר הזהיר אותך על חסימה בתנועה.", "אתה עולה להציב חסימה, והשומר של הגארד שלך מתכונן לעבור דרכה."],
+    "tip": ["השומר של {יריבה} עובר מעל חסימות.", "אם תחליק לסל לפני המגע, תהיה פנוי."],
+    "choices": [
+      { "label": "חסימה יציבה וחזקה", "stat": "physical", "difficulty": 52,
+        "success": { "text": ["חסימה כמו קיר. הגארד שלך פנוי לזריקה, ונכנסת. אסיסט מחסימה.", "השומר נתקע בך, וסל של {קבוצה}."], "effects": { "teamScore": 2, "rating": 0.6, "coachApproval": 3 } },
+        "fail": { "text": ["זזת ברגע המגע. חסימה בתנועה.", "השופט שורק לעבירת תוקף."], "effects": { "rating": -0.3 } } },
+      { "label": "מחליק לסל לפני המגע", "stat": "technique", "difficulty": 56,
+        "success": { "text": ["החלקת לסל, והמסירה הגיעה. הטבעה!", "ההגנה ציפתה לחסימה, ואתה כבר מתחת לסל."], "effects": { "playerPoints": 2, "rating": 0.9 } },
+        "fail": { "text": ["הגארד לא ראה אותך.", "המסירה אליך נחטפה."], "effects": { "rating": -0.2 } } },
+      { "label": "מסירה מיד ליד", "stat": "playmaking", "difficulty": 50,
+        "success": { "text": ["מסירה מיד ליד והגארד נכנס לסל.", "החלפה חלקה, שתיים."], "effects": { "playerAssists": 1, "teamScore": 2, "rating": 0.6 } },
+        "fail": { "text": ["הכדור נפל בדרך.", "השומר חטף באמצע."], "effects": { "rating": -0.3 } } }
+    ]
+  },
+  {
+    "key": "bb_b_outlet", "sport": "basketball", "scene": "bb_rebound",
+    "conditions": { "positions": ["PF", "C", "SF"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "tired_job", "hot_hand"],
+    "title": ["ריבאונד ויציאה מהירה", "מתפרצת מתחילה בך"],
+    "text": ["לקחת ריבאונד הגנה, והגארד של {קבוצה} כבר רץ קדימה לבד.", "הכדור בידיים שלך אחרי החטאה של {יריבה}, וכל השחקנים שלהם עדיין בצבע."],
+    "tip": ["הגארד של {קבוצה} כבר בחצי של {יריבה}.", "מסירה ארוכה מעל כולם היא סיכון."],
+    "choices": [
+      { "label": "מסירה ארוכה מעל כולם", "stat": "playmaking", "difficulty": 56,
+        "success": { "text": ["מסירה של כל המגרש, והגארד מסיים בלייאפ. אסיסט.", "מהריבאונד לסל בשלוש שניות."], "effects": { "playerRebounds": 1, "playerAssists": 1, "teamScore": 2, "rating": 0.9 } },
+        "fail": { "text": ["המסירה ארוכה מדי ויוצאת.", "חטיפה באמצע המגרש."], "effects": { "playerRebounds": 1, "rating": -0.2 } } },
+      { "label": "מכדרר קדימה בעצמך", "stat": "physical", "difficulty": 58,
+        "success": { "text": ["גבוה שמכדרר את כל המגרש וסוגר בהטבעה! האולם צועק.", "רצת עם הכדור לבד, וסל."], "effects": { "playerRebounds": 1, "playerPoints": 2, "rating": 1.1, "fanRep": 2 } },
+        "fail": { "text": ["הכדור נחטף ממך באמצע המגרש.", "צעדים."], "effects": { "playerRebounds": 1, "rating": -0.3 } } },
+      { "label": "מסירה קצרה לגארד", "stat": "mental", "difficulty": 44,
+        "success": { "text": ["מסירה קצרה ובטוחה, והגארד מוביל את ההתקפה.", "בלי סיכונים."], "effects": { "playerRebounds": 1, "rating": 0.4 } },
+        "fail": { "text": ["הגארד לא היה מוכן.", "חטיפה ליד הצבע."], "effects": { "playerRebounds": 1, "rating": -0.2 } } }
+    ]
+  },
+  {
+    "key": "bb_a_trap", "sport": "basketball", "scene": "bb_timeout",
+    "conditions": { "positions": ["PG", "SG", "SF", "PF", "C"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "tired_job", "marked"],
+    "title": ["מלכודת בקו הצד", "שניים עליך ליד הקו"],
+    "text": ["כדררת ליד קו הצד, ושני שחקנים של {יריבה} סוגרים עליך. הקו מאחוריך.", "{יריבה} לוכדת אותך בפינה של המגרש. השעון רץ."],
+    "tip": ["כשיש שניים עליך, יש חבר פנוי באמצע.", "אפשר לבקש פסק זמן."],
+    "choices": [
+      { "label": "מסירה מעל המלכודת", "stat": "playmaking", "difficulty": 56,
+        "success": { "text": ["מסירה מעל הראשים לחבר באמצע, ומשם סל קל. אסיסט.", "יצאת מהמלכודת במסירה אחת."], "effects": { "playerAssists": 1, "teamScore": 2, "rating": 0.8 } },
+        "fail": { "text": ["המסירה נחטפה, ומתפרצת להם.", "הכדור נגע בקו."], "effects": { "oppScore": 2, "rating": -0.4 } } },
+      { "label": "מבקש פסק זמן", "stat": "mental", "difficulty": 44,
+        "success": { "text": ["סימנת פסק זמן ברגע הנכון. המאמן מצייר מהלך.", "פסק זמן חכם. ההתקפה נשמרת."], "effects": { "rating": 0.3, "coachApproval": 2 } },
+        "fail": { "text": ["לא נשארו פסקי זמן. איבוד.", "השופט לא ראה, והכדור נחטף."], "effects": { "rating": -0.3 } } },
+      { "label": "חודר בין השניים", "stat": "technique", "difficulty": 60,
+        "success": { "text": ["עברת בין שני השומרים ורצת לסל. לייאפ!", "כדרור בין הרגליים, ואתה בחוץ. שתיים."], "effects": { "playerPoints": 2, "rating": 1, "fanRep": 2 } },
+        "fail": { "text": ["נתקעת ביניהם, כדור ביניים.", "הכדור נחטף."], "effects": { "rating": -0.4 } } }
+    ]
+  },
+  {
+    "key": "bb_a_backdoor", "sport": "basketball", "scene": "bb_drive",
+    "conditions": { "positions": ["PG", "SG", "SF", "PF"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_cold", "derby", "hot_hand", "marked"],
+    "title": ["שומר שנצמד", "חיתוך מאחורי הגב"],
+    "text": ["השומר של {יריבה} נצמד אליך כדי שלא תקבל כדור. מאחוריו כל הדרך לסל פנויה.", "{יריבה} משחקת הגנה אגרסיבית, והשומר שלך עומד בינך לבין הכדור."],
+    "tip": ["השומר שלך מסתכל רק על הכדור.", "הגארד של {קבוצה} יודע למסור מעל הראש."],
+    "choices": [
+      { "label": "חיתוך פתאומי לסל", "stat": "physical", "difficulty": 54,
+        "success": { "text": ["חתכת מאחורי הגב שלו, המסירה הגיעה, לייאפ.", "ריצה חדה לסל ושתיים קלות."], "effects": { "playerPoints": 2, "rating": 0.9 } },
+        "fail": { "text": ["המסירה לא הגיעה בזמן.", "השומר הסתובב איתך."], "effects": { "rating": -0.2 } } },
+      { "label": "יוצא החוצה לקבל", "stat": "technique", "difficulty": 50,
+        "success": { "text": ["יצאת החוצה, קיבלת והתחלת מהלך.", "קיבלת את הכדור בשקט, וההתקפה ממשיכה."], "effects": { "rating": 0.4 } },
+        "fail": { "text": ["השומר חטף את המסירה אליך.", "נדחפת החוצה."], "effects": { "rating": -0.3 } } },
+      { "label": "חוסם לחבר במקום", "stat": "playmaking", "difficulty": 50,
+        "success": { "text": ["חסמת את השומר של החבר, והוא נכנס לסל פנוי.", "עבודה בלי כדור, וסל של {קבוצה}."], "effects": { "teamScore": 2, "rating": 0.5, "teamMorale": 2 } },
+        "fail": { "text": ["החסימה לא עבדה.", "השופט שורק על חסימה בתנועה."], "effects": { "rating": -0.2 } } }
+    ]
+  },
+  {
+    "key": "bb_a_charge", "sport": "basketball", "scene": "referee_basketball",
+    "conditions": { "positions": ["PG", "SG", "SF", "PF", "C"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "foul_trouble", "captain"],
+    "title": ["שחקן כבד בדרך", "עבירת תוקף או חסימה?"],
+    "text": ["הפורוורד הכבד של {יריבה} חודר במהירות לכיוון שלך. יש לך שנייה להחליט אם לעמוד מולו.", "מתפרצת של {יריבה}, והשחקן עם הכדור רץ עליך בלי להסתכל."],
+    "tip": ["השופט {שופט} שורק לטובת המגינים היום.", "הוא לא מוסר כשהוא רץ."],
+    "choices": [
+      { "label": "עומד במקום ונופל", "stat": "mental", "difficulty": 54,
+        "success": { "text": ["ספגת את המכה והשופט שורק עבירת תוקף. הספסל קם.", "עבירת תוקף! כדור ל{קבוצה}."], "effects": { "rating": 0.9, "teamMorale": 3, "coachApproval": 3 } },
+        "fail": { "text": ["השופט שורק עליך. סל ועבירה.", "זזת ברגע האחרון. עבירה שלך."], "effects": { "oppScore": 3, "rating": -0.5 } } },
+      { "label": "קופץ לחסימה", "stat": "physical", "difficulty": 58,
+        "success": { "text": ["חסימה נקייה מאחור!", "תפסת את הכדור באוויר."], "effects": { "rating": 1, "fanRep": 2 } },
+        "fail": { "text": ["עבירה, ושתי זריקות עונשין להם.", "הוא מסר בדיוק כשקפצת."], "effects": { "oppScore": 2, "rating": -0.3 } } },
+      { "label": "מלווה אותו ומפריע לזריקה", "stat": "defense", "difficulty": 52,
+        "success": { "text": ["רצת לידו ופגעת לו בזריקה. החטאה.", "הוא זרק לחוץ, והכדור לא נכנס."], "effects": { "rating": 0.6 } },
+        "fail": { "text": ["הוא היה מהיר מדי. לייאפ.", "סל קל."], "effects": { "oppScore": 2, "rating": -0.2 } } }
+    ]
+  },
+  {
+    "key": "bb_a_trash_talk", "sport": "basketball", "scene": "referee_basketball",
+    "conditions": { "positions": ["PG", "SG", "SF", "PF", "C"] },
+    "contexts": ["q2", "q3", "q4", "hall_loud", "derby", "hot_hand", "marked"],
+    "title": ["דיבורים על המגרש", "הוא לא מפסיק לדבר"],
+    "text": ["השומר של {יריבה} לוחש לך משהו אחרי כל מהלך. עכשיו הוא צוחק עליך מול הספסל שלכם.", "השחקן של {יריבה} דוחף אותך בלי כדור ומדבר. השופט לא רואה."],
+    "tip": ["השופט {שופט} נותן עבירה טכנית מהר.", "הוא מנסה להוציא אותך מהמשחק."],
+    "choices": [
+      { "label": "עונה עם סל", "stat": "attack", "difficulty": 58,
+        "success": { "text": ["שלשה בפנים שלו, ואתה רק מסמן לו 'שקט'.", "קלעת מעליו. הוא הפסיק לדבר."], "effects": { "playerPoints": 3, "rating": 1.1, "fanRep": 3, "followers": 100 } },
+        "fail": { "text": ["רצית יותר מדי, והזריקה החטיאה.", "החטאה, והוא צוחק עוד יותר."], "effects": { "rating": -0.3, "confidence": -2 } } },
+      { "label": "מתעלם ומשחק", "stat": "mental", "difficulty": 50,
+        "success": { "text": ["לא הגבת בכלל. אחרי כמה דקות הוא הפסיק.", "קור רוח. המאמן מרוצה."], "effects": { "rating": 0.4, "coachApproval": 2, "confidence": 2 } },
+        "fail": { "text": ["זה הצליח להוציא אותך מריכוז.", "שתי החטאות ברצף."], "effects": { "rating": -0.3 } } },
+      { "label": "עונה לו בחזרה", "stat": "mental", "difficulty": 58,
+        "success": { "text": ["תשובה חדה, והספסל שלכם צוחק. הוא נעלב.", "השופט לא שמע, והוא מאבד את הראש. עבירה טכנית עליו."], "effects": { "rating": 0.5, "teamMorale": 3 } },
+        "fail": { "text": ["עבירה טכנית עליך. זריקת עונשין להם.", "השופט {שופט} שומע רק אותך. טכנית."], "effects": { "oppScore": 1, "rating": -0.6, "coachApproval": -3 } } }
+    ]
+  },
+  {
+    "key": "bb_a_jump_ball", "sport": "basketball", "scene": "referee_basketball",
+    "conditions": { "positions": ["PG", "SG", "SF", "PF", "C"] },
+    "contexts": ["q1", "q2", "q3", "q4", "hall_loud", "derby", "captain"],
+    "title": ["כדור ביניים", "ארבע ידיים על הכדור"],
+    "text": ["אתה ושחקן של {יריבה} תופסים את הכדור יחד. השופט שורק לכדור ביניים.", "מאבק על כדור חופשי על הרצפה, ושניכם לא משחררים. כדור ביניים."],
+    "tip": ["השחקן של {יריבה} שוכח לחסום אחרי קפיצה.", "מי שמגיע ראשון לכדור החוזר מנצח."],
+    "choices": [
+      { "label": "קופץ חזק לכדור", "stat": "physical", "difficulty": 54,
+        "success": { "text": ["ניצחת בקפיצה והקשת לחבר. {קבוצה} תוקפת.", "קפיצה גבוהה, כדור שלכם."], "effects": { "rating": 0.5 } },
+        "fail": { "text": ["הוא קפץ גבוה יותר.", "הכדור הלך להם."], "effects": { "rating": -0.1 } } },
+      { "label": "מקיש לצד לחבר", "stat": "technique", "difficulty": 52,
+        "success": { "text": ["הקשה מדויקת לחבר, ומשם סל.", "שליטה מושלמת בקפיצה, וסל ל{קבוצה}."], "effects": { "teamScore": 2, "rating": 0.6 } },
+        "fail": { "text": ["ההקשה הלכה ליריב.", "הכדור יצא החוצה."], "effects": { "rating": -0.1 } } },
+      { "label": "מסדר את החברים לפני השריקה", "stat": "mental", "difficulty": 48,
+        "success": { "text": ["סידרת את כולם, והכדור נפל לחבר שעמד בדיוק במקום.", "תכנון של שנייה, כדור שלכם."], "effects": { "rating": 0.4, "teamMorale": 2 } },
+        "fail": { "text": ["הם הבינו את התוכנית.", "אף אחד לא עמד במקום הנכון."], "effects": { "rating": -0.1 } } }
+    ]
+  }
+]

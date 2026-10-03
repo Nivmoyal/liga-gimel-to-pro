@@ -47,14 +47,18 @@ import { LIFESTYLE_OPTIONS, SOCIAL_POSTS, TRAINING_OPTIONS } from '../data/activ
 import type { LifestyleId, SocialPostId, TrainingId } from '../data/activities';
 import {
   buildContext,
+  STORY_IDS,
+  getAllEvents,
   getEventById,
   getTriggeredEvent,
+  isEligible,
   parseEvent,
   pickTriggeredEvent,
   pickEvent,
   pickInGameEvents,
   resolveChoice,
 } from '../services/eventEngine';
+import type { FilterExtras, Standing } from '../services/eventEngine';
 import {
   applyResult,
   createLeague,
@@ -101,7 +105,8 @@ const MATCH_AUDIENCE: Record<SportType, number[]> = {
   football: [5, 12, 35, 90, 240],
   basketball: [6, 15, 60, 200],
 };
-const SEEN_MEMORY = 40;
+/** Event ids remembered so whole pools of situations are used before any comes back. */
+const SEEN_MEMORY = 500;
 
 // ------------------------------------------------------------------
 // Helpers
@@ -130,6 +135,25 @@ function addNews(state: GameState, items: Array<NewsItem | null | undefined>): G
 
 function newsNow(state: GameState, category: NewsItem['category'], text: string): NewsItem {
   return makeNews(category, text, state.season, state.matchday);
+}
+
+/** Where the player's club stands in the table (promotion places, relegation places or between). */
+function standingOf(state: GameState): Standing | undefined {
+  if (state.matchday < 3) return undefined;
+  const position = playerClubPosition(state.league);
+  if (position <= 2) return 'top';
+  if (position >= state.league.teams.length - 1) return 'bottom';
+  return 'mid';
+}
+
+/** Table and opponent facts the situations can depend on. */
+function matchExtras(state: GameState, opponent: string | undefined): FilterExtras {
+  const { player } = state;
+  return {
+    matchday: state.matchday,
+    standing: standingOf(state),
+    formerClub: Boolean(opponent && opponent !== player.club && player.history.some((h) => h.club === opponent)),
+  };
 }
 
 function markSeen(state: GameState, id: string): GameState {
@@ -755,7 +779,7 @@ export function startMatchday(state: GameState): GameState {
 
   // Injured players watch from the stands: straight to the live match.
   if (role === 'injured') return continuePreMatch({ ...next, phase: 'preMatch' });
-  const pre = pickEvent('preMatch', next.player, next.seenEvents, { matchday: next.matchday, weather: match.info?.weather, derby: match.info?.derby }, next.flags.usedOnce);
+  const pre = pickEvent('preMatch', next.player, next.seenEvents, { ...matchExtras(next, opponent.name), weather: match.info?.weather, derby: match.info?.derby }, next.flags.usedOnce);
   if (!pre) return continuePreMatch({ ...next, phase: 'preMatch' });
   next = { ...next, phase: 'preMatch', currentMatch: { ...match, preEventId: pre.id } };
   return next;
@@ -858,7 +882,7 @@ export function advanceLive(state: GameState): GameState {
       if (prepared) next = prepared;
       else {
         // Too lopsided for a last-second decider: swap in a regular moment.
-        const swap = pickInGameEvents(state.player, [...state.seenEvents, ...match.inGameEventIds], 1, { noClutch: true })[0];
+        const swap = pickInGameEvents(state.player, [...match.inGameEventIds, ...state.seenEvents], 1, { noClutch: true })[0];
         if (swap) next = { ...next, clutch: false, inGameEventIds: next.inGameEventIds.map((id, i) => (i === match.inGameIndex ? swap.id : id)) };
       }
     }
@@ -1011,7 +1035,7 @@ export function continueSummary(state: GameState): GameState {
     return { ...state, phase: 'postMatch', currentMatch: { ...match, postEventId: post.id, pendingOutcome: null } };
   }
   if (match.role === 'injured') return endMatchday(state);
-  const post = pickEvent('postMatch', state.player, state.seenEvents, { matchResult: match.result.outcome, matchday: state.matchday }, state.flags.usedOnce);
+  const post = pickEvent('postMatch', state.player, state.seenEvents, { ...matchExtras(state, match.opponent), matchResult: match.result.outcome }, state.flags.usedOnce);
   if (!post) return endMatchday(state);
   return { ...state, phase: 'postMatch', currentMatch: { ...match, postEventId: post.id, pendingOutcome: null } };
 }
@@ -1155,6 +1179,33 @@ export function captainOfferReady(state: GameState): boolean {
   );
 }
 
+/** Matchdays after which this season's storyline tells its next chapter. */
+const STORY_CHAPTERS = [2, 6, 10];
+
+/**
+ * Every season tells its own storyline (a new coach, a rival for your place, a
+ * club without money...) in three chapters spread over the season. Storylines
+ * are not repeated until all the ones that fit the player were told.
+ */
+function storyChapter(state: GameState): { flags: GameFlags; eventId: string | null } {
+  const { player } = state;
+  let flags = state.flags;
+  if (!flags.story || flags.story.season !== state.season) {
+    const fits = (id: string) => getAllEvents().some((e) => e.trigger === `story_${id}_1` && isEligible(e, player));
+    const used = flags.storiesUsed ?? [];
+    const fresh = STORY_IDS.filter((id) => !used.includes(id) && fits(id));
+    const options = fresh.length > 0 ? fresh : STORY_IDS.filter(fits);
+    if (options.length === 0) return { flags, eventId: null };
+    const id = options[Math.floor(Math.random() * options.length)];
+    flags = { ...flags, story: { id, season: state.season, chapter: 0 }, storiesUsed: fresh.length > 0 ? [...used, id] : [id] };
+  }
+  const story = flags.story!;
+  if (story.chapter >= STORY_CHAPTERS.length || state.matchday < STORY_CHAPTERS[story.chapter]) return { flags, eventId: null };
+  // A chapter that no longer fits (e.g. the player left the day job) is skipped.
+  const event = pickTriggeredEvent(`story_${story.id}_${story.chapter + 1}`, player, state.seenEvents);
+  return { flags: { ...flags, story: { ...story, chapter: story.chapter + 1 } }, eventId: event?.id ?? null };
+}
+
 function queueLifeEvent(state: GameState): GameState {
   const { player, flags } = state;
   if (!player.agentId && !flags.agentDiscovered && agentUnlockReady(player)) {
@@ -1173,12 +1224,15 @@ function queueLifeEvent(state: GameState): GameState {
       flags: { ...flags, eliteAgentOffered: true },
     };
   }
+  const story = storyChapter(state);
+  if (story.eventId) return { ...state, flags: story.flags, pendingLifeEventId: story.eventId, lifeOutcome: null };
+  state = { ...state, flags: story.flags };
   if (captainOfferReady(state)) {
     return {
       ...state,
       pendingLifeEventId: pickTriggeredEvent('captain_offer', player, state.seenEvents)?.id ?? null,
       lifeOutcome: null,
-      flags: { ...flags, captainOfferSeason: state.season },
+      flags: { ...state.flags, captainOfferSeason: state.season },
     };
   }
   if (Math.random() < 0.65) {

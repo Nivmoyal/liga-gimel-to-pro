@@ -7,7 +7,7 @@
       { "label": "אני בכושר של החיים שלי", "success": { "text": ["ציטוט שרץ ברשתות.", "ביטחון שיש לו מחיר בחדר."], "effects": { "followers": 120, "fanRep": 2, "teamMorale": -3, "confidence": 3 } } },
       { "label": "מודה לאוהדים", "success": { "text": ["האוהדים משתפים את הקטע.", "חיבור לקהל."], "effects": { "fanRep": 5, "followers": 60 } } }
     ] },
-  { "key": "pq_title_race", "sport": "both", "scene": "press", "conditions": { "matchResult": ["win"], "minMatchday": 5 },
+  { "key": "pq_title_race", "sport": "both", "scene": "press", "conditions": { "matchResult": ["win"], "minMatchday": 5, "standing": ["top"] },
     "title": ["המאבק בצמרת", "לאן {קבוצה} הולכת?"],
     "text": ["'{קבוצה} בתנופה. אפשר לדבר על עלייה ליגה?'", "'עוד ניצחון. מה המטרה של {קבוצה} העונה?'"],
     "choices": [
@@ -47,7 +47,7 @@
       { "label": "מתעצבן על השאלה", "success": { "text": ["הקטע רץ ברשת. לא מחמיא.", "תגובה רגשית."], "effects": { "fanRep": -4, "followers": 120 } } },
       { "label": "מבטיח תגובה בשבוע הבא", "success": { "text": ["עכשיו צריך לקיים.", "הבטחה פומבית."], "effects": { "confidence": 3, "fanRep": 1 } } }
     ] },
-  { "key": "pq_relegation", "sport": "both", "scene": "press", "conditions": { "matchResult": ["loss"], "minMatchday": 5 },
+  { "key": "pq_relegation", "sport": "both", "scene": "press", "conditions": { "matchResult": ["loss"], "minMatchday": 5, "standing": ["bottom"] },
     "title": ["מתחת לקו", "ריח של ירידה"],
     "text": ["'{קבוצה} מסתבכת. אתם מפחדים מירידה?'", "'עוד הפסד. המצב בטבלה מדאיג?'"],
     "choices": [

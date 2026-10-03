@@ -1,0 +1,351 @@
+[
+  { "id": "story_new_coach_1", "type": "life", "sport": "both", "trigger": "story_new_coach_1", "scene": "coach_board", "speaker": "המאמן החדש",
+    "title": "מאמן חדש", "text": "ההנהלה של {קבוצה} החליפה את המאמן. המאמן החדש מגיע לאימון הראשון, מסתכל על הרשימה ולא יודע אפילו איך קוראים לך.",
+    "choices": [
+      { "label": "ניגש להציג את עצמך אחרי האימון", "success": { "text": "לחיצת יד, שתי דקות של שיחה. הוא רושם משהו במחברת.", "effects": { "coachApproval": 4 } } },
+      { "label": "שותק ונותן למגרש לדבר", "stat": "mental", "difficulty": 50,
+        "success": { "text": "אימון חזק בלי מילים מיותרות. בסוף האימון הוא כבר יודע את השם שלך.", "effects": { "coachApproval": 3, "confidence": 3 } },
+        "fail": { "text": "התאמצת יותר מדי להרשים, ועשית טעויות של מתחילים.", "effects": { "coachApproval": -2, "confidence": -2 } } },
+      { "label": "מתקשר להגיד תודה למאמן הקודם", "success": { "text": "המאמן הקודם מתרגש: 'אל תשכח מאיפה באת.' החברים שומעים ומעריכים.", "effects": { "teamMorale": 3, "confidence": 2 } } }
+    ] },
+  { "id": "story_new_coach_2", "type": "life", "sport": "both", "trigger": "story_new_coach_2", "scene": "field", "speaker": "המאמן החדש",
+    "title": "המבחן של המאמן", "text": "המאמן החדש עוצר את האימון ומעמיד אותך מול השחקן הכי חזק בקבוצה. 'אני רוצה לראות מה יש לך, {שחקן}.'",
+    "choices": [
+      { "label": "נותן הכול", "stat": "physical", "difficulty": 54,
+        "success": { "text": "ניצחת בדו קרב מול כולם. המאמן מהנהן בפעם הראשונה.", "effects": { "coachApproval": 6, "confidence": 4, "energy": -8 } },
+        "fail": { "text": "השחקן השני היה חזק יותר היום. המאמן לא אומר כלום, וזה הכי גרוע.", "effects": { "coachApproval": -2, "confidence": -3, "energy": -8 } } },
+      { "label": "משחק חכם ולא בכוח", "stat": "mental", "difficulty": 52,
+        "success": { "text": "לא הלכת לכוח, הלכת לראש. המאמן אוהב שחקנים שחושבים.", "effects": { "coachApproval": 5, "attributes": { "mental": 1 } } },
+        "fail": { "text": "התחכמת יותר מדי, והמאמן צועק: 'פה רצים!'", "effects": { "coachApproval": -3 } } },
+      { "label": "שואל אותו מה הוא מחפש", "success": { "text": "הוא מופתע מהשאלה ומסביר בדיוק מה הוא רוצה ממך. עכשיו יש לך כיוון.", "effects": { "coachApproval": 3, "attributes": { "mental": 1 } } } }
+    ] },
+  { "id": "story_new_coach_3", "type": "life", "sport": "both", "trigger": "story_new_coach_3", "scene": "office", "speaker": "המאמן החדש",
+    "title": "השיחה במשרד", "text": "המאמן קורא לך למשרד אחרי האימון: 'כמה חודשים אני פה, ואני כבר יודע מי אתה. בוא נדבר על התפקיד שלך בהמשך.'",
+    "choices": [
+      { "label": "מבקש תפקיד גדול יותר", "stat": "mental", "difficulty": 54,
+        "success": { "text": "'הרווחת את זה,' הוא אומר. מהשבוע הבא הקבוצה בנויה גם סביבך.", "effects": { "coachApproval": 4, "confidence": 5 } },
+        "fail": { "text": "'עוד לא,' הוא עונה. 'תראה לי עוד קצת.'", "effects": { "coachApproval": -2, "confidence": -2 } } },
+      { "label": "מבטיח להמשיך לעבוד", "success": { "text": "המאמן לוחץ לך את היד. 'בדיוק מה שרציתי לשמוע.'", "effects": { "coachApproval": 3, "teamMorale": 2 } } },
+      { "label": "מבקש ממנו ביקורת כנה", "success": { "text": "עשר דקות של אמת, בלי לייפות. אתה יוצא עם רשימה של מה לשפר.", "effects": { "attributes": { "mental": 1, "technique": 1 } } } }
+    ] },
+
+  { "id": "story_rival_teammate_1", "type": "life", "sport": "both", "trigger": "story_rival_teammate_1", "scene": "locker", "speaker": "חדר ההלבשה",
+    "title": "מתחרה בעמדה שלך", "text": "{קבוצה} החתימה שחקן חדש, בדיוק בעמדה שלך. הוא נכנס לחדר ההלבשה, זורק את התיק ושואל בקול: 'מי פה משחק בעמדה שלי?'",
+    "choices": [
+      { "label": "מקבל אותו יפה", "success": { "text": "הראית לו איפה הכול ועזרת לו להתמקם. החדר מעריך.", "effects": { "teamMorale": 4 } } },
+      { "label": "עונה 'אני' עם חיוך", "stat": "mental", "difficulty": 52,
+        "success": { "text": "כולם צוחקים, גם הוא. הכללים ברורים.", "effects": { "confidence": 4, "teamMorale": 1 } },
+        "fail": { "text": "החיוך לא עבד. נשארה מתיחות באוויר.", "effects": { "teamMorale": -2, "confidence": -1 } } },
+      { "label": "לא אומר כלום ומתאמן עוד יותר", "success": { "text": "באותו ערב נשארת עוד שעה באימון. המסר יגיע.", "effects": { "attributes": { "physical": 1 }, "energy": -8 } } }
+    ] },
+  { "id": "story_rival_teammate_2", "type": "life", "sport": "both", "trigger": "story_rival_teammate_2", "scene": "field", "speaker": "המאמן",
+    "title": "אחד מול השני", "text": "המאמן מעמיד אותך ואת השחקן החדש אחד מול השני בתרגיל. כל הקבוצה עוצרת להסתכל, והוא כבר מחייך.",
+    "choices": [
+      { "label": "מנצח אותו בתרגיל", "stat": "technique", "difficulty": 56,
+        "success": { "text": "ניצחת בתרגיל, ולא בפעם אחת. המאמן מסמן משהו ליד השם שלך.", "effects": { "coachApproval": 5, "confidence": 4 } },
+        "fail": { "text": "הוא היה טוב יותר היום. אתה מרגיש את המבט של המאמן.", "effects": { "confidence": -4 } } },
+      { "label": "משחק קשה אבל הוגן", "success": { "text": "תחרות נקייה. המאמן אומר לשניכם 'ככה אני רוצה את זה'.", "effects": { "coachApproval": 2, "teamMorale": 2 } } },
+      { "label": "נכנס בו חזק", "stat": "physical", "difficulty": 50,
+        "success": { "text": "הראית לו מי פה הבעלים. הוא הבין.", "effects": { "coachApproval": 2, "confidence": 3 } },
+        "fail": { "text": "המאמן עוצר את האימון וצועק על שניכם. האווירה נפגעה.", "effects": { "coachApproval": -4, "teamMorale": -3 } } }
+    ] },
+  { "id": "story_rival_teammate_3", "type": "life", "sport": "both", "trigger": "story_rival_teammate_3", "scene": "locker", "speaker": "השחקן החדש",
+    "title": "כבוד הדדי", "text": "השחקן החדש ניגש אליך אחרי אימון: 'אתה יודע, באתי לקחת לך את המקום. בסוף למדתי ממך הרבה.'",
+    "choices": [
+      { "label": "מזמין אותו להתאמן איתך בקיץ", "success": { "text": "שותף אימונים חדש. שניכם תהיו טובים יותר בעונה הבאה.", "effects": { "teamMorale": 4, "attributes": { "mental": 1 } } } },
+      { "label": "לוחץ לו את היד", "success": { "text": "לחיצת יד פשוטה, ושניכם יודעים מה היא אומרת.", "effects": { "teamMorale": 3 } } },
+      { "label": "'המקום שלי לא זז'", "success": { "text": "הוא צוחק. 'נראה בעונה הבאה.' התחרות ממשיכה.", "effects": { "confidence": 4, "teamMorale": -1 } } }
+    ] },
+
+  { "id": "story_money_trouble_1", "type": "life", "sport": "both", "trigger": "story_money_trouble_1", "scene": "office", "speaker": "יו״ר הקבוצה", "conditions": { "maxLevel": 2 },
+    "title": "אין כסף למשכורות", "text": "היו״ר של {קבוצה} מכנס את כל השחקנים בחדר ההלבשה: 'החודש אין כסף למשכורות. אני מבקש מכם סבלנות.'",
+    "choices": [
+      { "label": "מקבל ותומך בהנהלה", "success": { "text": "היו״ר מודה לך מול כולם. החודש יהיה צפוף בבית.", "effects": { "teamMorale": 4, "budget": -200 } } },
+      { "label": "דורש לקבל את הכסף", "stat": "mental", "difficulty": 54,
+        "success": { "text": "דיברת בשקט אבל בתקיפות, והיו״ר מוצא לך חלק מהסכום.", "effects": { "budget": 300 } },
+        "fail": { "text": "הוויכוח עלה לטונים גבוהים. היו״ר זוכר את זה.", "effects": { "coachApproval": -3, "teamMorale": -3 } } },
+      { "label": "מארגן מבצע התרמה עם האוהדים", "success": { "text": "דוכן ליד המגרש, חולצות חתומות, והקופה מתמלאת קצת. האוהדים לא שוכחים.", "effects": { "fanRep": 4, "energy": -8 } } }
+    ] },
+  { "id": "story_money_trouble_2", "type": "life", "sport": "both", "trigger": "story_money_trouble_2", "scene": "locker", "speaker": "חדר ההלבשה",
+    "title": "איום בשביתה", "text": "המשכורות עדיין לא הגיעו. חלק מהשחקנים רוצים לא לעלות לאימון עד שישלמו, וכולם מסתכלים עליך.",
+    "choices": [
+      { "label": "מצטרף לשביתה", "success": { "text": "אימון אחד שלא התקיים, וטלפון בהול מהיו״ר. הכסף בדרך.", "effects": { "teamMorale": 3, "coachApproval": -5, "budget": 200 } } },
+      { "label": "משכנע את כולם להמשיך להתאמן", "stat": "mental", "difficulty": 56,
+        "success": { "text": "'אנחנו משחקים בשביל העיר, לא בשביל ההנהלה.' כולם עולים למגרש.", "effects": { "coachApproval": 5, "teamMorale": 2 } },
+        "fail": { "text": "השחקנים לא השתכנעו, וחצי מהם הלכו הביתה.", "effects": { "teamMorale": -5 } } },
+      { "label": "נשאר בצד", "success": { "text": "לא נקטת עמדה. אף אחד לא כועס, אבל אף אחד לא שוכח.", "effects": { "confidence": -1 } } }
+    ] },
+  { "id": "story_money_trouble_3", "type": "life", "sport": "both", "trigger": "story_money_trouble_3", "scene": "office", "speaker": "איש העסקים",
+    "title": "המושיע המקומי", "text": "איש עסקים מהעיר נכנס כשותף ב{קבוצה} ומשלם את כל החובות. הוא מבקש להכיר את השחקנים אחד אחד.",
+    "choices": [
+      { "label": "מודה לו באופן אישי", "success": { "text": "הוא זוכר את השם שלך. המשכורות החסרות מגיעות כבר מחר.", "effects": { "budget": 400, "confidence": 2 } } },
+      { "label": "שואל על התוכניות שלו", "success": { "text": "הוא מספר על מגרש אימונים חדש ועל חלום לעלות ליגה. אתה יוצא עם אמונה.", "effects": { "budget": 300, "teamMorale": 3 } } },
+      { "label": "מבקש חסות אישית", "stat": "mental", "difficulty": 56,
+        "success": { "text": "הוא מחייך: 'אני אוהב שחקנים עם תעוזה.' מהחודש הבא יש לך חסות קטנה מהעסק שלו.", "effects": { "budget": 800 } },
+        "fail": { "text": "'קודם תביא תוצאות,' הוא עונה, והולך לשחקן הבא.", "effects": { "budget": 200, "confidence": -2 } } }
+    ] },
+
+  { "id": "story_injured_friend_1", "type": "life", "sport": "both", "trigger": "story_injured_friend_1", "scene": "medical", "speaker": "הרופא של הקבוצה",
+    "title": "החבר נפצע", "text": "החבר הכי טוב שלך בקבוצה נפצע קשה באימון. הרופא יוצא מהחדר ואומר בשקט: 'כל העונה בחוץ.'",
+    "choices": [
+      { "label": "נוסע איתו לבית החולים", "success": { "text": "ישבת איתו עד הלילה. הוא לא ישכח.", "effects": { "teamMorale": 4, "energy": -6 } } },
+      { "label": "מבטיח להקדיש לו את המשחק הבא", "success": { "text": "הוא מחייך בפעם הראשונה מאז הפציעה. עכשיו יש לך בשביל מי לשחק.", "effects": { "confidence": 3, "teamMorale": 2 } } },
+      { "label": "עוזר למשפחה שלו בכסף", "success": { "text": "המשפחה שלו מודה לך בדמעות. החדר מגלה מה זה חבר.", "effects": { "budget": -300, "fanRep": 2, "teamMorale": 4 } } }
+    ] },
+  { "id": "story_injured_friend_2", "type": "life", "sport": "both", "trigger": "story_injured_friend_2", "scene": "phone", "speaker": "החבר הפצוע",
+    "title": "שיחה באמצע הלילה", "text": "החבר הפצוע מתקשר בשתיים בלילה. השיקום קשה לו, והוא מדבר על להפסיק לשחק בכלל.",
+    "choices": [
+      { "label": "נוסע אליו לדבר", "stat": "mental", "difficulty": 50,
+        "success": { "text": "דיברתם עד הבוקר. הוא חוזר לפיזיותרפיה מחר.", "effects": { "teamMorale": 5, "energy": -8 } },
+        "fail": { "text": "לא מצאת את המילים. הוא סגר את השיחה מוקדם.", "effects": { "confidence": -2, "energy": -5 } } },
+      { "label": "מביא אותו למשחק הבא", "success": { "text": "הוא יושב על הספסל עם הקביים, והאוהדים שרים את השם שלו.", "effects": { "teamMorale": 4, "fanRep": 2 } } },
+      { "label": "מחבר אותו לפיזיותרפיסט טוב", "success": { "text": "שילמת על כמה טיפולים, והוא מרגיש שינוי כבר בשבוע הראשון.", "effects": { "budget": -150, "teamMorale": 3 } } }
+    ] },
+  { "id": "story_injured_friend_3", "type": "life", "sport": "both", "trigger": "story_injured_friend_3", "scene": "field", "speaker": "חדר ההלבשה",
+    "title": "החזרה", "text": "החבר חוזר לאימון הראשון אחרי חודשים. כל הקבוצה עומדת במעגל ומוחאת לו כפיים, והוא מסתכל עליך.",
+    "choices": [
+      { "label": "מחבק אותו מול כולם", "success": { "text": "חיבוק ארוך, וכמה שחקנים מנגבים את העיניים.", "effects": { "teamMorale": 6 } } },
+      { "label": "מוסר לו את הכדור הראשון", "success": { "text": "המסירה הראשונה שלו אחרי הפציעה. הוא מחזיר לך אותה ומחייך.", "effects": { "teamMorale": 4, "fanRep": 1 } } },
+      { "label": "מעלה תמונה של שניכם", "success": { "text": "התמונה מגיעה לאלפי אנשים. הסיפור של שניכם נוגע בלב.", "effects": { "followers": 150, "teamMorale": 2 } } }
+    ] },
+
+  { "id": "story_young_fan_1", "type": "life", "sport": "both", "trigger": "story_young_fan_1", "scene": "fans", "speaker": "אוהד קטן",
+    "title": "האוהד הקטן", "text": "ילד בן עשר מחכה לך אחרי כל משחק עם שלט שהוא הכין בעצמו. היום יש לו גבס על היד, והוא מבקש שתחתום עליו.",
+    "choices": [
+      { "label": "חותם ומדבר איתו", "success": { "text": "חתמת וציירת לו כדור קטן. הוא רץ להראות לאבא שלו.", "effects": { "fanRep": 3 } } },
+      { "label": "נותן לו את החולצה שלך", "success": { "text": "הוא לובש אותה עד הברכיים ולא מוכן להוריד.", "effects": { "fanRep": 4, "budget": -80 } } },
+      { "label": "מזמין אותו לאימון", "success": { "text": "בשבוע הבא הוא בא לאימון, וכל הקבוצה מחבקת אותו.", "effects": { "fanRep": 3, "teamMorale": 2 } } }
+    ] },
+  { "id": "story_young_fan_2", "type": "life", "sport": "both", "trigger": "story_young_fan_2", "scene": "phone", "speaker": "אמא של האוהד הקטן",
+    "title": "הודעה מאמא שלו", "text": "אמא של הילד שולחת לך הודעה: הוא עבר ניתוח, והדבר היחיד שהוא מדבר עליו זה המשחק הבא שלך.",
+    "choices": [
+      { "label": "שולח לו סרטון", "success": { "text": "הוא צופה בסרטון עשרים פעמים. אמא שלו כותבת לך תודה.", "effects": { "fanRep": 3, "followers": 60 } } },
+      { "label": "מבקר אותו בבית החולים", "success": { "text": "הבאת לו כדור חתום מכל הקבוצה. האחיות לא מאמינות.", "effects": { "fanRep": 5, "confidence": 3, "energy": -8 } } },
+      { "label": "מקדיש לו את המשחק בפומבי", "success": { "text": "כל העיר שומעת על הילד. הוא צופה במשחק מהמיטה.", "effects": { "followers": 120, "fanRep": 3 } } }
+    ] },
+  { "id": "story_young_fan_3", "type": "life", "sport": "both", "trigger": "story_young_fan_3", "scene": "stadium", "speaker": "היציע",
+    "title": "השלט בשורה הראשונה", "text": "הילד חזר ליציע, בשורה הראשונה, עם שלט ענק: 'תודה שהיית שם בשבילי'. כל המצלמות פונות אליו.",
+    "choices": [
+      { "label": "רץ אליו אחרי החימום", "success": { "text": "הרמת אותו מעל הגדר. התמונה מופיעה בכל אתר ספורט.", "effects": { "fanRep": 5, "followers": 100 } } },
+      { "label": "מנופף ומחייך", "success": { "text": "הוא קופץ מאושר. רגע קטן, גדול בשבילו.", "effects": { "fanRep": 2 } } },
+      { "label": "מזמין אותו לעלות עם הקבוצה בעונה הבאה", "success": { "text": "ההנהלה מאשרת. יש לו מקום קבוע ביום פתיחת העונה.", "effects": { "fanRep": 4, "teamMorale": 2 } } }
+    ] },
+
+  { "id": "story_hometown_court_1", "type": "life", "sport": "both", "trigger": "story_hometown_court_1", "scene": "street", "speaker": "חבר מהשכונה",
+    "title": "המגרש בשכונה", "text": "חבר מהשכונה מתקשר: העירייה רוצה לסגור את המגרש שבו התחלת לשחק בתור ילד, ולבנות שם חניון.",
+    "choices": [
+      { "label": "מעלה פוסט מחאה", "success": { "text": "הפוסט מקבל אלפי שיתופים. העירייה מתחילה לקבל טלפונים.", "effects": { "followers": 120, "fanRep": 2 } } },
+      { "label": "מתקשר ללשכת ראש העיר", "stat": "mental", "difficulty": 54,
+        "success": { "text": "קבעו לך פגישה. לשחקן של {קבוצה} יש קול בעיר.", "effects": { "fanRep": 3, "confidence": 2 } },
+        "fail": { "text": "העבירו אותך מפקיד לפקיד, ואף אחד לא חזר אליך.", "effects": { "confidence": -2 } } },
+      { "label": "מארגן משחק עם הילדים במגרש", "success": { "text": "חמישים ילדים במגרש, והעיתון המקומי מצלם.", "effects": { "fanRep": 4, "energy": -8 } } }
+    ] },
+  { "id": "story_hometown_court_2", "type": "life", "sport": "both", "trigger": "story_hometown_court_2", "scene": "street", "speaker": "תושבי השכונה",
+    "title": "העצרת", "text": "מאות תושבים מגיעים לעצרת ליד המגרש. מישהו מושיט לך מיקרופון: 'תגיד משהו, {שחקן}.'",
+    "choices": [
+      { "label": "נואם מהלב", "stat": "mental", "difficulty": 52,
+        "success": { "text": "סיפרת על הילד שהיית במגרש הזה. אנשים בוכים, והסרטון מתפשט.", "effects": { "fanRep": 5, "followers": 200 } },
+        "fail": { "text": "התרגשת מדי והמילים לא יצאו. עדיין, אנשים מחאו כפיים.", "effects": { "confidence": -3, "fanRep": 1 } } },
+      { "label": "עומד עם הילדים בלי לנאום", "success": { "text": "התמונה שלך מוקף בילדים אומרת יותר ממילים.", "effects": { "fanRep": 3 } } },
+      { "label": "מביא את החברים מהקבוצה", "success": { "text": "חצי מ{קבוצה} מגיעה. הקבוצה והשכונה ביחד.", "effects": { "teamMorale": 4, "fanRep": 3 } } }
+    ] },
+  { "id": "story_hometown_court_3", "type": "life", "sport": "both", "trigger": "story_hometown_court_3", "scene": "street", "speaker": "לשכת ראש העיר",
+    "title": "המגרש נשאר", "text": "העירייה מודיעה: המגרש לא נסגר, ומשפצים אותו. הם רוצים לקרוא לו על שמך.",
+    "choices": [
+      { "label": "מסכים בגאווה", "success": { "text": "שלט עם השם שלך בכניסה למגרש. ילדים יגדלו ליד השם הזה.", "effects": { "fanRep": 5, "followers": 150 } } },
+      { "label": "מבקש לקרוא לו על שם המאמן הראשון שלך", "success": { "text": "המאמן הזקן מגיע לטקס ולא מצליח לדבר מהתרגשות.", "effects": { "fanRep": 4, "confidence": 3 } } },
+      { "label": "חונך אותו עם הילדים", "success": { "text": "גזרת סרט עם הילדים ושיחקת איתם עד החושך.", "effects": { "fanRep": 4, "energy": -5 } } }
+    ] },
+
+  { "id": "story_trash_talk_1", "type": "life", "sport": "both", "trigger": "story_trash_talk_1", "scene": "phone", "speaker": "הרשתות",
+    "title": "מי זה בכלל?", "text": "שחקן בקבוצה יריבה בליגה אמר בראיון: '{שחקן}? לא שמעתי עליו. אצלנו הוא היה יושב על הספסל.' כל החברים שולחים לך את הקטע.",
+    "choices": [
+      { "label": "עונה לו ברשתות", "success": { "text": "תגובה חדה, ואלפי לייקים. המאמן פחות מרוצה מהבלגן.", "effects": { "followers": 150, "confidence": 2, "coachApproval": -1 } } },
+      { "label": "מתעלם", "stat": "mental", "difficulty": 48,
+        "success": { "text": "לא נתת לו את מה שהוא רצה. שקט.", "effects": { "confidence": 3 } },
+        "fail": { "text": "אמרת שתתעלם, אבל זה לא יוצא לך מהראש.", "effects": { "confidence": -3 } } },
+      { "label": "שומר את זה למגרש", "success": { "text": "שמרת את הקטע בטלפון. כל אימון אתה מסתכל עליו.", "effects": { "confidence": 4 } } }
+    ] },
+  { "id": "story_trash_talk_2", "type": "life", "sport": "both", "trigger": "story_trash_talk_2", "scene": "phone", "speaker": "הרשתות",
+    "title": "הוא ממשיך", "text": "היריב מעלה סרטון שבו הוא מחקה את החגיגה שלך. הסרטון רץ בכל קבוצות האוהדים.",
+    "choices": [
+      { "label": "מעלה סרטון תשובה מצחיק", "stat": "mental", "difficulty": 52,
+        "success": { "text": "הסרטון שלך מצחיק את כל הליגה. אפילו האוהדים שלו צוחקים.", "effects": { "followers": 250, "fanRep": 2 } },
+        "fail": { "text": "התשובה יצאה עצבנית. הוא ניצח בסיבוב הזה.", "effects": { "followers": 50, "confidence": -3 } } },
+      { "label": "מתקשר אליו בפרטי", "success": { "text": "שיחה קצרה וקרירה. לפחות הוא יודע שאתה לא מפחד.", "effects": { "confidence": 2 } } },
+      { "label": "מבקש מהקבוצה לטפל", "success": { "text": "דובר הקבוצה מוציא תגובה רשמית. המאמן מעריך שלא נגררת.", "effects": { "coachApproval": 2 } } }
+    ] },
+  { "id": "story_trash_talk_3", "type": "life", "sport": "both", "trigger": "story_trash_talk_3", "scene": "phone", "speaker": "היריב",
+    "title": "השלמה", "text": "אחרי שבועות של מילים, היריב מתקשר: 'אחי, הגזמתי. בוא נעשה סרטון ביחד ונסגור את זה.'",
+    "choices": [
+      { "label": "מסכים לסרטון משותף", "success": { "text": "הסרטון של שניכם הופך ללהיט. סוף טוב לכולם.", "effects": { "followers": 300, "fanRep": 2 } } },
+      { "label": "מקבל את ההתנצלות בשקט", "success": { "text": "לא צריך מצלמות. מספיק שהוא אמר את זה.", "effects": { "confidence": 3 } } },
+      { "label": "מסרב", "success": { "text": "'נדבר על המגרש,' אמרת, וסגרת. האוהדים שלך אוהבים את זה.", "effects": { "confidence": 2, "fanRep": 1 } } }
+    ] },
+
+  { "id": "story_family_shop_1", "type": "life", "sport": "both", "trigger": "story_family_shop_1", "scene": "home", "speaker": "אמא",
+    "title": "החנות של ההורים", "text": "אמא מספרת לך בשקט שהחנות הקטנה של ההורים בבעיה. אין לקוחות, ואבא לא מוכן לדבר על זה.",
+    "choices": [
+      { "label": "עוזר בחנות בימים הפנויים", "success": { "text": "אתה עומד מאחורי הדלפק, ולקוחות מזהים אותך.", "effects": { "energy": -10, "fanRep": 2 } } },
+      { "label": "נותן מהחסכונות", "success": { "text": "הכסף עוזר לעבור את החודש. אבא לא יודע שזה ממך.", "effects": { "budget": -500, "confidence": 2 } } },
+      { "label": "מפרסם את החנות ברשתות", "success": { "text": "תמונה שלך מול החנות, וכמה אוהדים כבר שואלים איפה זה.", "effects": { "followers": 40, "fanRep": 2 } } }
+    ] },
+  { "id": "story_family_shop_2", "type": "life", "sport": "both", "trigger": "story_family_shop_2", "scene": "shop", "speaker": "אמא",
+    "title": "תור בכניסה", "text": "האוהדים של {קבוצה} שמעו על החנות ומתחילים להגיע. בשבת בבוקר יש תור בחוץ.",
+    "choices": [
+      { "label": "בא לחתום לאוהדים בחנות", "success": { "text": "שעתיים של חתימות ותמונות. הקופה מלאה.", "effects": { "fanRep": 4, "energy": -8 } } },
+      { "label": "מודה לאוהדים ברשת", "success": { "text": "התודה שלך מקבלת אלפי לבבות.", "effects": { "followers": 100, "fanRep": 2 } } },
+      { "label": "מציע הנחה לאוהדים", "success": { "text": "הנחה למי שבא עם חולצה של {קבוצה}. היציע של החנות מתמלא.", "effects": { "fanRep": 3, "budget": -100 } } }
+    ] },
+  { "id": "story_family_shop_3", "type": "life", "sport": "both", "trigger": "story_family_shop_3", "scene": "home", "speaker": "אבא",
+    "title": "אבא מדבר", "text": "אבא מחכה לך בסלון: 'החנות חזרה לעמוד על הרגליים, בגללך. אני גאה בך, ולא בגלל ה{ספורט}.'",
+    "choices": [
+      { "label": "מחבק אותו", "success": { "text": "חיבוק שחיכה הרבה שנים.", "effects": { "confidence": 5 } } },
+      { "label": "אומר שזה בזכות כל המשפחה", "success": { "text": "אמא מנגבת דמעה במטבח.", "effects": { "confidence": 3, "teamMorale": 1 } } },
+      { "label": "מבטיח להמשיך לעזור", "success": { "text": "אבא צוחק: 'רק אל תשכח שיש לך משחק בשבת.'", "effects": { "confidence": 3, "fanRep": 1 } } }
+    ] },
+
+  { "id": "story_documentary_1", "type": "life", "sport": "both", "trigger": "story_documentary_1", "scene": "phone", "speaker": "סטודנטית לקולנוע",
+    "title": "סרט עליך", "text": "סטודנטית לקולנוע רוצה לצלם סרט תיעודי על שחקן שחולם לעלות ליגות. היא ראתה אותך משחק ובחרה בך.",
+    "choices": [
+      { "label": "מסכים בשמחה", "success": { "text": "מהשבוע הבא יש מצלמה ביציע בכל משחק.", "effects": { "followers": 100 } } },
+      { "label": "מסכים, בלי מצלמות בחדר ההלבשה", "success": { "text": "המאמן מעריך שחשבת על הקבוצה.", "effects": { "followers": 50, "coachApproval": 2 } } },
+      { "label": "מסכים, אם יצלמו גם את העבודה", "success": { "text": "הסרט יראה גם את המשמרות ואת הנסיעות. זה הסיפור האמיתי.", "effects": { "followers": 70, "confidence": 2 } } }
+    ] },
+  { "id": "story_documentary_2", "type": "life", "sport": "both", "trigger": "story_documentary_2", "scene": "home", "speaker": "סטודנטית לקולנוע",
+    "title": "המצלמה בבית", "text": "הצלמת מגיעה לצלם אותך בבית עם המשפחה. אמא מכינה אוכל לכל הצוות, ואבא לובש חולצה מכופתרת.",
+    "choices": [
+      { "label": "מספר בכנות על הקשיים", "success": { "text": "דיברת על הכסף, על העייפות ועל החלום. הצלמת שותקת דקה ארוכה.", "effects": { "followers": 150, "confidence": 2 } } },
+      { "label": "מראה רק את הצדדים הטובים", "success": { "text": "צילומים יפים, סיפור קצת פחות אמיתי.", "effects": { "followers": 60 } } },
+      { "label": "נותן למשפחה לדבר", "success": { "text": "אמא מספרת על הילד שבעט בכדור בסלון. כולם צוחקים ובוכים.", "effects": { "fanRep": 3 } } }
+    ] },
+  { "id": "story_documentary_3", "type": "life", "sport": "both", "trigger": "story_documentary_3", "scene": "party", "speaker": "סטודנטית לקולנוע",
+    "title": "ההקרנה", "text": "הסרט מוקרן בפסטיבל סטודנטים. כשהאורות נדלקים, כל האולם עומד ומוחא כפיים, ומישהו מבקש שתעלה לבמה.",
+    "choices": [
+      { "label": "עולה ומדבר", "stat": "mental", "difficulty": 50,
+        "success": { "text": "דיברת שתי דקות, והאולם מחא כפיים שוב. הקטע עולה לרשת.", "effects": { "followers": 300, "fanRep": 3 } },
+        "fail": { "text": "גמגמת קצת, אבל אנשים אהבו את הכנות.", "effects": { "followers": 100, "confidence": -2 } } },
+      { "label": "מביא את החברים מהקבוצה", "success": { "text": "כל {קבוצה} בשורה אחת באולם. רגע של קבוצה.", "effects": { "teamMorale": 4, "followers": 150 } } },
+      { "label": "משתף את הסרט ברשתות", "success": { "text": "הסרט מגיע לעשרות אלפי צפיות.", "effects": { "followers": 250 } } }
+    ] },
+
+  { "id": "story_new_owner_1", "type": "life", "sport": "both", "trigger": "story_new_owner_1", "scene": "office", "speaker": "הבעלים החדש", "conditions": { "minLevel": 2 },
+    "title": "בעלים חדש", "text": "{קבוצה} נמכרה לאיש עסקים עם תוכניות גדולות. במסיבת עיתונאים הוא מבטיח: 'תוך שנתיים אנחנו בליגה הבכירה.'",
+    "choices": [
+      { "label": "מברך אותו", "success": { "text": "הבעלים זוכר מי בירך אותו ראשון.", "effects": { "coachApproval": 2, "confidence": 1 } } },
+      { "label": "מביע ספק בראיון", "success": { "text": "הציטוט שלך עושה כותרות. הבעלים פחות מרוצה.", "effects": { "followers": 80, "coachApproval": -2 } } },
+      { "label": "מבקש פגישה אישית", "stat": "mental", "difficulty": 52,
+        "success": { "text": "הוא מקבל אותך במשרד ושואל מה אתה צריך כדי להצליח. אתה יוצא עם בונוס.", "effects": { "confidence": 3, "budget": 200 } },
+        "fail": { "text": "המזכירה אומרת שהוא עסוק. אולי בפעם אחרת.", "effects": { "confidence": -1 } } }
+    ] },
+  { "id": "story_new_owner_2", "type": "life", "sport": "both", "trigger": "story_new_owner_2", "scene": "locker", "speaker": "חדר ההלבשה",
+    "title": "החתמות גדולות", "text": "הבעלים החדש מביא שלושה שחקנים מוכרים בבת אחת. פתאום כל מקום בהרכב של {קבוצה} בתחרות.",
+    "choices": [
+      { "label": "מקבל את האתגר", "success": { "text": "אימון כפול כל השבוע. אף אחד לא ייקח לך את המקום בלי קרב.", "effects": { "attributes": { "physical": 1 }, "energy": -8 } } },
+      { "label": "מדבר עם המאמן על המקום שלך", "success": { "text": "המאמן מבטיח שהשמות לא ישחקו, רק הביצועים.", "effects": { "coachApproval": 2, "confidence": 2 } } },
+      { "label": "מקבל אותם יפה", "success": { "text": "הכוכבים החדשים מעריכים את היחס. החדר מתחבר מהר.", "effects": { "teamMorale": 4 } } }
+    ] },
+  { "id": "story_new_owner_3", "type": "life", "sport": "both", "trigger": "story_new_owner_3", "scene": "office", "speaker": "הבעלים החדש",
+    "title": "הפנים של הקבוצה", "text": "הבעלים קורא לך למשרד: 'אתה חלק מהתוכנית שלי. אני רוצה שתהיה הפנים של {קבוצה} בקמפיין של העונה הבאה.'",
+    "choices": [
+      { "label": "מסכים", "success": { "text": "שלטי חוצות עם הפנים שלך בכל העיר.", "effects": { "followers": 200, "fanRep": 3, "budget": 300 } } },
+      { "label": "מבקש העלאה במקום", "stat": "mental", "difficulty": 56,
+        "success": { "text": "הוא צוחק ומסכים. 'אני אוהב משא ומתן.'", "effects": { "budget": 700 } },
+        "fail": { "text": "'קודם הקמפיין, אחר כך הכסף,' הוא אומר.", "effects": { "coachApproval": -2 } } },
+      { "label": "מעדיף להתרכז במשחק", "success": { "text": "הבעלים מכבד. 'זה בדיוק מה שאני רוצה מהשחקנים שלי.'", "effects": { "confidence": 3, "coachApproval": 2 } } }
+    ] },
+
+  { "id": "story_veteran_1", "type": "life", "sport": "both", "trigger": "story_veteran_1", "scene": "locker", "speaker": "השחקן הוותיק",
+    "title": "העונה האחרונה שלו", "text": "השחקן הוותיק של {קבוצה}, בעונה האחרונה שלו, מזמין אותך לקפה: 'אני רואה בך משהו. אם תרצה, אלמד אותך כל מה שלמדתי.'",
+    "choices": [
+      { "label": "מקבל בשמחה", "success": { "text": "שעה של סיפורים ועצות. אתה יוצא עם מחברת מלאה.", "effects": { "attributes": { "mental": 1 } } } },
+      { "label": "שואל איך שומרים על הגוף", "success": { "text": "הוא מראה לך שגרת מתיחות שהוא עושה עשרים שנה.", "effects": { "attributes": { "physical": 1 }, "energy": 5 } } },
+      { "label": "שואל על הטעויות שלו", "success": { "text": "הוא מספר על כל ההזדמנויות שהפסיד. אתה לא תחזור עליהן.", "effects": { "confidence": 3, "attributes": { "mental": 1 } } } }
+    ] },
+  { "id": "story_veteran_2", "type": "life", "sport": "both", "trigger": "story_veteran_2", "scene": "field", "speaker": "השחקן הוותיק",
+    "title": "שיעור פרטי", "text": "הוותיק נשאר איתך שעה אחרי האימון ומראה לך תנועה אחת שהוא עשה כל הקריירה. 'עכשיו אתה, מאה פעמים.'",
+    "choices": [
+      { "label": "חוזר על זה עד שזה מושלם", "success": { "text": "מאה פעמים, ועוד עשרים. בפעם האחרונה הוא מוחא כפיים.", "effects": { "attributes": { "technique": 1 }, "energy": -10 } } },
+      { "label": "מצלם כדי לזכור", "success": { "text": "הסרטון שלכם מגיע לרשת, ואנשים אוהבים את הקשר ביניכם.", "effects": { "followers": 60, "attributes": { "technique": 1 } } } },
+      { "label": "מביא עוד צעירים מהקבוצה", "success": { "text": "חמישה צעירים במעגל סביב הוותיק. החדר מתחבר.", "effects": { "teamMorale": 4 } } }
+    ] },
+  { "id": "story_veteran_3", "type": "life", "sport": "both", "trigger": "story_veteran_3", "scene": "locker", "speaker": "השחקן הוותיק",
+    "title": "משחק הפרידה", "text": "אחרי משחק הפרידה שלו, הוותיק מוריד את הנעליים ונותן לך אותן: 'עכשיו אתה ממשיך.'",
+    "choices": [
+      { "label": "נואם לכבודו בחדר ההלבשה", "success": { "text": "דיברת מהלב, וכל החדר עמד לכבודו.", "effects": { "teamMorale": 5 } } },
+      { "label": "מבטיח להמשיך את הדרך שלו", "success": { "text": "הוא מחבק אותך. 'אני יודע.'", "effects": { "confidence": 5 } } },
+      { "label": "תולה את הנעליים בחדר ההלבשה", "success": { "text": "הנעליים שלו תלויות מעל הלוקר שלך. כל משחק אתה נוגע בהן.", "effects": { "teamMorale": 3, "fanRep": 2 } } }
+    ] },
+
+  { "id": "story_youth_course_1", "type": "life", "sport": "both", "trigger": "story_youth_course_1", "scene": "phone", "speaker": "ההתאחדות",
+    "title": "קורס מאמנים", "text": "נפתח קורס מאמני ילדים בערבים, ומציעים לך מקום בחינם. בתמורה תאמן קבוצת ילדים פעם בשבוע.",
+    "choices": [
+      { "label": "נרשם", "success": { "text": "שיעור ראשון על איך ילדים לומדים. אתה מגלה שגם אתה לומד.", "effects": { "attributes": { "mental": 1 }, "energy": -5 } } },
+      { "label": "נרשם עם חבר מהקבוצה", "success": { "text": "שניכם בשורה האחרונה, רושמים הכול וצוחקים.", "effects": { "teamMorale": 2, "attributes": { "mental": 1 } } } },
+      { "label": "נרשם, אבל רק לחצי מהשיעורים", "success": { "text": "המרצה מבין. ה{ספורט} קודם.", "effects": { "confidence": 1 } } }
+    ] },
+  { "id": "story_youth_course_2", "type": "life", "sport": "both", "trigger": "story_youth_course_2", "scene": "street", "speaker": "הילדים",
+    "title": "הקבוצה של הילדים", "text": "בקורס נותנים לך קבוצת ילדים בני תשע לאמן. כולם רצים אחרי הכדור יחד, ואחד בוכה כי לא מסרו לו.",
+    "choices": [
+      { "label": "מלמד בסבלנות", "stat": "mental", "difficulty": 50,
+        "success": { "text": "אחרי שעה הם כבר מוסרים אחד לשני. אתה מבין משהו על המשחק שלך.", "effects": { "fanRep": 3, "attributes": { "mental": 1 } } },
+        "fail": { "text": "יצאת מהאימון עם כאב ראש. זה קשה יותר ממה שחשבת.", "effects": { "confidence": -2, "energy": -5 } } },
+      { "label": "משחק איתם במקום להסביר", "success": { "text": "חצי שעה של משחק, והם לא רוצים ללכת הביתה.", "effects": { "fanRep": 3, "energy": -5 } } },
+      { "label": "מגייס את ההורים לעזור", "success": { "text": "שני אבות ואמא אחת מצטרפים. יש צוות.", "effects": { "fanRep": 2, "confidence": 2 } } }
+    ] },
+  { "id": "story_youth_course_3", "type": "life", "sport": "both", "trigger": "story_youth_course_3", "scene": "street", "speaker": "הילדים",
+    "title": "הטורניר הראשון", "text": "הקבוצה של הילדים משחקת בטורניר הראשון שלה. הם מפסידים בכל המשחקים, אבל יוצאים מהמגרש מאושרים.",
+    "choices": [
+      { "label": "נואם להם על כבוד", "success": { "text": "הם מקשיבים בעיניים גדולות. אחד אומר שהוא רוצה להיות כמוך.", "effects": { "fanRep": 4 } } },
+      { "label": "לוקח את כולם לפיצה", "success": { "text": "עשרים ילדים ושש פיצות. הם ידברו על זה כל השנה.", "effects": { "fanRep": 5, "budget": -150 } } },
+      { "label": "מחלק לכל אחד מדליה", "success": { "text": "ההורים מצלמים, והתמונות מגיעות לכל העיר.", "effects": { "fanRep": 4, "followers": 80, "budget": -100 } } }
+    ] },
+
+  { "id": "story_promotion_1", "type": "life", "sport": "both", "trigger": "story_promotion_1", "scene": "work", "speaker": "הבוס מהעבודה", "conditions": { "requiresJob": true, "contract": ["amateur", "semi"] },
+    "title": "הצעת קידום", "text": "הבוס שלך בעבודה בתור {עבודה} מציע לך קידום: יותר כסף, אבל גם יותר אחריות ושעות.",
+    "choices": [
+      { "label": "מקבל", "success": { "text": "תפקיד חדש ומשכורת גבוהה יותר. העייפות כבר מורגשת.", "effects": { "budget": 400, "energy": -10 } } },
+      { "label": "מבקש לדחות לסוף העונה", "stat": "mental", "difficulty": 50,
+        "success": { "text": "הבוס מבין. 'אבל אז אתה שלי.'", "effects": { "confidence": 2, "budget": 100 } },
+        "fail": { "text": "הבוס לא מרוצה: 'ההצעה לא תחכה לנצח.'", "effects": { "confidence": -2 } } },
+      { "label": "מסרב בשביל ה{ספורט}", "success": { "text": "המאמן שומע על זה ומעריך. הבוס פחות.", "effects": { "coachApproval": 3 } } }
+    ] },
+  { "id": "story_promotion_2", "type": "life", "sport": "both", "trigger": "story_promotion_2", "scene": "work", "speaker": "הבוס מהעבודה", "conditions": { "requiresJob": true, "contract": ["amateur", "semi"] },
+    "title": "משמרת מול אימון", "text": "השבוע יש בעבודה משמרת חשובה, בדיוק בזמן האימון הטקטי של {קבוצה}. הבוס כבר שם אותך בלוח.",
+    "choices": [
+      { "label": "הולך לעבודה", "success": { "text": "הבוס מרוצה, הכיס מרוצה. המאמן שואל איפה היית.", "effects": { "budget": 300, "coachApproval": -4 } } },
+      { "label": "הולך לאימון", "success": { "text": "המאמן מרוצה שבחרת בקבוצה. בעבודה יש פרצופים.", "effects": { "coachApproval": 3, "budget": -100 } } },
+      { "label": "מחליף משמרת עם חבר לעבודה", "stat": "mental", "difficulty": 48,
+        "success": { "text": "החבר מסכים, ואתה מגיע לשניהם. ניצחון קטן.", "effects": { "coachApproval": 1, "budget": 100 } },
+        "fail": { "text": "אף אחד לא מוכן להחליף. איחרת לאימון.", "effects": { "coachApproval": -2 } } }
+    ] },
+  { "id": "story_promotion_3", "type": "life", "sport": "both", "trigger": "story_promotion_3", "scene": "stadium", "speaker": "הבוס מהעבודה", "conditions": { "requiresJob": true },
+    "title": "החבר׳ה מהעבודה ביציע", "text": "הבוס מגיע למשחק עם כל הצוות מהעבודה, כולם עם חולצות של {קבוצה}. הם הכינו שלט עם השם שלך.",
+    "choices": [
+      { "label": "מנופף להם מהמגרש", "success": { "text": "הם צועקים את השם שלך כל המשחק.", "effects": { "fanRep": 2, "confidence": 2 } } },
+      { "label": "מזמין אותם לחדר ההלבשה אחרי המשחק", "success": { "text": "הבוס מצטלם עם כל הקבוצה. מחר בעבודה אתה מלך.", "effects": { "fanRep": 3, "teamMorale": 1 } } },
+      { "label": "מקדיש להם את המשחק", "success": { "text": "הבוס מתרגש ונותן לך בונוס קטן.", "effects": { "budget": 200, "fanRep": 1 } } }
+    ] },
+
+  { "id": "story_national_scout_1", "type": "life", "sport": "both", "trigger": "story_national_scout_1", "scene": "phone", "speaker": "מאמן הנבחרת הצעירה", "conditions": { "minLevel": 2 },
+    "title": "מישהו עוקב אחריך", "text": "מאמן מצוות הנבחרות מתקשר: 'אנחנו עוקבים אחריך. זה עוד לא זימון, אבל תמשיך ככה.'",
+    "choices": [
+      { "label": "מודה בצניעות", "success": { "text": "הוא אוהב את התשובה. 'נדבר.'", "effects": { "confidence": 4 } } },
+      { "label": "שואל מה לשפר", "success": { "text": "הוא נותן לך שתי נקודות ברורות. עכשיו אתה יודע על מה לעבוד.", "effects": { "attributes": { "mental": 1 } } } },
+      { "label": "מספר לכולם", "success": { "text": "הפוסט שלך מתפשט. המאמן במועדון פחות אוהב את הרעש.", "effects": { "followers": 150, "coachApproval": -1 } } }
+    ] },
+  { "id": "story_national_scout_2", "type": "life", "sport": "both", "trigger": "story_national_scout_2", "scene": "office", "speaker": "צוות הנבחרות",
+    "title": "דוח הסקאוט", "text": "צוות הנבחרות שולח לך דוח: חזק בכמה דברים, אבל צריך לשפר את ההחלטות תחת לחץ.",
+    "choices": [
+      { "label": "שעות של וידאו", "success": { "text": "כל ערב שעה של קטעים. אתה רואה את הטעויות לפני שהן קורות.", "effects": { "attributes": { "mental": 1 }, "energy": -5 } } },
+      { "label": "שוכר מאמן אישי", "success": { "text": "המאמן האישי עובד בדיוק על הנקודות מהדוח.", "effects": { "budget": -300, "attributes": { "technique": 1 } } } },
+      { "label": "מראה את הדוח למאמן במועדון", "success": { "text": "המאמן בונה לך תרגילים לפי הדוח. הוא שמח שבאת אליו.", "effects": { "coachApproval": 4 } } }
+    ] },
+  { "id": "story_national_scout_3", "type": "life", "sport": "both", "trigger": "story_national_scout_3", "scene": "phone", "speaker": "צוות הנבחרות",
+    "title": "הדוח עבר הלאה", "text": "הודעה מצוות הנבחרות: 'הדוח שלך הגיע לשולחן של מאמן הנבחרת. אם תמשיך ככה, הדלת פתוחה.'",
+    "choices": [
+      { "label": "נשאר צנוע", "success": { "text": "אתה לא מספר לאף אחד. רק עובד.", "effects": { "confidence": 3 } } },
+      { "label": "משתף את המשפחה", "success": { "text": "אבא שותק, אמא בוכה. אתה מרגיש שזה אמיתי.", "effects": { "confidence": 4 } } },
+      { "label": "מתאמן עוד יותר קשה", "success": { "text": "אימון בוקר נוסף, כל יום. הגוף מתחזק.", "effects": { "attributes": { "physical": 1 }, "energy": -10 } } }
+    ] }
+]

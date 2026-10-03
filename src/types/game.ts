@@ -133,6 +133,10 @@ export interface EventConditions {
   minFollowers?: number;
   /** Happens at most once in a career. */
   once?: boolean;
+  /** Only while the club is in these table places: top = promotion places, bottom = relegation places. */
+  standing?: Array<'top' | 'mid' | 'bottom'>;
+  /** Only against a club the player used to play for. */
+  formerClub?: boolean;
 }
 
 export interface GameEvent {
@@ -423,6 +427,10 @@ export interface GameFlags {
   sponsorInterest?: boolean;
   /** One-time situations already played. */
   usedOnce?: string[];
+  /** This season's storyline and the next chapter to tell (0-based). */
+  story?: { id: string; season: number; chapter: number };
+  /** Storylines already told in this career. */
+  storiesUsed?: string[];
 }
 
 /** What the player does with the week's free time when not choosing by hand. */

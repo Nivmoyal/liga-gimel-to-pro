@@ -8,6 +8,7 @@ import preMatchJson from '../data/events/preMatchEvents.json';
 import inGameJson from '../data/events/inGameEvents.json';
 import postMatchJson from '../data/events/postMatchEvents.json';
 import lifeJson from '../data/events/lifeEvents.json';
+import storyJson from '../data/events/storyEvents.json';
 import { generatedEvents } from './eventGenerator';
 
 import type {
@@ -34,7 +35,7 @@ export const EVENT_POOLS: Record<EventType, GameEvent[]> = {
   preMatch: [...(preMatchJson as GameEvent[]), ...GENERATED.preMatch],
   inGame: [...(inGameJson as GameEvent[]), ...GENERATED.inGame],
   postMatch: [...(postMatchJson as GameEvent[]), ...GENERATED.postMatch],
-  life: [...(lifeJson as GameEvent[]), ...GENERATED.life],
+  life: [...(lifeJson as GameEvent[]), ...(storyJson as GameEvent[]), ...GENERATED.life],
 };
 
 const EVENT_INDEX: Map<string, GameEvent> = new Map(
@@ -146,7 +147,13 @@ export interface FilterExtras {
   matchday?: number;
   weather?: string;
   derby?: boolean;
+  /** Where the club stands in the table right now. */
+  standing?: Standing;
+  /** Today's opponent is a club the player used to play for. */
+  formerClub?: boolean;
 }
+
+export type Standing = 'top' | 'mid' | 'bottom';
 
 export function isEligible(event: GameEvent, player: Player, extras: FilterExtras = {}): boolean {
   if (event.sport !== 'both' && event.sport !== player.sport) return false;
@@ -166,6 +173,8 @@ export function isEligible(event: GameEvent, player: Player, extras: FilterExtra
   if (c.minMatchday !== undefined && (extras.matchday ?? 0) < c.minMatchday) return false;
   if (c.weather && (!extras.weather || !c.weather.includes(extras.weather))) return false;
   if (c.derby && !extras.derby) return false;
+  if (c.standing && (!extras.standing || !c.standing.includes(extras.standing))) return false;
+  if (c.formerClub && !extras.formerClub) return false;
   const level = leagueLevel(player);
   if (c.minLevel !== undefined && level < c.minLevel) return false;
   if (c.maxLevel !== undefined && level > c.maxLevel) return false;
@@ -201,9 +210,35 @@ function weightedPick(events: GameEvent[]): GameEvent | null {
   return events[events.length - 1];
 }
 
+/** The situation an event comes from: all variations of one template share it. */
+export function templateOf(id: string): string {
+  return id.replace(/__.*$/, '').replace(/_v\d+$/, '').replace(/_bb$/, '');
+}
+
 /**
- * Picks one random eligible event, preferring events that were not seen recently.
- * Falls back to the full eligible pool if everything was seen.
+ * Narrows a pool to the situations the player has not met for the longest time:
+ * situations never seen come first; once all were seen, the third seen longest
+ * ago. A whole pool is used up before any situation comes back, and a returning
+ * situation comes in a variation (minute, weather, outlet...) not seen yet.
+ */
+export function freshest(events: GameEvent[], seen: string[], minTemplates = 1): GameEvent[] {
+  if (events.length === 0) return events;
+  const lastSeen = new Map<string, number>();
+  seen.forEach((id, i) => {
+    const t = templateOf(id);
+    if (!lastSeen.has(t)) lastSeen.set(t, i);
+  });
+  const age = (t: string) => lastSeen.get(t) ?? Number.POSITIVE_INFINITY;
+  const templates = [...new Set(events.map((e) => templateOf(e.id)))].sort((a, b) => age(b) - age(a));
+  const unseen = templates.filter((t) => !lastSeen.has(t)).length;
+  const keep = new Set(templates.slice(0, Math.max(minTemplates, unseen || Math.ceil(templates.length / 3))));
+  const kept = events.filter((e) => keep.has(templateOf(e.id)));
+  const newVariation = kept.filter((e) => !seen.includes(e.id) || !kept.some((o) => o !== e && templateOf(o.id) === templateOf(e.id) && !seen.includes(o.id)));
+  return newVariation.length > 0 ? newVariation : kept;
+}
+
+/**
+ * Picks one random eligible event among the situations not met for the longest time.
  */
 export function pickEvent(
   type: EventType,
@@ -213,8 +248,7 @@ export function pickEvent(
   exclude: string[] = [],
 ): GameEvent | null {
   const eligible = filterEvents(type, player, extras).filter((e) => !exclude.includes(e.id));
-  const fresh = eligible.filter((e) => !seen.includes(e.id));
-  return weightedPick(fresh.length > 0 ? fresh : eligible);
+  return weightedPick(freshest(eligible, seen));
 }
 
 /** Picks the in-game scenarios for one match. A clutch scenario (if any) is always last. */
@@ -229,8 +263,7 @@ export function pickInGameEvents(
   // Substitutes only see moments from the time they are on the pitch.
   const late = opts.minMinute ? all.filter((e) => (parseClock(e.clock, player.sport) ?? 0) >= opts.minMinute!) : all;
   const eligible = late.length >= count ? late : all;
-  const fresh = eligible.filter((e) => !seen.includes(e.id));
-  const pool = [...(fresh.length >= count ? fresh : eligible)];
+  const pool = [...freshest(eligible, seen, count + 1)];
   const picked: GameEvent[] = [];
   const usedTemplates = new Set<string>();
   let hasClutch = false;
@@ -238,7 +271,7 @@ export function pickInGameEvents(
     const event = weightedPick(pool)!;
     pool.splice(pool.indexOf(event), 1);
     // Never two variations of the same situation in one match.
-    const template = event.id.replace(/_v\d+$/, '').replace(/__.*$/, '');
+    const template = templateOf(event.id);
     if (usedTemplates.has(template)) continue;
     if (event.clutch) {
       if (hasClutch) continue;
@@ -253,9 +286,17 @@ export function pickInGameEvents(
 /** Random eligible event among those sharing a trigger (e.g. national team scenes). */
 export function pickTriggeredEvent(trigger: string, player: Player, seen: string[]): GameEvent | null {
   const pool = getAllEvents().filter((e) => e.trigger === trigger && isEligible(e, player));
-  const fresh = pool.filter((e) => !seen.includes(e.id));
-  return weightedPick(fresh.length > 0 ? fresh : pool);
+  return weightedPick(freshest(pool, seen));
 }
+
+/** Season storylines: each has chapters story_<id>_1, _2, _3 (see storyEvents.json). */
+export const STORY_IDS: string[] = [
+  ...new Set(
+    getAllEvents()
+      .map((e) => /^story_(.+)_1$/.exec(e.trigger ?? '')?.[1])
+      .filter((id): id is string => Boolean(id)),
+  ),
+];
 
 export function getTriggeredEvent(trigger: string): GameEvent | null {
   for (const pool of Object.values(EVENT_POOLS)) {

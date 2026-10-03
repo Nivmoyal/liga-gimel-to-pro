@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { EVENT_POOLS, filterEvents, getAllEvents, parseEvent, parseText } from '../services/eventEngine';
+import { EVENT_POOLS, STORY_IDS, filterEvents, getAllEvents, isEligible, parseEvent, parseText, pickEvent, pickInGameEvents, templateOf } from '../services/eventEngine';
 import { parseClock, scoreAt } from '../services/matchEngine';
 import { gameReducer } from '../state/gameReducer';
 import type { GameAction } from '../state/gameReducer';
@@ -66,10 +66,10 @@ describe('event engine', () => {
 });
 
 describe('situation catalogue', () => {
-  it('has between 1,000 and 2,000 distinct situations', () => {
+  it('has between 1,000 and 2,500 distinct situations', () => {
     const all = getAllEvents();
     expect(all.length).toBeGreaterThanOrEqual(1000);
-    expect(all.length).toBeLessThanOrEqual(2000);
+    expect(all.length).toBeLessThanOrEqual(2500);
     // Within a sport, every situation reads differently.
     const texts = new Set(all.map((e) => `${e.sport}|${e.title}|${e.text}`));
     expect(texts.size).toBe(all.length);
@@ -410,6 +410,71 @@ describe('situations fit the career stage', () => {
     for (const e of post) {
       expect(e.speaker, e.id).not.toMatch(/ערוץ הספורט|העיתון הארצי|פודקאסט/);
       expect(textOf(e), e.id).not.toMatch(/סוכן|נבחרת|ויראלי/);
+    }
+  });
+});
+
+describe('variety over a long career', () => {
+  const player = (sport: SportType, position: Position) =>
+    ({ ...gameReducer(null, { type: 'NEW_GAME', setup: { name: 'בדיקה', shirtNumber: 5, sport, position, home: findPlace('חיפה')!, club: sport === 'football' ? 'הפועל קצרין' : 'הפועל ערד', jobId: 'pizza' } })!.player, careerStats: { apps: 30 } }) as never;
+
+  it('plays every match moment of a position before any comes back', () => {
+    const cases: Array<[SportType, Position]> = [['football', 'ST'], ['football', 'CB'], ['football', 'GK'], ['football', 'CM'], ['basketball', 'PG'], ['basketball', 'C']];
+    for (const [sport, position] of cases) {
+      const p = player(sport, position);
+      const templates = new Set(filterEvents('inGame', p).map((e) => templateOf(e.id)));
+      expect(templates.size, `${sport}/${position}`).toBeGreaterThanOrEqual(30);
+      let seen: string[] = [];
+      const met = new Set<string>();
+      for (let match = 0; match < 12; match++) {
+        for (const event of pickInGameEvents(p, seen, 2)) {
+          expect(met.has(templateOf(event.id)), `${sport}/${position} repeated ${event.id}`).toBe(false);
+          met.add(templateOf(event.id));
+          seen = [event.id, ...seen];
+        }
+      }
+    }
+  });
+
+  it('asks a different question after every match for a whole season', () => {
+    const p = player('football', 'ST');
+    let seen: string[] = [];
+    const met = new Set<string>();
+    for (let match = 0; match < 12; match++) {
+      for (const type of ['preMatch', 'postMatch'] as const) {
+        const event = pickEvent(type, p, seen, { matchResult: (['win', 'draw', 'loss'] as const)[match % 3], matchday: match })!;
+        expect(met.has(templateOf(event.id)), event.id).toBe(false);
+        met.add(templateOf(event.id));
+        seen = [event.id, ...seen];
+      }
+    }
+  });
+
+  it('only talks about a title race or relegation when the table says so', () => {
+    const p = player('football', 'ST');
+    const race = getAllEvents().find((e) => e.id.startsWith('g_pq_title_race__'))!;
+    const drop = getAllEvents().find((e) => e.id.startsWith('g_pq_relegation__'))!;
+    expect(isEligible(race, p, { matchResult: 'win', matchday: 8, standing: 'bottom' })).toBe(false);
+    expect(isEligible(race, p, { matchResult: 'win', matchday: 8, standing: 'top' })).toBe(true);
+    expect(isEligible(drop, p, { matchResult: 'loss', matchday: 8, standing: 'top' })).toBe(false);
+    expect(isEligible(drop, p, { matchResult: 'loss', matchday: 8, standing: 'bottom' })).toBe(true);
+    const former = getAllEvents().find((e) => e.id.startsWith('g_pm_former_club__'))!;
+    expect(isEligible(former, p, {})).toBe(false);
+    expect(isEligible(former, p, { formerClub: true })).toBe(true);
+  });
+
+  it('tells a different three-chapter story every season', () => {
+    expect(STORY_IDS.length).toBeGreaterThanOrEqual(12);
+    for (const id of STORY_IDS) {
+      for (const chapter of [1, 2, 3]) expect(getAllEvents().some((e) => e.trigger === `story_${id}_${chapter}`), `${id} ${chapter}`).toBe(true);
+    }
+    const { state } = autoplay({ name: 'דני כהן', shirtNumber: 9, sport: 'football', position: 'ST', home: findPlace('קצרין')!, club: 'הפועל קצרין', jobId: 'pizza' }, 3);
+    const told = state.flags.storiesUsed ?? [];
+    expect(new Set(told).size).toBe(told.length);
+    expect(told.length).toBeGreaterThanOrEqual(3);
+    for (const id of told.slice(0, 3)) {
+      const chapters = state.seenEvents.filter((e) => e.startsWith(`story_${id}_`));
+      expect(chapters.length, id).toBeGreaterThanOrEqual(2);
     }
   });
 });

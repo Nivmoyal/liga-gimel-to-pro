@@ -1,4 +1,4 @@
-import { ChevronLeft, Inbox, MessageSquare } from 'lucide-react';
+import { BookOpen, ChevronLeft, Inbox, MessageSquare } from 'lucide-react';
 import type { GameState } from '../types/game';
 import type { GameAction } from '../state/gameReducer';
 import { getParsedEvent } from '../state/gameLogic';
@@ -14,6 +14,8 @@ interface DecisionBoxProps {
 /** "הודעה מחכה לתשובה שלך" - the interactive life-event card on the dashboard. */
 export function DecisionBox({ state, dispatch }: DecisionBoxProps) {
   const event = getParsedEvent(state, state.pendingLifeEventId);
+  // Chapters of this season's storyline are marked as such.
+  const chapter = /^story_.+_(\d)$/.exec(event?.id ?? '')?.[1];
 
   if (!event) {
     return (
@@ -32,6 +34,12 @@ export function DecisionBox({ state, dispatch }: DecisionBoxProps) {
           <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-brand" />
         </span>
         <h2 className="text-sm font-extrabold text-brand">הודעה מחכה לתשובה שלך</h2>
+        {chapter && (
+          <span className="ms-auto flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-brand/15 px-2 py-0.5 text-[11px] font-bold text-brand">
+            <BookOpen size={12} />
+            סיפור העונה {chapter}/3
+          </span>
+        )}
       </div>
       <ScenePhoto scene={event.scene ?? 'phone'} seed={event.id} sport={state.player.sport} height={150} className="-mx-4 -mt-4 mb-3" />
       <div className="mb-3 flex gap-3">

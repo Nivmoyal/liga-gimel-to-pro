@@ -10,8 +10,13 @@ import type { AttrKey, Effects, EventChoice, EventConditions, GameEvent, SportTy
 import inGameFootball from '../data/events/templates/inGameFootball.json';
 import inGameBasketball from '../data/events/templates/inGameBasketball.json';
 import inGameGoalkeeper from '../data/events/templates/inGameGoalkeeper.json';
+import inGameFootballLines from '../data/events/templates/inGameFootballLines.json';
+import inGameGoalkeeperMore from '../data/events/templates/inGameGoalkeeperMore.json';
+import inGameBasketballRoles from '../data/events/templates/inGameBasketballRoles.json';
 import preMatchTemplates from '../data/events/templates/preMatchTemplates.json';
+import preMatchMore from '../data/events/templates/preMatchMore.json';
 import postMatchTemplates from '../data/events/templates/postMatchTemplates.json';
+import postMatchMore from '../data/events/templates/postMatchMore.json';
 import lifeTemplates from '../data/events/templates/lifeTemplates.json';
 import contexts from '../data/events/templates/contexts.json';
 import { hashString } from '../data/clubIdentity';
@@ -189,18 +194,19 @@ let cached: Record<'inGame' | 'preMatch' | 'postMatch' | 'life', GameEvent[]> | 
 
 export function generatedEvents() {
   if (cached) return cached;
-  const pre = preMatchTemplates as unknown as Template[];
+  const pre = [...preMatchTemplates, ...preMatchMore] as unknown as Template[];
+  const football = [...inGameFootball, ...inGameFootballLines, ...inGameGoalkeeper, ...inGameGoalkeeperMore] as unknown as Template[];
+  const basketball = [...inGameBasketball, ...inGameBasketballRoles] as unknown as Template[];
   cached = {
     inGame: [
-      ...expandMatchTemplates(inGameFootball as unknown as Template[], 'inGame', () => 'inGameFootball'),
-      ...expandMatchTemplates(inGameGoalkeeper as unknown as Template[], 'inGame', () => 'inGameFootball'),
-      ...expandMatchTemplates(inGameBasketball as unknown as Template[], 'inGame', () => 'inGameBasketball'),
+      ...expandMatchTemplates(football, 'inGame', () => 'inGameFootball'),
+      ...expandMatchTemplates(basketball, 'inGame', () => 'inGameBasketball'),
     ],
     preMatch: [
       ...expandMatchTemplates(pre.filter((t) => t.sport !== 'basketball').map((t) => ({ ...t, sport: 'football' as const })), 'preMatch', () => 'preMatchFootball'),
       ...expandMatchTemplates(pre.filter((t) => t.sport !== 'football').map((t) => ({ ...t, key: `${t.key}_bb`, sport: 'basketball' as const })), 'preMatch', () => 'preMatchBasketball'),
     ],
-    postMatch: expandPostMatch(postMatchTemplates as unknown as Template[]),
+    postMatch: expandPostMatch([...postMatchTemplates, ...postMatchMore] as unknown as Template[]),
     life: expandLife(lifeTemplates as unknown as Template[]),
   };
   return cached;

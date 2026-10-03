@@ -140,13 +140,6 @@ export const OVR_WEIGHTS: Record<Position, Record<AttrKey, number>> = {
   C: { attack: 0.15, technique: 0.05, playmaking: 0.05, defense: 0.3, physical: 0.35, mental: 0.1 },
 };
 
-/** Weekly cost of living, deducted after every matchday. */
-export const LIVING_COST: Record<'amateur' | 'semi' | 'pro', number> = {
-  amateur: 750,
-  semi: 1000,
-  pro: 1800,
-};
-
 export const CONTRACT_LABEL: Record<'amateur' | 'semi' | 'pro', string> = {
   amateur: 'חוזה חובבני',
   semi: 'חוזה חצי מקצועני',

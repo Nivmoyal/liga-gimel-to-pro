@@ -33,7 +33,6 @@ import {
   attrLabels,
   CONTRACT_LABEL,
   DIVISION_STRENGTH,
-  LIVING_COST,
   OVR_WEIGHTS,
   SEASON_MATCHDAYS,
   TRANSFER_WINDOW_MATCHDAY,
@@ -1054,14 +1053,13 @@ function endMatchday(state: GameState): GameState {
   let player = { ...next.player };
   const agent = getAgent(player.agentId);
 
-  // Economy
+  // Economy: money only comes in here (salary, sponsors). It goes out only when
+  // the player spends it or picks a choice that costs money.
   const captainBonus = player.isCaptain ? 1.1 : 1;
   const salaryNet = Math.round(player.weeklySalary * captainBonus * (1 - (agent?.commission ?? 0)));
-  const living = LIVING_COST[player.contract];
-  player.budget += salaryNet - living;
-  // Driving to training from home (professionals get housing near the club)
+  player.budget += salaryNet;
+  // Driving to training from home tires the player (professionals get housing near the club)
   const commute = isNonPro(player) ? commuteCost(clubDistance(player.home, player.club)) : commuteCost(null);
-  player.budget -= commute.budget;
 
   // Sponsors pay weekly; a sponsor walks away if the fan reputation collapses
   const news: NewsItem[] = [];

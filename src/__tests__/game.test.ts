@@ -497,6 +497,50 @@ describe('live commentary', () => {
   });
 });
 
+describe('money', () => {
+  it('only goes down when the player spends it', () => {
+    let s: GameState = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 9, sport: 'football', position: 'ST', home: findPlace('אילת')!, club: startingClubs('football').find((c) => c.division === 0)!.name, jobId: 'pizza' },
+    })!;
+    // A choice that costs nothing, whatever its outcome.
+    const free = (id: string | null | undefined) => {
+      const event = getAllEvents().find((e) => e.id === id);
+      const i = event?.choices.findIndex((c) => (c.success.effects.budget ?? 0) >= 0 && (c.fail?.effects.budget ?? 0) >= 0) ?? 0;
+      return Math.max(0, i);
+    };
+    for (let guard = 0; s.matchday < 4 && guard < 400; guard++) {
+      const before = s.player.budget;
+      let action: GameAction;
+      switch (s.phase) {
+        case 'dashboard':
+          action = s.pendingLifeEventId ? (s.lifeOutcome ? { type: 'LIFE_DISMISS' } : { type: 'LIFE_CHOICE', index: free(s.pendingLifeEventId) }) : { type: 'START_MATCHDAY' };
+          break;
+        case 'preMatch':
+          action = s.currentMatch?.pendingOutcome ? { type: 'PRE_CONTINUE' } : { type: 'PRE_CHOICE', index: free(s.currentMatch?.preEventId) };
+          break;
+        case 'live':
+          action = { type: 'LIVE_ADVANCE' };
+          break;
+        case 'inGame':
+          action = s.currentMatch?.pendingOutcome ? { type: 'INGAME_CONTINUE' } : { type: 'INGAME_CHOICE', index: free(s.currentMatch?.inGameEventIds[s.currentMatch.inGameIndex]) };
+          break;
+        case 'matchSummary':
+          action = { type: 'SUMMARY_CONTINUE' };
+          break;
+        case 'postMatch':
+          action = s.currentMatch?.pendingOutcome ? { type: 'POST_CONTINUE' } : { type: 'POST_CHOICE', index: free(s.currentMatch?.postEventId) };
+          break;
+        default:
+          action = s.phase === 'transfer' ? { type: 'DECLINE_OFFERS' } : { type: 'ACCEPT_CALLUP' };
+      }
+      s = gameReducer(s, action)!;
+      expect(s.player.budget, `${action.type} in ${s.phase}`).toBeGreaterThanOrEqual(before);
+    }
+    expect(s.matchday).toBe(4);
+  });
+});
+
 describe('weekly routine', () => {
   it('fills unused slots before the match, with position-based training by default', () => {
     let s = gameReducer(null, {

@@ -312,12 +312,12 @@ export function nearestStartingClubs(sport: SportType, home: HomePlace): Startin
 }
 
 /**
- * Weekly cost of the drive to training and back. Full professionals get housing
+ * Weekly toll (energy) of the drive to training and back. Full professionals get housing
  * near the club, so it only matters while still semi-pro or amateur.
  */
-export function commuteCost(km: number | null): { energy: number; budget: number; label: string } {
-  if (km === null || km <= 15) return { energy: 0, budget: 0, label: 'קרוב לבית' };
-  if (km <= 40) return { energy: 2, budget: 60, label: 'נסיעה קצרה' };
-  if (km <= 80) return { energy: 4, budget: 120, label: 'נסיעה ארוכה' };
-  return { energy: 6, budget: 200, label: 'נסיעה מתישה' };
+export function commuteCost(km: number | null): { energy: number; label: string } {
+  if (km === null || km <= 15) return { energy: 0, label: 'קרוב לבית' };
+  if (km <= 40) return { energy: 2, label: 'נסיעה קצרה' };
+  if (km <= 80) return { energy: 4, label: 'נסיעה ארוכה' };
+  return { energy: 6, label: 'נסיעה מתישה' };
 }

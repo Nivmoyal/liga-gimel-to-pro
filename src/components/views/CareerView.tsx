@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { BadgeDollarSign, House, CalendarDays, Coins, Flag, Heart, History, RotateCcw, Smile, Users } from 'lucide-react';
+import { Award, BadgeDollarSign, House, CalendarDays, Coins, Flag, Heart, History, Medal, RotateCcw, Smile, Trophy, Users, Armchair } from 'lucide-react';
+import { ACHIEVEMENTS, RETIRE_FROM_AGE } from '../../services/careerEngine';
+import { castOf } from '../../state/gameLogic';
 import type { GameState } from '../../types/game';
 import { clubDistance } from '../../data/places';
 import { ATTR_KEYS, attrLabels, CONTRACT_LABEL, SPORT_LABEL, divisionName, positionLabel } from '../../data/sports';
@@ -12,9 +14,12 @@ import { Jersey } from '../art/Jersey';
 import { Crest } from '../art/Crest';
 import { SponsorLogo } from '../art/SponsorLogo';
 
-export function CareerView({ state, onReset, onHome }: { state: GameState; onReset: () => void; onHome: () => void }) {
-  const { player } = state;
+export function CareerView({ state, onReset, onHome, onRetire }: { state: GameState; onReset: () => void; onHome: () => void; onRetire: () => void }) {
+  const { player, flags } = state;
   const [confirm, setConfirm] = useState(false);
+  const [confirmRetire, setConfirmRetire] = useState(false);
+  const unlocked = new Map((flags.achievements ?? []).map((a) => [a.id, a.season]));
+  const cast = castOf(state);
   const agent = getAgent(player.agentId);
   const homeKm = clubDistance(player.home, player.club);
   const facts = [
@@ -115,6 +120,57 @@ export function CareerView({ state, onReset, onHome }: { state: GameState; onRes
 
       <section className="rounded-2xl border border-line bg-card p-4">
         <h2 className="mb-2 flex items-center gap-2 font-extrabold">
+          <Trophy size={18} className="text-brand" />
+          תארים
+        </h2>
+        <div className="grid grid-cols-2 gap-2 text-center">
+          <div className="rounded-xl bg-card-2 p-2">
+            <div className="text-lg font-black text-amber-300">{flags.titles ?? 0}</div>
+            <div className="text-[10px] text-muted">אליפויות</div>
+          </div>
+          <div className="rounded-xl bg-card-2 p-2">
+            <Medal size={14} className="mx-auto text-muted" />
+            <div className="text-lg font-black text-amber-300">{flags.cupWins ?? 0}</div>
+            <div className="text-[10px] text-muted">גביעי מדינה</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-line bg-card p-4">
+        <h2 className="mb-2 flex items-center gap-2 font-extrabold">
+          <Award size={18} className="text-brand" />
+          הישגים ({unlocked.size}/{ACHIEVEMENTS.length})
+        </h2>
+        <ul className="grid grid-cols-2 gap-1.5">
+          {ACHIEVEMENTS.map((a) => {
+            const season = unlocked.get(a.id);
+            return (
+              <li key={a.id} className={`rounded-xl p-2 text-xs ${season ? 'bg-brand/10' : 'bg-pitch opacity-50'}`}>
+                <div className={`font-bold ${season ? 'text-brand' : ''}`}>{a.title}</div>
+                <div className="text-[10px] text-muted">{season ? `עונה ${season}` : a.description}</div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section className="rounded-2xl border border-line bg-card p-4">
+        <h2 className="mb-2 flex items-center gap-2 font-extrabold">
+          <Users size={18} className="text-brand" />
+          אנשים בקריירה
+        </h2>
+        <ul className="space-y-1 text-sm">
+          <li>
+            <b>{cast.friend}</b> <span className="text-muted">| החבר הכי טוב שלך בחדר ההלבשה</span>
+          </li>
+          <li>
+            <b>{cast.rival}</b> <span className="text-muted">| היריב שלך, משחק ב{cast.rivalClub}</span>
+          </li>
+        </ul>
+      </section>
+
+      <section className="rounded-2xl border border-line bg-card p-4">
+        <h2 className="mb-2 flex items-center gap-2 font-extrabold">
           <BadgeDollarSign size={18} className="text-brand" />
           ספונסרים
         </h2>
@@ -159,6 +215,29 @@ export function CareerView({ state, onReset, onHome }: { state: GameState; onRes
           </ul>
         )}
       </section>
+
+      {player.age >= RETIRE_FROM_AGE - 2 && (
+        <section className="rounded-2xl border border-line bg-card p-4">
+          {confirmRetire ? (
+            <div className="space-y-2">
+              <p className="text-sm">לפרוש עכשיו? הקריירה תסתיים ותראה את הסיכום שלה.</p>
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={onRetire} className="btn-gold rounded-xl py-2.5 font-black">
+                  כן, לפרוש
+                </button>
+                <button onClick={() => setConfirmRetire(false)} className="rounded-xl border border-line bg-card py-2.5 font-bold">
+                  ביטול
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => setConfirmRetire(true)} className="flex w-full items-center justify-center gap-2 py-1 font-bold">
+              <Armchair size={16} />
+              לתלות את הנעליים
+            </button>
+          )}
+        </section>
+      )}
 
       <button onClick={onHome} className="flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-card py-3 font-bold text-ink hover:border-brand/50">
         <House size={16} />

@@ -35,12 +35,19 @@ export type GameAction =
   | { type: 'DECLINE_OFFERS' }
   | { type: 'SEASON_CONTINUE' }
   | { type: 'CUP_PLAY' }
+  | { type: 'RETIRE' }
   | { type: 'BUY_ITEM'; id: ShopId }
   | { type: 'CANCEL_ITEM'; id: ShopId }
   | { type: 'CLEAR_TOAST' };
 
 /** `null` state means the setup screen is shown. */
 export function gameReducer(state: GameState | null, action: GameAction): GameState | null {
+  const next = reduce(state, action);
+  // Achievements unlock whenever the career reaches them.
+  return next && action.type !== 'CLEAR_TOAST' ? logic.unlockAchievements(next) : next;
+}
+
+function reduce(state: GameState | null, action: GameAction): GameState | null {
   if (action.type === 'NEW_GAME') return logic.createNewGame(action.setup);
   if (action.type === 'RESET') return null;
   if (!state) return state;
@@ -52,6 +59,8 @@ export function gameReducer(state: GameState | null, action: GameAction): GameSt
       return logic.lifestyle(state, action.option);
     case 'WORK_SHIFT':
       return logic.workShift(state);
+    case 'RETIRE':
+      return logic.retire(state);
     case 'CUP_PLAY':
       return logic.startCupMatch(state);
     case 'BUY_ITEM':

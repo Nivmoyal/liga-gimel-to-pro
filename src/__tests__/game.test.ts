@@ -15,6 +15,7 @@ import { SPONSORS } from '../data/sponsors';
 import { agentInterested, bestTrainingFor, buyItem, castOf, getParsedEvent, migrateSave, runWeekPlan, shopOf, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
 import { getAgent } from '../data/agents';
 import { FOOTBALL_POSITIONS, BASKETBALL_POSITIONS, SEASON_MATCHDAYS } from '../data/sports';
+import { goalStatus, goalsOf } from '../services/careerEngine';
 
 function walk(dir: string): string[] {
   return readdirSync(dir).flatMap((name: string) => {
@@ -543,6 +544,62 @@ describe('money', () => {
       expect(s.player.budget, `${action.type} in ${s.phase}`).toBeGreaterThanOrEqual(before);
     }
     expect(s.matchday).toBe(4);
+  });
+});
+
+describe('goals, achievements and retirement', () => {
+  /** Plays on (without spending) until the season ends. */
+  const toSeasonEnd = (start: GameState): GameState => {
+    let s = start;
+    for (let guard = 0; s.phase !== 'seasonEnd' && guard < 2000; guard++) {
+      const m = s.currentMatch;
+      const action: GameAction =
+        s.phase === 'dashboard' ? (s.pendingLifeEventId ? (s.lifeOutcome ? { type: 'LIFE_DISMISS' } : { type: 'LIFE_CHOICE', index: 0 }) : { type: 'START_MATCHDAY' })
+        : s.phase === 'preMatch' ? (m?.pendingOutcome ? { type: 'PRE_CONTINUE' } : { type: 'PRE_CHOICE', index: 0 })
+        : s.phase === 'live' ? { type: 'LIVE_ADVANCE' }
+        : s.phase === 'inGame' ? (m?.pendingOutcome ? { type: 'INGAME_CONTINUE' } : { type: 'INGAME_CHOICE', index: 0 })
+        : s.phase === 'matchSummary' ? { type: 'SUMMARY_CONTINUE' }
+        : s.phase === 'postMatch' ? (m?.pendingOutcome ? { type: 'POST_CONTINUE' } : { type: 'POST_CHOICE', index: 0 })
+        : s.phase === 'cupDraw' ? { type: 'CUP_PLAY' }
+        : s.phase === 'transfer' ? { type: 'DECLINE_OFFERS' }
+        : { type: 'ACCEPT_CALLUP' };
+      s = gameReducer(s, action)!;
+    }
+    return s;
+  };
+  const start = () =>
+    gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'דני כהן', shirtNumber: 9, sport: 'football', position: 'ST', home: findPlace('קצרין')!, club: 'הפועל קצרין', jobId: 'pizza' },
+    })!;
+
+  it('sets season goals, judges them at the end and pays for the ones met', () => {
+    const s = start();
+    expect(goalsOf(s)).toHaveLength(3);
+    const scorer = { ...s, player: { ...s.player, seasonStats: { ...s.player.seasonStats, goals: 6 } } };
+    expect(goalStatus(scorer, goalsOf(s)[0]).done).toBe(true);
+    const end = toSeasonEnd(s);
+    expect(end.seasonSummary?.goals).toHaveLength(3);
+    const after = gameReducer(end, { type: 'SEASON_CONTINUE' })!;
+    expect(after.news.some((n) => n.text.includes('יעד'))).toBe(true);
+  });
+
+  it('unlocks achievements as the career gets there', () => {
+    const end = toSeasonEnd(start());
+    const ids = (end.flags.achievements ?? []).map((a) => a.id);
+    expect(ids).toContain('debut');
+    expect(end.news.some((n) => n.text.startsWith('הישג חדש'))).toBe(true);
+  });
+
+  it('ends the career at the last age, or earlier by choice', () => {
+    const s = start();
+    const old = toSeasonEnd({ ...s, player: { ...s.player, age: 37 } });
+    const retired = gameReducer(old, { type: 'SEASON_CONTINUE' })!;
+    expect(retired.phase).toBe('retired');
+    expect(retired.player.history).toHaveLength(1);
+    const early = gameReducer({ ...s, player: { ...s.player, age: 33 } }, { type: 'RETIRE' })!;
+    expect(early.phase).toBe('retired');
+    expect(early.retired?.age).toBe(33);
   });
 });
 

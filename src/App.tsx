@@ -7,6 +7,8 @@ import { HeaderStats } from './components/HeaderStats';
 import { SportIndicator } from './components/SportIndicator';
 import { DecisionBox } from './components/DecisionBox';
 import { MainActionGrid } from './components/MainActionGrid';
+import { GoalsCard } from './components/GoalsCard';
+import { RetirementScreen } from './components/RetirementScreen';
 import type { ActionSheetId } from './components/MainActionGrid';
 import { SocialFeed } from './components/SocialFeed';
 import { MainCTA } from './components/MainCTA';
@@ -89,6 +91,20 @@ export default function App() {
     );
   }
 
+  if (state.phase === 'retired') {
+    return (
+      <div dir="rtl" className="min-h-dvh bg-pitch text-ink">
+        <RetirementScreen
+          state={state}
+          onNewCareer={() => {
+            dispatch({ type: 'RESET' });
+            setScreen('title');
+          }}
+        />
+      </div>
+    );
+  }
+
   const openSheet = (id: ActionSheetId) => {
     if (id === 'stats') {
       setView('table');
@@ -108,6 +124,7 @@ export default function App() {
             <>
               <SportIndicator state={state} />
               <DecisionBox state={state} dispatch={dispatch} />
+              <GoalsCard state={state} />
               <MainActionGrid state={state} onOpen={openSheet} />
               <SocialFeed news={state.news} limit={6} />
             </>
@@ -122,6 +139,7 @@ export default function App() {
                 setScreen('title');
               }}
               onHome={() => setScreen('title')}
+              onRetire={() => dispatch({ type: 'RETIRE' })}
             />
           )}
         </main>

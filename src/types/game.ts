@@ -409,6 +409,8 @@ export interface SeasonSummary {
   champion: boolean;
   stats: SeasonStats;
   table: LeagueTeam[];
+  /** The coach's goals and whether they were met. */
+  goals?: Array<{ label: string; done: boolean }>;
 }
 
 export type GamePhase =
@@ -422,6 +424,7 @@ export type GamePhase =
   | 'seasonEnd'
   | 'callUp'
   | 'cupDraw'
+  | 'retired'
   | 'live';
 
 export interface NationalCallUp {
@@ -452,6 +455,12 @@ export interface GameFlags {
   storiesUsed?: string[];
   /** State Cups won in this career. */
   cupWins?: number;
+  /** League titles won in this career. */
+  titles?: number;
+  /** Was captain at some point. */
+  wasCaptain?: boolean;
+  /** Achievements unlocked, with the season they came. */
+  achievements?: Array<{ id: string; season: number }>;
 }
 
 export interface GameState {
@@ -483,6 +492,16 @@ export interface GameState {
   cup?: CupState;
   /** People who come back through the career. */
   cast?: Cast;
+  /** The coach's goals for the current season. */
+  goals?: { season: number; items: SeasonGoal[] };
+  /** Set when the career is over. */
+  retired?: { season: number; age: number };
+}
+
+export interface SeasonGoal {
+  kind: 'goals' | 'assists' | 'points' | 'rebounds' | 'rating' | 'position' | 'cup' | 'apps';
+  target: number;
+  label: string;
 }
 
 export interface Cast {

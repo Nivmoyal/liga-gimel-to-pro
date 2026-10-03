@@ -48,6 +48,7 @@ import { LIFESTYLE_OPTIONS, SOCIAL_POSTS, TRAINING_OPTIONS } from '../data/activ
 import { CLUB_POOLS } from '../data/clubs';
 import { CUP_NAME, CUP_ROUNDS } from '../data/cup';
 import { hashString } from '../data/clubIdentity';
+import { LAST_SEASON_AGE, goalStatus, goalsOf, newAchievements, seasonGoalsFor } from '../services/careerEngine';
 import { getShopItem } from '../data/shop';
 import type { ShopId } from '../data/shop';
 import type { LifestyleId, SocialPostId, TrainingId } from '../data/activities';
@@ -215,6 +216,7 @@ function applyEffects(state: GameState, effects: Effects): GameState {
   if (effects.setAgent) {
     next = { ...next, flags: { ...next.flags, agentDiscovered: true } };
   }
+  if (effects.setCaptain) next = { ...next, flags: { ...next.flags, wasCaptain: true } };
   if (effects.setCaptain && !state.player.isCaptain) {
     next = addNews(next, [
       newsNow(next, 'club', `רשמי: ${next.player.name} נבחר לקפטן של ${next.player.club}`),
@@ -412,7 +414,7 @@ export function createNewGame(setup: SetupData): GameState {
     flags: defaultFlags(),
     toast: null,
   };
-  state = { ...state, cast: makeCast(state) };
+  state = { ...state, cast: makeCast(state), goals: { season: 1, items: seasonGoalsFor(state) } };
 
   const job = getJob(setup.jobId);
   state = addNews(state, [
@@ -1402,6 +1404,38 @@ function queueLifeEvent(state: GameState): GameState {
 }
 
 // ------------------------------------------------------------------
+// Achievements and retirement
+// ------------------------------------------------------------------
+
+/** Unlocks the achievements reached by now, with a news item for each. */
+export function unlockAchievements(state: GameState): GameState {
+  if (state.phase === 'retired') return state;
+  const fresh = newAchievements(state);
+  if (fresh.length === 0) return state;
+  const unlocked = [...(state.flags.achievements ?? []), ...fresh.map((a) => ({ id: a.id, season: state.season }))];
+  const next: GameState = { ...state, flags: { ...state.flags, achievements: unlocked } };
+  return addNews(next, fresh.map((a) => newsNow(next, 'club', `הישג חדש: ${a.title}. ${a.description}`)));
+}
+
+/** Ends the career. At the season end the season is filed first. */
+export function retire(state: GameState): GameState {
+  if (state.phase === 'retired') return state;
+  if (state.phase === 'seasonEnd') {
+    const filed = continueSeasonEnd(state);
+    return filed.phase === 'retired' ? filed : endCareer(filed);
+  }
+  if (state.player.seasonStats.apps === 0) return endCareer(state);
+  const record = { season: state.season, club: state.player.club, division: state.player.division, finalPosition: playerClubPosition(state.league), stats: state.player.seasonStats, ovr: calcOvr(state.player) };
+  return endCareer({ ...state, player: { ...state.player, history: [...state.player.history, record] } });
+}
+
+function endCareer(state: GameState): GameState {
+  let next = unlockAchievements(state);
+  next = addNews(next, [newsNow(next, 'club', `${next.player.name} תולה את הנעליים בגיל ${next.player.age}. תודה על הכול`)]);
+  return { ...next, phase: 'retired', transferOffers: [], transferContext: null, currentMatch: null, retired: { season: next.season, age: next.player.age } };
+}
+
+// ------------------------------------------------------------------
 // Season end & transfers
 // ------------------------------------------------------------------
 
@@ -1424,6 +1458,7 @@ function enterSeasonEnd(state: GameState): GameState {
       champion,
       stats: player.seasonStats,
       table,
+      goals: goalsOf(state).map((g) => ({ label: g.label, done: goalStatus(state, g, position).done })),
     },
   };
 }
@@ -1446,9 +1481,32 @@ export function continueSeasonEnd(state: GameState): GameState {
   const oldDivision = player.division;
   if (summary.promoted) player.division += 1;
   if (summary.relegated) player.division -= 1;
+  let flags = state.flags;
   if (summary.champion) {
     news.push(makeNews('league', `${player.club} אלופת ${divisionName(player.sport, oldDivision)}!`, state.season, SEASON_MATCHDAYS));
     player.fanRep = clamp(player.fanRep + 8, 0, 100);
+    flags = { ...flags, titles: (flags.titles ?? 0) + 1 };
+  }
+  // The coach's goals: a bonus and trust for each one met, less trust for each one missed.
+  const goals = summary.goals ?? [];
+  if (goals.length > 0) {
+    const met = goals.filter((g) => g.done).length;
+    const bonus = met * Math.max(500, player.weeklySalary * 2);
+    player.coachApproval = clamp(player.coachApproval + met * 6 - (goals.length - met) * 4, 0, 100);
+    player.confidence = clamp(player.confidence + met * 3, 0, 100);
+    player.budget += bonus;
+    news.push(
+      makeNews(
+        'club',
+        met === goals.length
+          ? `המאמן מרוצה: ${player.name} עמד בכל ${goals.length} היעדים של העונה. בונוס של ${formatMoney(bonus)}`
+          : met === 0
+            ? `${player.name} לא עמד באף יעד שהמאמן הציב העונה`
+            : `${player.name} עמד ב-${met} מתוך ${goals.length} יעדי העונה${bonus ? ` ומקבל בונוס של ${formatMoney(bonus)}` : ''}`,
+        state.season,
+        SEASON_MATCHDAYS,
+      ),
+    );
   }
   if (summary.promoted) {
     news.push(makeNews('club', `${player.club} עולה ל${divisionName(player.sport, player.division)}!`, state.season, SEASON_MATCHDAYS));
@@ -1465,8 +1523,10 @@ export function continueSeasonEnd(state: GameState): GameState {
   }
   player = autoQuitJobIfPro(player, news, state.season);
 
-  let next: GameState = { ...state, player };
+  let next: GameState = { ...state, player, flags };
   next = addNews(next, news);
+  // The body decides when the career ends.
+  if (player.age >= LAST_SEASON_AGE) return endCareer(next);
   const windowState: GameState = { ...next, phase: 'transfer', transferContext: 'endseason' };
   return { ...windowState, transferOffers: generateOffers(windowState) };
 }
@@ -1532,10 +1592,19 @@ export function declineOffers(state: GameState): GameState {
 function startNewSeason(state: GameState): GameState {
   const season = state.season + 1;
   const expired = state.player.sponsors.filter((s) => s.untilSeason < season).map((s) => getSponsor(s.id)?.name).filter(Boolean);
+  const age = state.player.age + 1;
+  // From 31 the body slowly gives way: pace first, then the rest.
+  const attributes = { ...state.player.attributes };
+  if (age >= 31) attributes.physical = Math.max(20, attributes.physical - randInt(1, 3));
+  if (age >= 33) {
+    attributes.attack = Math.max(20, attributes.attack - randInt(0, 2));
+    attributes.technique = Math.max(20, attributes.technique - randInt(0, 1));
+  }
   const player: Player = {
     ...state.player,
+    attributes,
     sponsors: state.player.sponsors.filter((s) => s.untilSeason >= season),
-    age: state.player.age + 1,
+    age,
     seasonStats: emptyStats(),
     coachApproval: Math.round(state.player.coachApproval + (52 - state.player.coachApproval) * 0.5),
     energy: 100,
@@ -1555,6 +1624,7 @@ function startNewSeason(state: GameState): GameState {
     flags: { ...state.flags, shiftsThisWeek: 0, postedThisWeek: false, jobWarnings: 0 },
   };
   next = keepRivalClose(next);
+  next = { ...next, goals: { season, items: seasonGoalsFor(next) } };
   next = addNews(next, [
     makeNews('league', `עונה ${season} יוצאת לדרך ב${divisionName(player.sport, player.division)}`, season, 0),
     makeNews('club', `${player.club} פותחת את ההכנות לעונה. ${player.name} כבר באימונים.`, season, 0),

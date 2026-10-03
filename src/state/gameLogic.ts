@@ -19,6 +19,7 @@ import type {
   NewsItem,
   ShopState,
   CupState,
+  Cast,
   PendingOutcome,
   Player,
   SetupData,
@@ -46,6 +47,7 @@ import {
 import { LIFESTYLE_OPTIONS, SOCIAL_POSTS, TRAINING_OPTIONS } from '../data/activities';
 import { CLUB_POOLS } from '../data/clubs';
 import { CUP_NAME, CUP_ROUNDS } from '../data/cup';
+import { hashString } from '../data/clubIdentity';
 import { getShopItem } from '../data/shop';
 import type { ShopId } from '../data/shop';
 import type { LifestyleId, SocialPostId, TrainingId } from '../data/activities';
@@ -158,7 +160,42 @@ function matchExtras(state: GameState, opponent: string | undefined): FilterExtr
     matchday: state.matchday,
     standing: standingOf(state),
     formerClub: Boolean(opponent && opponent !== player.club && player.history.some((h) => h.club === opponent)),
+    rivalMatch: Boolean(opponent && opponent === castOf(state).rivalClub),
   };
+}
+
+// ------------------------------------------------------------------
+// Recurring people
+// ------------------------------------------------------------------
+
+/** The best friend in the dressing room and a personal rival at another club of the league. */
+function makeCast(state: Pick<GameState, 'player' | 'league'>): Cast {
+  const { player, league } = state;
+  const h = hashString(`${player.name}|${player.club}`);
+  const mates = rosterFor(player.club, player.sport, player.division).filter((p) => p.name !== player.name);
+  const others = league.teams.filter((t) => !t.isPlayerClub);
+  const rivalClub = others[h % Math.max(1, others.length)]?.name ?? 'היריבה';
+  const rivals = rosterFor(rivalClub, player.sport, player.division).filter((p) => p.pos !== 'שוער');
+  return {
+    friend: mates[(h >> 4) % Math.max(1, mates.length)]?.name ?? 'החבר הכי טוב שלך',
+    rival: rivals[(h >> 7) % Math.max(1, rivals.length)]?.name ?? 'היריב',
+    rivalClub,
+  };
+}
+
+export function castOf(state: Pick<GameState, 'player' | 'league' | 'cast'>): Cast {
+  return state.cast ?? makeCast(state);
+}
+
+/** The rival follows the player: when the leagues part, he moves to a club of the new league. */
+function keepRivalClose(state: GameState): GameState {
+  const cast = castOf(state);
+  if (state.league.teams.some((t) => t.name === cast.rivalClub && !t.isPlayerClub)) return { ...state, cast };
+  const others = state.league.teams.filter((t) => !t.isPlayerClub);
+  if (others.length === 0) return { ...state, cast };
+  const rivalClub = pickRandom(others).name;
+  const next: GameState = { ...state, cast: { ...cast, rivalClub } };
+  return addNews(next, [newsNow(next, 'rumors', `${cast.rival} עבר ל${rivalClub}. הדרכים של ${state.player.name} ושלו נפגשות שוב`)]);
 }
 
 function markSeen(state: GameState, id: string): GameState {
@@ -375,6 +412,7 @@ export function createNewGame(setup: SetupData): GameState {
     flags: defaultFlags(),
     toast: null,
   };
+  state = { ...state, cast: makeCast(state) };
 
   const job = getJob(setup.jobId);
   state = addNews(state, [
@@ -771,7 +809,7 @@ export function availableSponsorCount(player: Player): number {
 export function getParsedEvent(state: GameState, id: string | null): GameEvent | null {
   const event = getEventById(id);
   if (!event) return null;
-  return parseEvent(event, buildContext(state));
+  return parseEvent(event, buildContext({ ...state, cast: castOf(state) }));
 }
 
 /** Resolves a choice; fame gains are scaled to how known the player is. */
@@ -1259,7 +1297,7 @@ function endMatchday(state: GameState): GameState {
 
   flags.shiftsThisWeek = 0;
   flags.postedThisWeek = false;
-  next = { ...next, player, flags, weekSlots: WEEK_SLOTS, weekRecap: undefined, shop: weekly.shop };
+  next = { ...next, player, flags, weekSlots: WEEK_SLOTS, weekRecap: undefined, shop: weekly.shop, cast: castOf(state) };
 
   // Rumors
   const ovr = calcOvr(player);
@@ -1480,7 +1518,7 @@ export function acceptOffer(state: GameState, offerId: string): GameState {
 
   if (state.transferContext === 'midseason') {
     const league = createLeague(player.sport, player.division, player.club, offer.strength, state.matchday);
-    return { ...next, league, phase: 'dashboard', transferContext: null };
+    return keepRivalClose({ ...next, league, phase: 'dashboard', transferContext: null });
   }
   return startNewSeason({ ...next, transferContext: null });
 }
@@ -1516,6 +1554,7 @@ function startNewSeason(state: GameState): GameState {
     weekSlots: WEEK_SLOTS,
     flags: { ...state.flags, shiftsThisWeek: 0, postedThisWeek: false, jobWarnings: 0 },
   };
+  next = keepRivalClose(next);
   next = addNews(next, [
     makeNews('league', `עונה ${season} יוצאת לדרך ב${divisionName(player.sport, player.division)}`, season, 0),
     makeNews('club', `${player.club} פותחת את ההכנות לעונה. ${player.name} כבר באימונים.`, season, 0),

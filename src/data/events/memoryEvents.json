@@ -1,0 +1,96 @@
+[
+  { "id": "mem_pre_rival", "type": "preMatch", "sport": "both", "scene": "locker", "speaker": "חדר ההלבשה", "conditions": { "rivalMatch": true, "noMemory": "rival_feud" },
+    "title": "היום מול {יריב}", "text": "{קבוצה} פוגשת היום את {קבוצת_היריב}. בחימום אתה רואה את {יריב} מסתכל עליך מהצד השני של המגרש.",
+    "choices": [
+      { "label": "מהנהן אליו בכבוד", "success": { "text": "הוא מהנהן בחזרה. יריבות של ספורטאים.", "effects": { "confidence": 2, "fanRep": 1 } } },
+      { "label": "מתעלם ומתרכז", "stat": "mental", "difficulty": 48,
+        "success": { "text": "רק אתה והמשחק. הוא לא קיים היום.", "effects": { "confidence": 4 } },
+        "fail": { "text": "אתה ממשיך להסתכל עליו כל החימום.", "effects": { "confidence": -2 } } },
+      { "label": "מבקש מהמאמן לשמור עליו", "success": { "text": "המאמן מחייך: 'אם אתה רוצה אותו, הוא שלך.'", "effects": { "coachApproval": 3, "confidence": 2 } } }
+    ] },
+  { "id": "mem_pre_rival_feud", "type": "preMatch", "sport": "both", "scene": "fans", "speaker": "היציע", "conditions": { "rivalMatch": true, "memory": "rival_feud" },
+    "title": "{יריב} לא שכח", "text": "האוהדים של {קבוצת_היריב} הכינו שלט עם הציטוט שלך מהרשת. {יריב} עובר לידך בכניסה למגרש ולוחש: 'היום נראה מי יושב על הספסל.'",
+    "choices": [
+      { "label": "עונה לו בחיוך", "stat": "mental", "difficulty": 54,
+        "success": { "text": "חיוך אחד, ושקט. הוא זה שנלחץ.", "effects": { "confidence": 5, "followers": 80 } },
+        "fail": { "text": "המילים נתקעו בגרון. הוא צוחק והולך.", "effects": { "confidence": -3 } } },
+      { "label": "עונה לו בחזרה בקול", "success": { "text": "השופט שמע ומזהיר את שניכם. האוהדים בשני הצדדים חוגגים.", "effects": { "followers": 150, "coachApproval": -2, "fanRep": 2 } } },
+      { "label": "שותק ושומר את זה למשחק", "success": { "text": "האש בבטן. אתה עולה למגרש עם מטרה אחת.", "effects": { "confidence": 4, "rating": 0.2 } } }
+    ] },
+  { "id": "mem_pre_rival_peace", "type": "preMatch", "sport": "both", "scene": "stadium", "speaker": "המגרש", "conditions": { "rivalMatch": true, "memory": "rival_peace" },
+    "title": "לחיצת יד עם {יריב}", "text": "מאז הסרטון המשותף, כולם מחכים למפגש. {יריב} ניגש אליך בכניסה למגרש: 'רק שלא תכעס כשאנחנו מנצחים.'",
+    "choices": [
+      { "label": "לוחץ יד מול המצלמות", "success": { "text": "התמונה של שניכם עולה לכל אתרי הספורט.", "effects": { "followers": 200, "fanRep": 2 } } },
+      { "label": "'נדבר אחרי השריקה'", "success": { "text": "שניכם צוחקים. תחרות בריאה.", "effects": { "confidence": 3 } } },
+      { "label": "מציע להחליף חולצות בסוף", "success": { "text": "הוא מסכים. יש לך בשביל מה לשחק עד הסוף.", "effects": { "teamMorale": 2, "fanRep": 2 } } }
+    ] },
+
+  { "id": "mem_post_rival", "type": "postMatch", "sport": "both", "scene": "phone", "speaker": "כתב הספורט המקומי", "conditions": { "rivalMatch": true },
+    "title": "השאלה על {יריב}", "text": "'{שחקן}, כולם דיברו השבוע על המפגש שלך עם {יריב}. מה אתה אומר לו אחרי המשחק?'",
+    "choices": [
+      { "label": "מחמיא לו", "success": { "text": "תשובה של ג׳נטלמן. גם האוהדים שלו משתפים.", "effects": { "fanRep": 3, "followers": 60, "remember": "rival_peace" } } },
+      { "label": "'המגרש אמר את שלו'", "success": { "text": "ציטוט קצר שעושה כותרות.", "effects": { "followers": 150, "confidence": 2 } } },
+      { "label": "עוקץ אותו", "success": { "text": "האוהדים שלך צוחקים, שלו פחות. היריבות רק מתחילה.", "effects": { "followers": 200, "fanRep": 1, "coachApproval": -2, "remember": "rival_feud" } } }
+    ] },
+
+  { "id": "mem_life_friend_dinner", "type": "life", "sport": "both", "scene": "home", "speaker": "{חבר}",
+    "title": "ארוחת שישי אצל {חבר}", "text": "{חבר} מזמין אותך לארוחת שישי אצל ההורים שלו. 'אמא שלי לא מפסיקה לשאול עליך.'",
+    "choices": [
+      { "label": "בא עם עוגה", "success": { "text": "ערב של אוכל, צחוק וסיפורים מהקבוצה.", "effects": { "confidence": 3, "teamMorale": 3, "energy": 5 } } },
+      { "label": "מביא עוד שניים מהקבוצה", "success": { "text": "השולחן מתמלא. החדר של {קבוצה} מתחבר גם מחוץ למגרש.", "effects": { "teamMorale": 5 } } },
+      { "label": "מוותר, צריך לנוח", "success": { "text": "{חבר} מבין, אבל קצת מאוכזב.", "effects": { "energy": 10, "teamMorale": -1 } } }
+    ] },
+  { "id": "mem_life_friend_advice", "type": "life", "sport": "both", "scene": "phone", "speaker": "{חבר}", "conditions": { "minApps": 6 },
+    "title": "{חבר} צריך עצה", "text": "{חבר} שולח לך הודעה: 'קיבלתי הצעה מקבוצה אחרת, אבל אני לא רוצה לעזוב אותך. מה אתה אומר?'",
+    "choices": [
+      { "label": "'תעשה מה שטוב לך'", "success": { "text": "הוא מודה לך. חבר אמיתי לא מחזיק אחרים במקום.", "effects": { "confidence": 2, "teamMorale": 1 } } },
+      { "label": "'תישאר, אנחנו עולים ביחד'", "stat": "mental", "difficulty": 50,
+        "success": { "text": "הוא נשאר. החדר שומע ומתרגש.", "effects": { "teamMorale": 5 } },
+        "fail": { "text": "הוא בכל זאת שוקל ללכת. נשאר טעם מר.", "effects": { "teamMorale": -2 } } },
+      { "label": "מציע לשאול את המאמן", "success": { "text": "המאמן נותן לו עצה כנה, ו{חבר} מעריך שחשבת עליו.", "effects": { "teamMorale": 2, "coachApproval": 1 } } }
+    ] },
+  { "id": "mem_life_friend_wedding", "type": "life", "sport": "both", "scene": "party", "speaker": "{חבר}", "conditions": { "memory": "friend_loyal", "minSeason": 2, "once": true },
+    "title": "השושבין", "text": "{חבר} מתחתן. 'כשנפצעתי, אתה היית שם. אני רוצה שתהיה השושבין שלי.' החתונה ביום חמישי, שני ימים לפני משחק.",
+    "choices": [
+      { "label": "שושבין בגאווה, רוקד עד הבוקר", "success": { "text": "הנאום שלך מרגש את כל האולם. אתה ישן מעט, אבל מאושר.", "effects": { "confidence": 6, "teamMorale": 4, "energy": -15 } } },
+      { "label": "שושבין, אבל הולך מוקדם לישון", "success": { "text": "נאום קצר, ריקוד אחד, ומיטה בחצות. {חבר} מבין.", "effects": { "confidence": 4, "teamMorale": 3 } } },
+      { "label": "נותן מתנה גדולה במקום", "success": { "text": "המתנה מרשימה, אבל {חבר} היה רוצה אותך שם.", "effects": { "budget": -1000, "teamMorale": -1 } } }
+    ] },
+  { "id": "mem_life_young_fan_grown", "type": "life", "sport": "both", "scene": "field", "speaker": "מאמן נוער", "conditions": { "memory": "young_fan", "minSeason": 3, "once": true },
+    "title": "האוהד הקטן גדל", "text": "מאמן נוער מתקשר: 'זוכר את הילד עם השלט? הוא בנבחרת הנוער של המחוז, ואומר לכולם שבזכותך. הוא רוצה שתבוא לראות אותו משחק.'",
+    "choices": [
+      { "label": "בא למשחק שלו", "success": { "text": "הוא כובש ורץ לחגוג מולך. אתה מוחא כפיים ביציע.", "effects": { "fanRep": 5, "confidence": 4, "followers": 120 } } },
+      { "label": "שולח לו נעליים חדשות", "success": { "text": "הוא שולח תמונה עם הנעליים ועם השלט הישן.", "effects": { "fanRep": 3, "budget": -400 } } },
+      { "label": "מזמין אותו לאימון של הקבוצה", "success": { "text": "הוא מתאמן לידך שעה שלמה. המאמן שלך מתרשם.", "effects": { "fanRep": 4, "teamMorale": 2 } } }
+    ] },
+  { "id": "mem_life_court_tournament", "type": "life", "sport": "both", "scene": "street", "speaker": "חבר מהשכונה", "conditions": { "memory": "court_saved", "minSeason": 2, "once": true },
+    "title": "טורניר במגרש שהצלת", "text": "המגרש בשכונה ששמרתם עליו מארח טורניר ילדים ראשון. שמונה קבוצות, ומבקשים שתחלק את הגביע.",
+    "choices": [
+      { "label": "מגיע ומשחק עם הילדים", "success": { "text": "שעתיים של משחק. מישהו מצלם, והסרטון מתפשט.", "effects": { "fanRep": 5, "followers": 150, "energy": -6 } } },
+      { "label": "מממן מדליות לכולם", "success": { "text": "כל ילד הולך הביתה עם מדליה.", "effects": { "fanRep": 4, "budget": -500 } } },
+      { "label": "מגיע רק לטקס", "success": { "text": "נאום קצר וגביע. הילדים לא יודעים מה לעשות מרוב התרגשות.", "effects": { "fanRep": 3 } } }
+    ] },
+  { "id": "mem_life_veteran_call", "type": "life", "sport": "both", "scene": "phone", "speaker": "הוותיק", "conditions": { "memory": "veteran_shoes", "minSeason": 2, "once": true },
+    "title": "הנעליים עדיין אצלך?", "text": "הוותיק שפרש מתקשר: 'ראיתי אותך במשחק האחרון. עוד שומר את הנעליים שלי? יש לי עוד דבר אחד ללמד אותך.'",
+    "choices": [
+      { "label": "נפגש איתו לאימון", "success": { "text": "שעה אחת, תנועה אחת חדשה. כמו פעם.", "effects": { "attributes": { "mental": 1 }, "confidence": 3 } } },
+      { "label": "מזמין אותו למשחק הבא", "success": { "text": "הוא יושב ביציע ומוחא כפיים לכל מהלך שלך.", "effects": { "confidence": 4, "fanRep": 2 } } },
+      { "label": "שולח לו תמונה של הנעליים", "success": { "text": "הוא עונה בשלושה סימני קריאה ולב.", "effects": { "confidence": 2 } } }
+    ] },
+  { "id": "mem_life_rival_mock", "type": "life", "sport": "both", "scene": "phone", "speaker": "הרשתות", "conditions": { "memory": "rival_feud", "once": true },
+    "title": "{יריב} שוב בעסק", "text": "{יריב} מעלה סטורי אחרי הפסד של {קבוצה}: תמונה שלך עם אימוג׳י של ליצן. החברים שולחים לך צילומי מסך בלי הפסקה.",
+    "choices": [
+      { "label": "עונה עם נתונים", "success": { "text": "צילום מסך של המספרים שלך, בלי מילה אחת. הרשת אוהבת.", "effects": { "followers": 200, "confidence": 3 } } },
+      { "label": "מתקשר לסגור את זה", "stat": "mental", "difficulty": 54,
+        "success": { "text": "שיחה קשה, אבל בסוף שניכם צוחקים. סוף לסיפור.", "effects": { "confidence": 2, "remember": "rival_peace" } },
+        "fail": { "text": "הוא לא עונה. היריבות ממשיכה.", "effects": { "confidence": -2 } } },
+      { "label": "מתעלם", "success": { "text": "המאמן אומר לך שזו הבחירה הנכונה.", "effects": { "coachApproval": 2 } } }
+    ] },
+  { "id": "mem_life_rival_injury", "type": "life", "sport": "both", "scene": "medical", "speaker": "חדשות", "conditions": { "memory": "rival_peace", "once": true },
+    "title": "{יריב} נפצע", "text": "{יריב} נפצע קשה במשחק של {קבוצת_היריב}. הוא בחוץ לחודשים. מאז הסרטון ביניכם אתם בקשר.",
+    "choices": [
+      { "label": "מבקר אותו", "success": { "text": "הוא לא מאמין שבאת. היריבות הפכה לחברות.", "effects": { "confidence": 3, "fanRep": 3 } } },
+      { "label": "שולח הודעה מעודדת", "success": { "text": "הוא עונה: 'תשמור לי מקום בטבלה.'", "effects": { "confidence": 2 } } },
+      { "label": "מקדיש לו את המשחק הבא", "success": { "text": "האוהדים של שתי הקבוצות משתפים.", "effects": { "followers": 150, "fanRep": 2 } } }
+    ] }
+]

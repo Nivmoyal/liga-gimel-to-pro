@@ -70,6 +70,7 @@ export function formatFollowers(value: number): string {
 export function applyPlayerEffects(player: Player, effects: Effects): Player {
   const next: Player = { ...player, attributes: { ...player.attributes } };
   if (effects.budget) next.budget = Math.round(next.budget + effects.budget);
+  if (effects.remember && !(next.memories ?? []).includes(effects.remember)) next.memories = [...(next.memories ?? []), effects.remember];
   if (effects.energy) next.energy = clamp(next.energy + effects.energy, 0, 100);
   if (effects.coachApproval) next.coachApproval = clamp(next.coachApproval + effects.coachApproval, 0, 100);
   if (effects.fanRep) next.fanRep = clamp(next.fanRep + effects.fanRep, 0, 100);

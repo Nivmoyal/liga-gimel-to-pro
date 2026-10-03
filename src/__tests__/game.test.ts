@@ -12,7 +12,7 @@ import localities from '../data/localities.json';
 import { clubPlace, findPlace, nearestStartingClubs, searchPlaces, startingClubs } from '../data/places';
 import { clubIdentity } from '../data/clubIdentity';
 import { SPONSORS } from '../data/sponsors';
-import { agentInterested, bestTrainingFor, buyItem, migrateSave, runWeekPlan, shopOf, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
+import { agentInterested, bestTrainingFor, buyItem, castOf, getParsedEvent, migrateSave, runWeekPlan, shopOf, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
 import { getAgent } from '../data/agents';
 import { FOOTBALL_POSITIONS, BASKETBALL_POSITIONS, SEASON_MATCHDAYS } from '../data/sports';
 
@@ -543,6 +543,40 @@ describe('money', () => {
       expect(s.player.budget, `${action.type} in ${s.phase}`).toBeGreaterThanOrEqual(before);
     }
     expect(s.matchday).toBe(4);
+  });
+});
+
+describe('recurring people and memories', () => {
+  it('names a friend in the dressing room and a rival in the league, and keeps the rival in the next leagues', () => {
+    const s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'דני כהן', shirtNumber: 9, sport: 'football', position: 'ST', home: findPlace('קצרין')!, club: 'הפועל קצרין', jobId: 'pizza' },
+    })!;
+    const cast = castOf(s);
+    expect(cast.friend.length).toBeGreaterThan(2);
+    expect(s.league.teams.some((t) => t.name === cast.rivalClub && !t.isPlayerClub)).toBe(true);
+    const parsed = getParsedEvent({ ...s, pendingLifeEventId: 'story_trash_talk_1' }, 'story_trash_talk_1')!;
+    expect(parsed.text).toContain(cast.rival);
+    expect(parsed.text).toContain(cast.rivalClub);
+    const { state } = autoplay({ name: 'דני כהן', shirtNumber: 9, sport: 'football', position: 'ST', home: findPlace('קצרין')!, club: 'הפועל קצרין', jobId: 'pizza' }, 3);
+    expect(state.league.teams.some((t) => t.name === castOf(state).rivalClub && !t.isPlayerClub)).toBe(true);
+  });
+
+  it('remembers choices and brings them back later', () => {
+    const s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'דני כהן', shirtNumber: 9, sport: 'football', position: 'ST', home: findPlace('קצרין')!, club: 'הפועל קצרין', jobId: 'pizza' },
+    })!;
+    const wedding = getAllEvents().find((e) => e.id === 'mem_life_friend_wedding')!;
+    const later = { ...s.player, history: [{}, {}] as never, memories: [] as string[] };
+    expect(isEligible(wedding, later)).toBe(false);
+    let st: GameState = { ...s, pendingLifeEventId: 'story_injured_friend_1' };
+    st = gameReducer(st, { type: 'LIFE_CHOICE', index: 0 })!;
+    expect(st.player.memories).toContain('friend_loyal');
+    expect(isEligible(wedding, { ...later, memories: st.player.memories })).toBe(true);
+    const feud = getAllEvents().find((e) => e.id === 'mem_pre_rival_feud')!;
+    expect(isEligible(feud, { ...s.player, memories: ['rival_feud'] }, { rivalMatch: true })).toBe(true);
+    expect(isEligible(feud, { ...s.player, memories: ['rival_feud'] }, { rivalMatch: false })).toBe(false);
   });
 });
 

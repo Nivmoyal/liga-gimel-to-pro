@@ -77,6 +77,8 @@ export interface Effects {
   injuryWeeks?: number;
   setAgent?: string | null;
   setCaptain?: boolean;
+  /** Remembers this choice; later situations can depend on it. */
+  remember?: string;
   // Match-only effects
   rating?: number;
   playerGoals?: number;
@@ -138,6 +140,11 @@ export interface EventConditions {
   standing?: Array<'top' | 'mid' | 'bottom'>;
   /** Only against a club the player used to play for. */
   formerClub?: boolean;
+  /** Only if an earlier choice was remembered (or was not). */
+  memory?: string;
+  noMemory?: string;
+  /** Only against the club of the player's personal rival. */
+  rivalMatch?: boolean;
 }
 
 export interface GameEvent {
@@ -172,6 +179,10 @@ export interface EventContext {
   scoreLine?: string;
   referee?: string;
   venue?: string;
+  /** Recurring people: best friend, personal rival and his club. */
+  friend?: string;
+  rival?: string;
+  rivalClub?: string;
 }
 
 // ------------------------------------------------------------------
@@ -250,6 +261,8 @@ export interface Player {
   history: SeasonRecord[];
   sponsors: ActiveSponsor[];
   national: NationalStats;
+  /** Choices the story remembers. */
+  memories?: string[];
 }
 
 export interface LeagueTeam {
@@ -468,6 +481,14 @@ export interface GameState {
   shop?: ShopState;
   /** This season's State Cup run. */
   cup?: CupState;
+  /** People who come back through the career. */
+  cast?: Cast;
+}
+
+export interface Cast {
+  friend: string;
+  rival: string;
+  rivalClub: string;
 }
 
 export interface CupResult {

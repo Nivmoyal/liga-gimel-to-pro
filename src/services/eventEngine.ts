@@ -9,6 +9,7 @@ import inGameJson from '../data/events/inGameEvents.json';
 import postMatchJson from '../data/events/postMatchEvents.json';
 import lifeJson from '../data/events/lifeEvents.json';
 import storyJson from '../data/events/storyEvents.json';
+import memoryJson from '../data/events/memoryEvents.json';
 import { generatedEvents } from './eventGenerator';
 
 import type {
@@ -29,13 +30,15 @@ import { calcOvr, clamp } from './playerUtils';
 import { parseClock, scoreAt } from './matchEngine';
 
 const GENERATED = generatedEvents();
+const MEMORY = memoryJson as GameEvent[];
+const memoryOf = (type: EventType) => MEMORY.filter((e) => e.type === type);
 
 /** Hand-written events plus generated situations (templates x contexts). */
 export const EVENT_POOLS: Record<EventType, GameEvent[]> = {
-  preMatch: [...(preMatchJson as GameEvent[]), ...GENERATED.preMatch],
+  preMatch: [...(preMatchJson as GameEvent[]), ...memoryOf('preMatch'), ...GENERATED.preMatch],
   inGame: [...(inGameJson as GameEvent[]), ...GENERATED.inGame],
-  postMatch: [...(postMatchJson as GameEvent[]), ...GENERATED.postMatch],
-  life: [...(lifeJson as GameEvent[]), ...(storyJson as GameEvent[]), ...GENERATED.life],
+  postMatch: [...(postMatchJson as GameEvent[]), ...memoryOf('postMatch'), ...GENERATED.postMatch],
+  life: [...(lifeJson as GameEvent[]), ...(storyJson as GameEvent[]), ...memoryOf('life'), ...GENERATED.life],
 };
 
 const EVENT_INDEX: Map<string, GameEvent> = new Map(
@@ -57,7 +60,7 @@ export function getAllEvents(): GameEvent[] {
 // Placeholder parser
 // ------------------------------------------------------------------
 
-const PLACEHOLDER_RE = /\{(שחקן|קבוצה|יריבה|עבודה|סוכן|משטח|ספורט|תוצאה|שופט|אצטדיון)\}/g;
+const PLACEHOLDER_RE = /\{(שחקן|קבוצה|יריבה|עבודה|סוכן|משטח|ספורט|תוצאה|שופט|אצטדיון|חבר|יריב|קבוצת_היריב)\}/g;
 
 export function parseText(text: string, ctx: EventContext): string {
   return text.replace(PLACEHOLDER_RE, (_match, key: string) => {
@@ -82,6 +85,12 @@ export function parseText(text: string, ctx: EventContext): string {
         return ctx.referee ?? 'השופט';
       case 'אצטדיון':
         return ctx.venue ?? 'המגרש';
+      case 'חבר':
+        return ctx.friend ?? 'החבר הכי טוב שלך';
+      case 'יריב':
+        return ctx.rival ?? 'היריב';
+      case 'קבוצת_היריב':
+        return ctx.rivalClub ?? 'הקבוצה שלו';
       default:
         return key;
     }
@@ -98,7 +107,7 @@ function scoreLine(state: Pick<GameState, 'player' | 'currentMatch'>, club: stri
   return team > opp ? `${club} ביתרון ${team}${sep}${opp}` : `${club} בפיגור ${team}${sep}${opp}`;
 }
 
-export function buildContext(state: Pick<GameState, 'player' | 'currentMatch'>, opponentOverride?: string): EventContext {
+export function buildContext(state: Pick<GameState, 'player' | 'currentMatch' | 'cast'>, opponentOverride?: string): EventContext {
   const { player } = state;
   const club = state.currentMatch?.national ? NATIONAL_TEAM_NAME[state.currentMatch.national] : player.club;
   return {
@@ -111,6 +120,9 @@ export function buildContext(state: Pick<GameState, 'player' | 'currentMatch'>, 
     scoreLine: scoreLine(state, club),
     referee: state.currentMatch?.info?.referee,
     venue: state.currentMatch?.info?.venue,
+    friend: state.cast?.friend,
+    rival: state.cast?.rival,
+    rivalClub: state.cast?.rivalClub,
   };
 }
 
@@ -151,6 +163,8 @@ export interface FilterExtras {
   standing?: Standing;
   /** Today's opponent is a club the player used to play for. */
   formerClub?: boolean;
+  /** Today's opponent is the club of the player's personal rival. */
+  rivalMatch?: boolean;
 }
 
 export type Standing = 'top' | 'mid' | 'bottom';
@@ -175,6 +189,9 @@ export function isEligible(event: GameEvent, player: Player, extras: FilterExtra
   if (c.derby && !extras.derby) return false;
   if (c.standing && (!extras.standing || !c.standing.includes(extras.standing))) return false;
   if (c.formerClub && !extras.formerClub) return false;
+  if (c.rivalMatch && !extras.rivalMatch) return false;
+  if (c.memory && !(player.memories ?? []).includes(c.memory)) return false;
+  if (c.noMemory && (player.memories ?? []).includes(c.noMemory)) return false;
   const level = leagueLevel(player);
   if (c.minLevel !== undefined && level < c.minLevel) return false;
   if (c.maxLevel !== undefined && level > c.maxLevel) return false;

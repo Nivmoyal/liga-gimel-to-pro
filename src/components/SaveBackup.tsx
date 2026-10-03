@@ -19,18 +19,6 @@ export function SaveExport({ state }: { state: GameState }) {
       setNote('לא הצלחנו להעתיק אוטומטית. סמנו את הקוד והעתיקו אותו ידנית.');
     }
   };
-  const download = () => {
-    try {
-      const url = URL.createObjectURL(new Blob([code], { type: 'text/plain' }));
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `olim-liga-${state.player.name}-season${state.season}.txt`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch {
-      setNote('ההורדה לא נתמכת כאן. העתיקו את הקוד במקום.');
-    }
-  };
   return (
     <div className="space-y-2">
       <p className="text-sm text-muted">הקריירה נשמרת בדפדפן הזה. כדי לא לאבד אותה, או כדי להמשיך במכשיר אחר, צרו קוד גיבוי.</p>
@@ -42,16 +30,10 @@ export function SaveExport({ state }: { state: GameState }) {
       ) : (
         <>
           <textarea readOnly value={code} onFocus={(e) => e.currentTarget.select()} className="h-20 w-full resize-none rounded-xl border border-line bg-pitch p-2 font-mono text-[10px] text-muted" dir="ltr" />
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={copy} className="btn-gold flex items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-black">
-              <ClipboardCopy size={15} />
-              להעתיק
-            </button>
-            <button onClick={download} className="flex items-center justify-center gap-1.5 rounded-xl border border-line bg-card py-2 text-sm font-bold">
-              <Download size={15} />
-              להוריד קובץ
-            </button>
-          </div>
+          <button onClick={copy} className="btn-gold flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-black">
+            <ClipboardCopy size={15} />
+            להעתיק את הקוד
+          </button>
         </>
       )}
       {note && <p className="text-xs text-amber-200">{note}</p>}

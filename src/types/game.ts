@@ -1,3 +1,4 @@
+import type { ShopId } from '../data/shop';
 // ===================================================================
 // Core domain types for the dual-sport career game
 // ===================================================================
@@ -456,6 +457,14 @@ export interface GameState {
   toast: string | null;
   /** What happened during the week (shown before the match). */
   weekRecap?: string[];
+  /** Purchases: owned for good, weekly services and gifts (season last given). */
+  shop?: ShopState;
+}
+
+export interface ShopState {
+  owned: ShopId[];
+  weekly: ShopId[];
+  gifts: Partial<Record<ShopId, number>>;
 }
 
 export interface SetupData {

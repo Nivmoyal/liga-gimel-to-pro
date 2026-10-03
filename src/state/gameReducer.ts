@@ -1,5 +1,6 @@
 import type { GameState, JobId, SetupData } from '../types/game';
 import type { LifestyleId, SocialPostId, TrainingId } from '../data/activities';
+import type { ShopId } from '../data/shop';
 import * as logic from './gameLogic';
 
 export type GameAction =
@@ -33,6 +34,8 @@ export type GameAction =
   | { type: 'ACCEPT_OFFER'; offerId: string }
   | { type: 'DECLINE_OFFERS' }
   | { type: 'SEASON_CONTINUE' }
+  | { type: 'BUY_ITEM'; id: ShopId }
+  | { type: 'CANCEL_ITEM'; id: ShopId }
   | { type: 'CLEAR_TOAST' };
 
 /** `null` state means the setup screen is shown. */
@@ -48,6 +51,10 @@ export function gameReducer(state: GameState | null, action: GameAction): GameSt
       return logic.lifestyle(state, action.option);
     case 'WORK_SHIFT':
       return logic.workShift(state);
+    case 'BUY_ITEM':
+      return logic.buyItem(state, action.id);
+    case 'CANCEL_ITEM':
+      return logic.cancelItem(state, action.id);
     case 'CHOOSE_JOB':
       return logic.chooseJob(state, action.jobId);
     case 'QUIT_JOB':

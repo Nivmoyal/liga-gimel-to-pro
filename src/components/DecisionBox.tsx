@@ -21,7 +21,7 @@ export function DecisionBox({ state, dispatch }: DecisionBoxProps) {
     return (
       <section className="flex items-center gap-3 rounded-2xl border border-dashed border-line bg-card/50 p-4 text-muted">
         <Inbox size={20} />
-        <p className="text-sm">אין הודעות חדשות. זה הזמן להתאמן, לעבוד או לנוח לפני המחזור.</p>
+        <p className="text-sm">אין החלטות פתוחות השבוע. האימון, העבודה והמנוחה מתבצעים לבד לפני המחזור.</p>
       </section>
     );
   }

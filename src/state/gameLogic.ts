@@ -17,6 +17,7 @@ import type {
   NationalCallUp,
   NationalLevel,
   NewsItem,
+  ShopState,
   PendingOutcome,
   Player,
   SetupData,
@@ -42,6 +43,8 @@ import {
   topDivision,
 } from '../data/sports';
 import { LIFESTYLE_OPTIONS, SOCIAL_POSTS, TRAINING_OPTIONS } from '../data/activities';
+import { getShopItem } from '../data/shop';
+import type { ShopId } from '../data/shop';
 import type { LifestyleId, SocialPostId, TrainingId } from '../data/activities';
 import {
   buildContext,
@@ -50,6 +53,7 @@ import {
   getEventById,
   getTriggeredEvent,
   isEligible,
+  leagueLevel,
   parseEvent,
   pickTriggeredEvent,
   pickEvent,
@@ -467,7 +471,6 @@ function trainingToast(before: Player, after: Player, gains: Partial<Attributes>
 export function lifestyle(state: GameState, id: LifestyleId): GameState {
   const option = LIFESTYLE_OPTIONS.find((o) => o.id === id);
   if (!option) return state;
-  if (option.oneTime && state.flags.ownsBoots) return withToast(state, 'כבר קנית את הציוד הזה.');
   if (state.player.budget < option.budgetCost) return withToast(state, 'אין מספיק תקציב.');
   if (option.energy < 0 && state.player.energy < -option.energy) return withToast(state, 'אין לך כוח לזה עכשיו.');
   const slotted = useSlot(state);
@@ -479,7 +482,6 @@ export function lifestyle(state: GameState, id: LifestyleId): GameState {
     fanRep: option.fanRep,
     attributes: option.attributes,
   });
-  if (option.oneTime) next = { ...next, flags: { ...next.flags, ownsBoots: true } };
   if (option.progress) {
     const gains: Partial<Attributes> = {};
     for (const key of Object.keys(option.progress) as AttrKey[]) gains[key] = trainingProgress(next.player, key, option.progress[key]!);
@@ -488,6 +490,107 @@ export function lifestyle(state: GameState, id: LifestyleId): GameState {
     if (raised.length > 0) return withToast(next, `${option.label}: ${attrLabels(player.sport, player.position)[raised[0]]} עלה ל-${player.attributes[raised[0]]}.`);
   }
   return withToast(next, `${option.label}: בוצע.`);
+}
+
+// ------------------------------------------------------------------
+// Shop: things money buys
+// ------------------------------------------------------------------
+
+export function shopOf(state: GameState): ShopState {
+  return state.shop ?? { owned: state.flags.ownsBoots ? ['boots'] : [], weekly: [], gifts: {} };
+}
+
+/** What a purchase does right away (weekly services act at the end of each matchday). */
+const PURCHASE_EFFECTS: Partial<Record<ShopId, Effects>> = {
+  boots: { attributes: { technique: 1, attack: 1 }, confidence: 4 },
+  family_help: { confidence: 6 },
+  kids_gear: { fanRep: 5, followers: 100 },
+  luxury_car: { followers: 600, confidence: 5, fanRep: -3 },
+  parents_house: { confidence: 10, fanRep: 4, followers: 300 },
+};
+
+const PURCHASE_NEWS: Partial<Record<ShopId, (name: string) => string>> = {
+  family_help: (n) => `${n} עוזר למשפחה. אמא שלו מספרת לשכנות על הבן שלה`,
+  kids_gear: (n) => `${n} תרם כדורים וחולצות לילדים במגרש השכונתי שבו התחיל`,
+  luxury_car: (n) => `${n} הגיע לאימון ברכב חדש ונוצץ. ברשתות כבר מדברים`,
+  parents_house: (n) => `${n} קנה בית להורים. "הבטחתי לאמא כשהייתי ילד"`,
+  foundation: (n) => `${n} מקים קרן שתממן חוגי ספורט לילדים בפריפריה`,
+};
+
+export function buyItem(state: GameState, id: ShopId): GameState {
+  const item = getShopItem(id);
+  if (!item) return state;
+  const shop = shopOf(state);
+  if (item.minLevel !== undefined && leagueLevel(state.player) < item.minLevel) return withToast(state, 'עוד מוקדם בשביל זה.');
+  if (item.kind === 'own' && shop.owned.includes(id)) return withToast(state, 'כבר יש לך את זה.');
+  if (item.kind === 'weekly' && shop.weekly.includes(id)) return withToast(state, 'השירות כבר פעיל.');
+  if (item.kind === 'gift' && shop.gifts[id] === state.season) return withToast(state, 'כבר נתת העונה. אפשר שוב בעונה הבאה.');
+  if (state.player.budget < item.price) return withToast(state, 'אין מספיק כסף.');
+  // Weekly services are paid at the end of every matchday, starting this week.
+  let next = applyEffects(state, { ...(item.kind === 'weekly' ? {} : { budget: -item.price }), ...PURCHASE_EFFECTS[id] });
+  const nextShop: ShopState =
+    item.kind === 'own'
+      ? { ...shop, owned: [...shop.owned, id] }
+      : item.kind === 'weekly'
+        ? { ...shop, weekly: [...shop.weekly, id] }
+        : { ...shop, gifts: { ...shop.gifts, [id]: state.season } };
+  next = { ...next, shop: nextShop, flags: id === 'boots' ? { ...next.flags, ownsBoots: true } : next.flags };
+  const story = PURCHASE_NEWS[id];
+  if (story) next = addNews(next, [newsNow(next, 'fans', story(next.player.name))]);
+  return withToast(next, item.kind === 'weekly' ? `${item.title}: פעיל. ${formatMoney(item.price)} בסוף כל מחזור.` : `${item.title}: ${item.effect}.`);
+}
+
+export function cancelItem(state: GameState, id: ShopId): GameState {
+  const shop = shopOf(state);
+  if (!shop.weekly.includes(id)) return state;
+  return withToast({ ...state, shop: { ...shop, weekly: shop.weekly.filter((w) => w !== id) } }, `${getShopItem(id)?.title ?? ''}: בוטל.`);
+}
+
+/** Weekly services: paid after the matchday, then they do their work. Unaffordable ones stop. */
+function runWeeklyShop(state: GameState, player: Player, news: NewsItem[], matchday: number): { player: Player; shop: ShopState } {
+  const shop = shopOf(state);
+  const kept: ShopId[] = [];
+  let p = player;
+  const progress: Partial<Attributes> = {};
+  const addGain = (key: AttrKey, base: number) => {
+    progress[key] = (progress[key] ?? 0) + trainingProgress(p, key, base);
+  };
+  for (const id of shop.weekly) {
+    const item = getShopItem(id);
+    if (!item) continue;
+    if (p.budget < item.price) {
+      news.push(makeNews('rumors', `${p.name} הפסיק את ${item.title}: אין מספיק כסף השבוע`, state.season, matchday));
+      continue;
+    }
+    kept.push(id);
+    p = { ...p, budget: p.budget - item.price };
+    if (id === 'apartment') p.energy = clamp(p.energy + 5, 0, 100);
+    if (id === 'fitness_coach') {
+      p.energy = clamp(p.energy + 5, 0, 100);
+      addGain('physical', 0.2);
+    }
+    if (id === 'skills_coach') {
+      const weights = OVR_WEIGHTS[p.position];
+      const top = [...ATTR_KEYS].sort((a, b) => weights[b] - weights[a]).slice(0, 2);
+      addGain(top[0], 0.22);
+      addGain(top[1], 0.16);
+    }
+    if (id === 'physio') {
+      p.energy = clamp(p.energy + 10, 0, 100);
+      if (p.injuryWeeks > 1) p.injuryWeeks -= 1;
+    }
+    if (id === 'mental_coach') {
+      p.confidence = clamp(p.confidence + 3, 0, 100);
+      addGain('mental', 0.15);
+    }
+    if (id === 'foundation') {
+      p.fanRep = clamp(p.fanRep + 2, 0, 100);
+      p.followers += 60;
+    }
+  }
+  if (shop.owned.includes('home_gym')) addGain('physical', 0.12);
+  if (Object.keys(progress).length > 0) p = addProgress(p, progress).player;
+  return { player: p, shop: { ...shop, weekly: kept } };
 }
 
 export function chooseJob(state: GameState, jobId: JobId): GameState {
@@ -737,7 +840,7 @@ export function runWeekPlan(state: GameState): { state: GameState; recap: string
     const job = getJob(player.jobId);
     const option = TRAINING_OPTIONS.find((o) => o.id === bestTrainingFor(player)) ?? TRAINING_OPTIONS[1];
     let attempt: GameState;
-    if (job && isNonPro(player) && flags.shiftsThisWeek < 1 && player.energy >= job.energyCost + 10) {
+    if (job && isNonPro(player) && flags.shiftsThisWeek < 1 && player.energy >= job.energyCost) {
       attempt = workShift(next);
     } else if (player.injuryWeeks === 0 && player.energy - option.energyCost >= 30 && player.budget >= option.budgetCost) {
       attempt = train(next, option.id);
@@ -1058,8 +1161,11 @@ function endMatchday(state: GameState): GameState {
   const captainBonus = player.isCaptain ? 1.1 : 1;
   const salaryNet = Math.round(player.weeklySalary * captainBonus * (1 - (agent?.commission ?? 0)));
   player.budget += salaryNet;
-  // Driving to training from home tires the player (professionals get housing near the club)
+  // Driving to training from home tires the player (professionals get housing near the club).
+  // A car halves it, a flat near the club removes it.
   const commute = isNonPro(player) ? commuteCost(clubDistance(player.home, player.club)) : commuteCost(null);
+  const owned = shopOf(state);
+  const commuteEnergy = owned.weekly.includes('apartment') ? 0 : owned.owned.includes('car') ? Math.floor(commute.energy / 2) : commute.energy;
 
   // Sponsors pay weekly; a sponsor walks away if the fan reputation collapses
   const news: NewsItem[] = [];
@@ -1080,6 +1186,10 @@ function endMatchday(state: GameState): GameState {
   });
   player.sponsors = keptSponsors;
 
+  // Weekly services (coaches, flat, physio...)
+  const weekly = runWeeklyShop(state, player, news, matchday);
+  player = weekly.player;
+
   // Day job duty
   const flags = { ...next.flags };
   const job = getJob(player.jobId);
@@ -1098,7 +1208,7 @@ function endMatchday(state: GameState): GameState {
   }
 
   // Recovery and drift
-  player.energy = clamp(player.energy + 20 - commute.energy, 0, 100);
+  player.energy = clamp(player.energy + 20 - commuteEnergy, 0, 100);
   if (player.injuryWeeks > 0) player.injuryWeeks -= 1;
   player.confidence = Math.round(player.confidence + (50 - player.confidence) * 0.08);
   player.teamMorale = Math.round(player.teamMorale + (55 - player.teamMorale) * 0.08);
@@ -1128,7 +1238,7 @@ function endMatchday(state: GameState): GameState {
 
   flags.shiftsThisWeek = 0;
   flags.postedThisWeek = false;
-  next = { ...next, player, flags, weekSlots: WEEK_SLOTS, weekRecap: undefined };
+  next = { ...next, player, flags, weekSlots: WEEK_SLOTS, weekRecap: undefined, shop: weekly.shop };
 
   // Rumors
   const ovr = calcOvr(player);
@@ -1223,10 +1333,9 @@ function queueLifeEvent(state: GameState): GameState {
       flags: { ...state.flags, captainOfferSeason: state.season },
     };
   }
-  if (Math.random() < 0.65) {
-    const event = pickEvent('life', player, state.seenEvents, { matchday: state.matchday }, state.flags.usedOnce);
-    if (event) return { ...state, pendingLifeEventId: event.id, lifeOutcome: null };
-  }
+  // Every week brings one decision; training, work and rest run on their own.
+  const event = pickEvent('life', player, state.seenEvents, { matchday: state.matchday }, state.flags.usedOnce);
+  if (event) return { ...state, pendingLifeEventId: event.id, lifeOutcome: null };
   return { ...state, pendingLifeEventId: null, lifeOutcome: null };
 }
 

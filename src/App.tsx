@@ -23,10 +23,9 @@ import { LiveMatchScreen } from './components/LiveMatchScreen';
 import { TitleScreen } from './components/TitleScreen';
 import { IntroStory } from './components/IntroStory';
 import { CreditsScreen } from './components/CreditsScreen';
-import { TrainingSheet } from './components/sheets/TrainingSheet';
 import { JobSheet } from './components/sheets/JobSheet';
 import { AgentSheet } from './components/sheets/AgentSheet';
-import { LifestyleSheet } from './components/sheets/LifestyleSheet';
+import { ShopSheet } from './components/sheets/ShopSheet';
 import { SocialSheet } from './components/sheets/SocialSheet';
 import { StatsView } from './components/views/StatsView';
 import { CareerView } from './components/views/CareerView';
@@ -131,10 +130,9 @@ export default function App() {
       <BottomNav view={view} onChange={setView} />
 
       {/* Action sheets */}
-      {state.phase === 'dashboard' && sheet === 'training' && <TrainingSheet state={state} dispatch={dispatch} onClose={closeSheet} />}
       {state.phase === 'dashboard' && sheet === 'job' && <JobSheet state={state} dispatch={dispatch} onClose={closeSheet} />}
       {state.phase === 'dashboard' && sheet === 'agent' && <AgentSheet state={state} dispatch={dispatch} onClose={closeSheet} />}
-      {state.phase === 'dashboard' && sheet === 'lifestyle' && <LifestyleSheet state={state} dispatch={dispatch} onClose={closeSheet} />}
+      {state.phase === 'dashboard' && sheet === 'shop' && <ShopSheet state={state} dispatch={dispatch} onClose={closeSheet} />}
       {state.phase === 'dashboard' && sheet === 'social' && <SocialSheet state={state} dispatch={dispatch} onClose={closeSheet} />}
 
       {/* Matchday flow */}

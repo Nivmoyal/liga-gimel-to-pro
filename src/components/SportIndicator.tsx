@@ -1,10 +1,10 @@
 import { Goal, HeartPulse, Volleyball } from 'lucide-react';
 import type { GameState } from '../types/game';
-import { SPORT_LABEL, WEEK_SLOTS, positionLabel } from '../data/sports';
+import { SPORT_LABEL, positionLabel } from '../data/sports';
 import { clubIdentity } from '../data/clubIdentity';
 import { Jersey } from './art/Jersey';
 
-/** Shows the active sport, position and how much free time is left this week. */
+/** Shows the active sport, position and the player's fitness. */
 export function SportIndicator({ state }: { state: GameState }) {
   const { player } = state;
   const Icon = player.sport === 'football' ? Goal : Volleyball;
@@ -30,14 +30,7 @@ export function SportIndicator({ state }: { state: GameState }) {
             פצוע ({player.injuryWeeks})
           </div>
         ) : (
-          <>
-            <div className="text-[11px] text-muted">זמן פנוי השבוע</div>
-            <div className="mt-1 flex justify-end gap-1" aria-label={`נותרו ${state.weekSlots} פעולות`}>
-              {Array.from({ length: WEEK_SLOTS }, (_, i) => (
-                <span key={i} className={`h-2 w-5 rounded-full ${i < state.weekSlots ? 'bg-brand' : 'bg-line'}`} />
-              ))}
-            </div>
-          </>
+          <div className="text-xs font-bold text-emerald-400">כשיר למשחק</div>
         )}
       </div>
     </div>

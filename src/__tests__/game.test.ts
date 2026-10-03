@@ -12,7 +12,7 @@ import localities from '../data/localities.json';
 import { clubPlace, findPlace, nearestStartingClubs, searchPlaces, startingClubs } from '../data/places';
 import { clubIdentity } from '../data/clubIdentity';
 import { SPONSORS } from '../data/sponsors';
-import { agentInterested, bestTrainingFor, migrateSave, runWeekPlan, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
+import { agentInterested, bestTrainingFor, buyItem, migrateSave, runWeekPlan, shopOf, sponsorBlocked, sponsorMissing } from '../state/gameLogic';
 import { getAgent } from '../data/agents';
 import { FOOTBALL_POSITIONS, BASKETBALL_POSITIONS, SEASON_MATCHDAYS } from '../data/sports';
 
@@ -538,6 +538,49 @@ describe('money', () => {
       expect(s.player.budget, `${action.type} in ${s.phase}`).toBeGreaterThanOrEqual(before);
     }
     expect(s.matchday).toBe(4);
+  });
+});
+
+describe('shop', () => {
+  const fresh = () =>
+    gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 9, sport: 'football', position: 'ST', home: findPlace('חיפה')!, club: 'הפועל קצרין', jobId: 'pizza' },
+    })!;
+
+  it('charges once for owned items and keeps them', () => {
+    let s = { ...fresh(), player: { ...fresh().player, budget: 20000 } };
+    s = buyItem(s, 'car');
+    expect(s.player.budget).toBe(11000);
+    expect(shopOf(s).owned).toContain('car');
+    const again = buyItem(s, 'car');
+    expect(again.player.budget).toBe(11000);
+  });
+
+  it('charges weekly services after each matchday and stops them when money runs out', () => {
+    let s = { ...fresh(), pendingLifeEventId: null, player: { ...fresh().player, budget: 1000 } };
+    s = buyItem(s, 'skills_coach');
+    expect(s.player.budget).toBe(1000);
+    expect(shopOf(s).weekly).toContain('skills_coach');
+    // Play one matchday without spending.
+    for (let guard = 0; s.matchday < 1 && guard < 200; guard++) {
+      const m = s.currentMatch;
+      const action: GameAction =
+        s.phase === 'dashboard' ? { type: 'START_MATCHDAY' }
+        : s.phase === 'preMatch' ? (m?.pendingOutcome ? { type: 'PRE_CONTINUE' } : { type: 'PRE_CHOICE', index: 0 })
+        : s.phase === 'live' ? { type: 'LIVE_ADVANCE' }
+        : s.phase === 'inGame' ? (m?.pendingOutcome ? { type: 'INGAME_CONTINUE' } : { type: 'INGAME_CHOICE', index: 0 })
+        : s.phase === 'matchSummary' ? { type: 'SUMMARY_CONTINUE' }
+        : m?.pendingOutcome ? { type: 'POST_CONTINUE' } : { type: 'POST_CHOICE', index: 0 };
+      s = gameReducer(s, action)!;
+    }
+    expect(s.matchday).toBe(1);
+    expect(s.news.some((n) => n.text.includes('הפסיק את מאמן מקצועי אישי')) || shopOf(s).weekly.includes('skills_coach')).toBe(true);
+  });
+
+  it('keeps boots bought before the shop existed', () => {
+    const s = fresh();
+    expect(shopOf({ ...s, shop: undefined, flags: { ...s.flags, ownsBoots: true } }).owned).toEqual(['boots']);
   });
 });
 

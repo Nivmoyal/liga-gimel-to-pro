@@ -1,12 +1,12 @@
-import { ChartNoAxesColumn, Briefcase, Dumbbell, Lock, Smartphone, Sofa, UserRound } from 'lucide-react';
+import { ChartNoAxesColumn, Briefcase, Lock, ShoppingBag, Smartphone, UserRound } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { GameState } from '../types/game';
 import { getJob } from '../data/jobs';
 import { getAgent } from '../data/agents';
 import { formatFollowers } from '../services/playerUtils';
-import { availableSponsorCount } from '../state/gameLogic';
+import { availableSponsorCount, shopOf } from '../state/gameLogic';
 
-export type ActionSheetId = 'training' | 'job' | 'agent' | 'lifestyle' | 'social' | 'stats';
+export type ActionSheetId = 'shop' | 'job' | 'agent' | 'social' | 'stats';
 
 interface GridItem {
   id: ActionSheetId;
@@ -30,11 +30,11 @@ export function MainActionGrid({ state, onOpen }: MainActionGridProps) {
   const needsJob = player.contract !== 'pro' && !job;
 
   const items: GridItem[] = [
-    { id: 'training', title: 'אימונים', subtitle: 'שיפור תכונות', icon: Dumbbell },
+    { id: 'shop', title: 'קניות והשקעות', subtitle: shopOf(state).weekly.length ? `${shopOf(state).weekly.length} שירותים פעילים` : 'מה הכסף יכול לקנות', icon: ShoppingBag },
     {
       id: 'job',
       title: 'עבודה',
-      subtitle: player.contract === 'pro' ? 'מקצוען, בלי עבודה' : job ? `${flags.shiftsThisWeek} משמרות השבוע` : 'חובה לבחור עבודה',
+      subtitle: player.contract === 'pro' ? 'מקצוען, בלי עבודה' : job ? job.name : 'חובה לבחור עבודה',
       icon: Briefcase,
       alert: needsJob || (Boolean(job) && player.contract !== 'pro' && flags.shiftsThisWeek === 0 && flags.jobWarnings > 0),
     },
@@ -46,7 +46,6 @@ export function MainActionGrid({ state, onOpen }: MainActionGridProps) {
       locked: agentLocked,
       alert: !agent && flags.agentDiscovered,
     },
-    { id: 'lifestyle', title: 'סגנון חיים', subtitle: 'מנוחה והתאוששות', icon: Sofa },
     {
       id: 'social',
       title: 'מדיה ורשתות',

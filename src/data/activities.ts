@@ -74,7 +74,7 @@ export const TRAINING_OPTIONS: TrainingOption[] = [
   },
 ];
 
-export type LifestyleId = 'rest' | 'physio' | 'nutrition' | 'friends' | 'family' | 'gear';
+export type LifestyleId = 'rest' | 'physio' | 'nutrition' | 'friends' | 'family';
 
 export interface LifestyleOption {
   id: LifestyleId;
@@ -87,7 +87,6 @@ export interface LifestyleOption {
   attributes: Partial<Record<AttrKey, number>>;
   /** Fraction of a point towards these attributes (gradual, like training). */
   progress?: Partial<Record<AttrKey, number>>;
-  oneTime?: boolean;
 }
 
 export const LIFESTYLE_OPTIONS: LifestyleOption[] = [
@@ -96,17 +95,6 @@ export const LIFESTYLE_OPTIONS: LifestyleOption[] = [
   { id: 'nutrition', label: 'תזונאי ספורט', description: 'תפריט מסודר, פחות שווארמה.', budgetCost: 400, energy: 10, confidence: 1, fanRep: 0, attributes: {}, progress: { physical: 0.2 } },
   { id: 'friends', label: 'ערב עם החברים', description: 'לנקות את הראש מהלחץ.', budgetCost: 200, energy: -8, confidence: 6, fanRep: 1, attributes: {} },
   { id: 'family', label: 'ארוחת שישי אצל המשפחה', description: 'אוכל של אמא ושקט נפשי.', budgetCost: 0, energy: 15, confidence: 5, fanRep: 0, attributes: {} },
-  {
-    id: 'gear',
-    label: 'ציוד מקצועי חדש',
-    description: 'נעליים ובגדים של מקצוענים. קנייה חד פעמית.',
-    budgetCost: 900,
-    energy: 0,
-    confidence: 4,
-    fanRep: 0,
-    attributes: { technique: 1, attack: 1 },
-    oneTime: true,
-  },
 ];
 
 export type SocialPostId = 'training' | 'fans' | 'lifestyle' | 'sponsored';

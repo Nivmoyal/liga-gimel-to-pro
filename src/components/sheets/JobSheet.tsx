@@ -1,4 +1,4 @@
-import { Briefcase, Car, Factory, GraduationCap, Pizza, ShieldCheck, Wrench, Zap, Coins, TriangleAlert } from 'lucide-react';
+import { Briefcase, Car, Factory, GraduationCap, Pizza, ShieldCheck, Wrench, Zap, TriangleAlert } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { GameState, JobId } from '../../types/game';
 import type { GameAction } from '../../state/gameReducer';
@@ -80,24 +80,15 @@ export function JobSheet({ state, dispatch, onClose }: Props) {
         <p className="mt-2 text-xs text-muted">בונוס: {job.perk.label}</p>
       </div>
 
-      {flags.shiftsThisWeek === 0 && (
-        <div className="mb-3 flex items-start gap-2 rounded-xl bg-brand/10 p-3 text-xs text-amber-200">
-          <TriangleAlert size={16} className="shrink-0" />
-          <span>
-            הבוס מצפה למשמרת אחת לפחות בכל שבוע.
-            {flags.jobWarnings > 0 ? ' כבר קיבלת אזהרה - עוד שבוע בלי משמרת ותפוטר.' : ''}
-          </span>
-        </div>
-      )}
+      <div className="mb-3 flex items-start gap-2 rounded-xl bg-brand/10 p-3 text-xs text-amber-200">
+        <TriangleAlert size={16} className="shrink-0" />
+        <span>
+          משמרת אחת בשבוע נעשית לבד לפני כל מחזור, כשיש לך כוח לזה.
+          {flags.jobWarnings > 0 ? ' השבוע שעבר לא הגעת למשמרת, והבוס כבר הזהיר.' : ''}
+        </span>
+      </div>
 
       <div className="space-y-2">
-        <GoldButton
-          onClick={() => dispatch({ type: 'WORK_SHIFT' })}
-          disabled={state.weekSlots <= 0 || player.energy < job.energyCost}
-        >
-          <Coins size={18} />
-          לעבוד משמרת (+{formatMoney(pay)})
-        </GoldButton>
         <div className="grid grid-cols-2 gap-2">
           <GoldButton variant="ghost" onClick={() => dispatch({ type: 'ASK_RAISE' })} disabled={flags.raiseAskedSeason === state.season}>
             לבקש העלאה

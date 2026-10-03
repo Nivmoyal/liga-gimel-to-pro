@@ -30,7 +30,8 @@ for (const list of Object.values(manifest)) {
     if (!existsSync(path) || !quoted.test(js)) continue;
     const meta = await sharp(path).metadata();
     const portrait = (meta.height ?? 0) > (meta.width ?? 0);
-    const webp = await sharp(path).resize(portrait ? { width: 720, withoutEnlargement: true } : { width: 1024, withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
+    // Phone-sized and well compressed: the whole game has to load fast on a mobile connection.
+    const webp = await sharp(path).resize(portrait ? { width: 600, withoutEnlargement: true } : { width: 800, withoutEnlargement: true }).webp({ quality: 64, effort: 6 }).toBuffer();
     const uri = `data:image/webp;base64,${webp.toString('base64')}`;
     js = js.replace(quoted, (_m, q) => `${q}${uri}${q}`);
     embedded += 1;

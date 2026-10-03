@@ -172,20 +172,26 @@ function matchExtras(state: GameState, opponent: string | undefined): FilterExtr
 /** The best friend in the dressing room and a personal rival at another club of the league. */
 function makeCast(state: Pick<GameState, 'player' | 'league'>): Cast {
   const { player, league } = state;
-  const h = hashString(`${player.name}|${player.club}`);
+  const h = hashString(`${player.name}|${player.club}`) >>> 0;
   const mates = rosterFor(player.club, player.sport, player.division).filter((p) => p.name !== player.name);
   const others = league.teams.filter((t) => !t.isPlayerClub);
   const rivalClub = others[h % Math.max(1, others.length)]?.name ?? 'היריבה';
   const rivals = rosterFor(rivalClub, player.sport, player.division).filter((p) => p.pos !== 'שוער');
   return {
-    friend: mates[(h >> 4) % Math.max(1, mates.length)]?.name ?? 'החבר הכי טוב שלך',
-    rival: rivals[(h >> 7) % Math.max(1, rivals.length)]?.name ?? 'היריב',
+    friend: mates[(h >>> 4) % Math.max(1, mates.length)]?.name ?? 'החבר הכי טוב שלך',
+    rival: rivals[(h >>> 7) % Math.max(1, rivals.length)]?.name ?? 'היריב',
     rivalClub,
   };
 }
 
 export function castOf(state: Pick<GameState, 'player' | 'league' | 'cast'>): Cast {
-  return state.cast ?? makeCast(state);
+  if (!state.cast) return makeCast(state);
+  // Careers started before names were always found get a real friend now.
+  if (state.cast.friend === 'החבר הכי טוב שלך' || state.cast.rival === 'היריב') {
+    const fresh = makeCast(state);
+    return { ...state.cast, friend: fresh.friend, rival: state.cast.rival === 'היריב' ? fresh.rival : state.cast.rival };
+  }
+  return state.cast;
 }
 
 /** The rival follows the player: when the leagues part, he moves to a club of the new league. */

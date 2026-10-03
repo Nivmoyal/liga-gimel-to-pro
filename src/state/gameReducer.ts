@@ -6,6 +6,7 @@ import * as logic from './gameLogic';
 export type GameAction =
   | { type: 'NEW_GAME'; setup: SetupData }
   | { type: 'RESET' }
+  | { type: 'LOAD_SAVE'; state: GameState }
   | { type: 'TRAIN'; option: TrainingId }
   | { type: 'LIFESTYLE'; option: LifestyleId }
   | { type: 'WORK_SHIFT' }
@@ -50,6 +51,7 @@ export function gameReducer(state: GameState | null, action: GameAction): GameSt
 function reduce(state: GameState | null, action: GameAction): GameState | null {
   if (action.type === 'NEW_GAME') return logic.createNewGame(action.setup);
   if (action.type === 'RESET') return null;
+  if (action.type === 'LOAD_SAVE') return action.state;
   if (!state) return state;
 
   switch (action.type) {

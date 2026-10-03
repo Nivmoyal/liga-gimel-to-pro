@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Award, BadgeDollarSign, House, CalendarDays, Coins, Flag, Heart, History, Medal, RotateCcw, Smile, Trophy, Users, Armchair } from 'lucide-react';
 import { ACHIEVEMENTS, RETIRE_FROM_AGE } from '../../services/careerEngine';
 import { castOf } from '../../state/gameLogic';
+import { SaveExport } from '../SaveBackup';
 import type { GameState } from '../../types/game';
 import { clubDistance } from '../../data/places';
 import { ATTR_KEYS, attrLabels, CONTRACT_LABEL, SPORT_LABEL, divisionName, positionLabel } from '../../data/sports';
@@ -214,6 +215,11 @@ export function CareerView({ state, onReset, onHome, onRetire }: { state: GameSt
             ))}
           </ul>
         )}
+      </section>
+
+      <section className="rounded-2xl border border-line bg-card p-4">
+        <h2 className="mb-2 font-extrabold">גיבוי הקריירה</h2>
+        <SaveExport state={state} />
       </section>
 
       {player.age >= RETIRE_FROM_AGE - 2 && (

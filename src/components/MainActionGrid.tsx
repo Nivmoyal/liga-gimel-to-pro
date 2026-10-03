@@ -1,4 +1,4 @@
-import { ChartNoAxesColumn, Briefcase, Lock, ShoppingBag, Smartphone, UserRound } from 'lucide-react';
+import { ChartNoAxesColumn, Briefcase, CircleHelp, Lock, ShoppingBag, Smartphone, UserRound } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { GameState } from '../types/game';
 import { getJob } from '../data/jobs';
@@ -6,7 +6,7 @@ import { getAgent } from '../data/agents';
 import { formatFollowers } from '../services/playerUtils';
 import { availableSponsorCount, shopOf } from '../state/gameLogic';
 
-export type ActionSheetId = 'shop' | 'job' | 'agent' | 'social' | 'stats';
+export type ActionSheetId = 'shop' | 'job' | 'agent' | 'social' | 'stats' | 'help';
 
 interface GridItem {
   id: ActionSheetId;
@@ -54,6 +54,7 @@ export function MainActionGrid({ state, onOpen }: MainActionGridProps) {
       alert: availableSponsorCount(player) > 0,
     },
     { id: 'stats', title: 'סטטיסטיקות', subtitle: 'טבלה ונתונים', icon: ChartNoAxesColumn },
+    { id: 'help', title: 'איך משחקים', subtitle: 'הסבר על המדדים', icon: CircleHelp, alert: state.season === 1 && state.matchday === 0 },
   ];
 
   return (

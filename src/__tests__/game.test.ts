@@ -16,6 +16,7 @@ import { agentInterested, bestTrainingFor, buyItem, castOf, getParsedEvent, migr
 import { getAgent } from '../data/agents';
 import { FOOTBALL_POSITIONS, BASKETBALL_POSITIONS, SEASON_MATCHDAYS } from '../data/sports';
 import { goalStatus, goalsOf } from '../services/careerEngine';
+import { exportSave, importSave } from '../state/storage';
 
 function walk(dir: string): string[] {
   return readdirSync(dir).flatMap((name: string) => {
@@ -547,6 +548,22 @@ describe('money', () => {
   });
 });
 
+describe('save backup code', () => {
+  it('turns a career into a code and back', async () => {
+    const s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'נועה לוי', shirtNumber: 7, sport: 'basketball', position: 'PG', home: findPlace('ערד')!, club: 'הפועל ערד', jobId: 'instructor' },
+    })!;
+    const code = await exportSave(s);
+    expect(code.startsWith('OLIM')).toBe(true);
+    const back = await importSave(`  ${code}\n`);
+    expect(back?.player.name).toBe('נועה לוי');
+    expect(back?.league.teams.length).toBe(s.league.teams.length);
+    expect(await importSave('not a code')).toBeNull();
+    expect(await importSave('OLIM1:AAAA')).toBeNull();
+  });
+});
+
 describe('goals, achievements and retirement', () => {
   /** Plays on (without spending) until the season ends. */
   const toSeasonEnd = (start: GameState): GameState => {
@@ -611,6 +628,11 @@ describe('recurring people and memories', () => {
     })!;
     const cast = castOf(s);
     expect(cast.friend.length).toBeGreaterThan(2);
+    for (const name of ['בדיקה', 'נועה לוי', 'יוסי', 'אבי כהן', 'מיכל', 'עומר חסון', 'דנה']) {
+      const other = gameReducer(null, { type: 'NEW_GAME', setup: { name, shirtNumber: 5, sport: 'basketball', position: 'PG', home: findPlace('חולון')!, club: 'אליצור גבעתיים', jobId: 'security' } })!;
+      expect(castOf(other).friend, name).not.toBe('החבר הכי טוב שלך');
+      expect(castOf(other).rival, name).not.toBe('היריב');
+    }
     expect(s.league.teams.some((t) => t.name === cast.rivalClub && !t.isPlayerClub)).toBe(true);
     const parsed = getParsedEvent({ ...s, pendingLifeEventId: 'story_trash_talk_1' }, 'story_trash_talk_1')!;
     expect(parsed.text).toContain(cast.rival);

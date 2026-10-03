@@ -29,6 +29,7 @@ import { CreditsScreen } from './components/CreditsScreen';
 import { JobSheet } from './components/sheets/JobSheet';
 import { AgentSheet } from './components/sheets/AgentSheet';
 import { ShopSheet } from './components/sheets/ShopSheet';
+import { HelpSheet } from './components/sheets/HelpSheet';
 import { SocialSheet } from './components/sheets/SocialSheet';
 import { StatsView } from './components/views/StatsView';
 import { CareerView } from './components/views/CareerView';
@@ -85,6 +86,11 @@ export default function App() {
             }}
             onNewGame={() => setScreen('intro')}
             onCredits={() => setScreen('credits')}
+            onImport={(loaded) => {
+              dispatch({ type: 'LOAD_SAVE', state: loaded });
+              setView('home');
+              setScreen('game');
+            }}
           />
         )}
       </div>
@@ -152,6 +158,7 @@ export default function App() {
       {state.phase === 'dashboard' && sheet === 'job' && <JobSheet state={state} dispatch={dispatch} onClose={closeSheet} />}
       {state.phase === 'dashboard' && sheet === 'agent' && <AgentSheet state={state} dispatch={dispatch} onClose={closeSheet} />}
       {state.phase === 'dashboard' && sheet === 'shop' && <ShopSheet state={state} dispatch={dispatch} onClose={closeSheet} />}
+      {state.phase === 'dashboard' && sheet === 'help' && <HelpSheet onClose={closeSheet} />}
       {state.phase === 'dashboard' && sheet === 'social' && <SocialSheet state={state} dispatch={dispatch} onClose={closeSheet} />}
 
       {/* Matchday flow */}

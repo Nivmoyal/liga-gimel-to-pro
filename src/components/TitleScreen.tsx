@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Camera, ChevronLeft, Play, Plus, Trophy } from 'lucide-react';
+import { Camera, ChevronLeft, Play, Plus, Trophy, Upload } from 'lucide-react';
+import { SaveImport } from './SaveBackup';
 import type { GameState } from '../types/game';
 import { SPORT_LABEL, divisionName } from '../data/sports';
 import { calcOvr } from '../services/playerUtils';
@@ -15,11 +16,13 @@ interface TitleScreenProps {
   onContinue: () => void;
   onNewGame: () => void;
   onCredits: () => void;
+  onImport: (state: GameState) => void;
 }
 
 /** Opening screen: full-bleed photo, game title, continue / new career. */
-export function TitleScreen({ save, onContinue, onNewGame, onCredits }: TitleScreenProps) {
+export function TitleScreen({ save, onContinue, onNewGame, onCredits, onImport }: TitleScreenProps) {
   const [confirm, setConfirm] = useState(false);
+  const [importing, setImporting] = useState(false);
   const p = save?.player;
   // Warm the photo cache in the background so match scenes appear instantly.
   useEffect(() => {
@@ -95,6 +98,17 @@ export function TitleScreen({ save, onContinue, onNewGame, onCredits }: TitleScr
             >
               <Plus size={20} />
               קריירה חדשה
+            </button>
+          )}
+
+          {importing ? (
+            <div className="rounded-2xl border border-white/15 bg-black/70 p-3 backdrop-blur">
+              <SaveImport onLoad={onImport} />
+            </div>
+          ) : (
+            <button onClick={() => setImporting(true)} className="mx-auto flex items-center gap-1 text-sm font-bold text-white/80 hover:text-white">
+              <Upload size={14} />
+              טעינת קריירה מקוד גיבוי
             </button>
           )}
 

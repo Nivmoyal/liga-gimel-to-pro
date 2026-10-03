@@ -14,8 +14,15 @@ export function CreditsScreen({ onBack }: { onBack: () => void }) {
         <ChevronRight size={18} />
         חזרה
       </button>
-      <h1 className="gold-text mb-1 text-3xl font-black">קרדיטים לתמונות</h1>
-      <p className="mb-4 text-sm text-muted">התמונות מגיעות מ-Wikimedia Commons ברישיונות חופשיים (CC0, CC BY, CC BY-SA, נחלת הכלל), עם קרדיט לצלמים.</p>
+      <h1 className="gold-text mb-1 text-3xl font-black">קרדיטים</h1>
+      <p className="mb-2 text-sm text-muted">התמונות במשחק נוצרו בבינה מלאכותית. כל הדמויות, המותגים והמועדונים בתמונות בדיוניים.</p>
+      <p className="mb-4 text-sm text-muted">
+        רשימת היישובים והמרחקים:{' '}
+        <a href="https://github.com/akivaschiff/israel-geolocation" target="_blank" rel="noreferrer" className="underline">
+          israel-geolocation
+        </a>{' '}
+        (MIT), על בסיס נתוני הממשלה.
+      </p>
       {credits.length === 0 ? (
         <div className="flex items-center gap-2 rounded-2xl border border-line bg-card p-4 text-sm text-muted">
           <ImageOff size={18} />

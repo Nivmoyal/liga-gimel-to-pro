@@ -7,6 +7,7 @@
 import type { HomePlace, SportType } from '../types/game';
 import { CLUB_POOLS } from './clubs';
 import { clubCity } from '../services/rosterEngine';
+import localities from './localities.json';
 
 interface Place {
   name: string;
@@ -156,22 +157,39 @@ export const PLACES: Place[] = [
 // Text search
 // ------------------------------------------------------------------
 
-/** Folds spelling variants: geresh/quotes, hyphens, full/short spelling of קריה. */
+/**
+ * Folds spelling variants: geresh/quotes, hyphens, brackets, full/short
+ * spelling of קריה, and words like "קיבוץ" or "מושב" before the name.
+ */
 export function normalizePlace(text: string): string {
   return text
-    .replace(/["'״׳`]/g, '')
+    .replace(/["'״׳`()]/g, '')
     .replace(/[-־–,.]/g, ' ')
     .replace(/(^|\s)קרית(?=\s|$)/g, '$1קריית')
+    .replace(/^(קיבוץ|מושב|היישוב|יישוב|העיר|הכפר|מועצה מקומית)\s+/, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+/**
+ * Every Israeli locality (government settlement list, see
+ * scripts/build-localities.mjs), plus the hand-made places above with their
+ * nicknames and regions. Hand-made entries win on name clashes.
+ */
+const ALL_PLACES: Place[] = (() => {
+  const known = new Set(PLACES.flatMap((p) => [p.name, ...(p.aliases ?? [])].map(normalizePlace)));
+  const official = (localities as Array<[string, number, number]>)
+    .filter(([name]) => !known.has(normalizePlace(name)))
+    .map(([name, lat, lon]) => ({ name, lat, lon }));
+  return [...PLACES, ...official];
+})();
 
 interface IndexedName {
   key: string;
   place: Place;
 }
 
-const INDEX: IndexedName[] = PLACES.flatMap((place) =>
+const INDEX: IndexedName[] = ALL_PLACES.flatMap((place) =>
   [place.name, ...(place.aliases ?? [])].map((n) => ({ key: normalizePlace(n), place })),
 );
 
@@ -253,6 +271,11 @@ const CLUB_TOWN: Record<string, string> = {
   'מכבי בני ריינה': 'ריינה',
   'אליצור שומרון': 'קרני שומרון',
   'הפועל העמק': 'עמק יזרעאל',
+  'הפועל חבל אילות': 'יטבתה',
+  'מכבי חבל אילות': 'יטבתה',
+  'הפועל ערבה': 'ספיר',
+  'הפועל ים המלח': 'נווה זוהר',
+  'הפועל אשכול': 'מגן',
 };
 
 /** Home town of a club, when it is in the gazetteer. */
@@ -271,6 +294,8 @@ export interface StartingClub {
   name: string;
   division: number;
   km: number;
+  /** The club's home town. */
+  town: string | null;
 }
 
 /** Clubs a newcomer can join: the bottom tier (and the one above it in basketball). */
@@ -282,7 +307,7 @@ export function startingClubs(sport: SportType): Array<{ name: string; division:
 /** Starting clubs sorted by distance from home (nearest first). */
 export function nearestStartingClubs(sport: SportType, home: HomePlace): StartingClub[] {
   return startingClubs(sport)
-    .map((c) => ({ ...c, km: clubDistance(home, c.name) ?? 999 }))
+    .map((c) => ({ ...c, km: clubDistance(home, c.name) ?? 999, town: clubPlace(c.name)?.name ?? null }))
     .sort((a, b) => a.km - b.km || a.division - b.division);
 }
 

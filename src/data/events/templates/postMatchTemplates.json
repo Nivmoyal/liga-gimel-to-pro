@@ -41,7 +41,7 @@
     ] },
   { "key": "pq_your_performance", "sport": "both", "scene": "press", "conditions": { "matchResult": ["loss"] },
     "title": ["שאלה עליך", "המשחק האישי שלך"],
-    "text": ["'לא נראית במיטבך היום. משהו מפריע לך?'", "'יש אוהדים שאומרים שהעבודה פוגעת לך בכושר. מה דעתך?'"],
+    "text": ["'לא נראית במיטבך היום. משהו מפריע לך?'", "'יש אוהדים שאומרים שאתה נראה עייף בחודש האחרון. מה דעתך?'"],
     "choices": [
       { "label": "מודה שהיה יום חלש", "success": { "text": ["כנות מכבדת.", "האוהדים סולחים."], "effects": { "fanRep": 3, "confidence": -1 } } },
       { "label": "מתעצבן על השאלה", "success": { "text": ["הקטע רץ ברשת. לא מחמיא.", "תגובה רגשית."], "effects": { "fanRep": -4, "followers": 120 } } },
@@ -55,7 +55,7 @@
       { "label": "צריך לבדוק את עצמנו", "success": { "text": ["תשובה כנה. המאמן מסכים.", "דרישה מעצמכם."], "effects": { "coachApproval": 3 } } },
       { "label": "אני כאן כדי להציל את העונה", "success": { "text": ["כותרת נועזת. לחץ על הכתפיים.", "האחריות עליך."], "effects": { "confidence": 3, "followers": 80, "teamMorale": -1 } } }
     ] },
-  { "key": "pq_coach_future", "sport": "both", "scene": "press", "conditions": { "matchResult": ["loss"] },
+  { "key": "pq_coach_future", "sport": "both", "scene": "press", "conditions": { "matchResult": ["loss"], "minMatchday": 3 },
     "title": ["המאמן בסכנה?", "עתיד המאמן"],
     "text": ["'יש שמועות על החלפת המאמן. אתם עדיין איתו?'", "'ההנהלה לא מרוצה מהמאמן. מה אתה אומר?'"],
     "choices": [
@@ -79,9 +79,17 @@
       { "label": "ההחלטות היו גרועות", "success": { "text": ["האוהדים מסכימים. ההתאחדות פחות.", "קנס בדרך?"], "effects": { "fanRep": 2, "budget": -200 } } },
       { "label": "עוקץ בהומור", "success": { "text": ["הקטע מצחיק את כולם.", "חוש הומור מנצח."], "effects": { "followers": 100, "fanRep": 2 } } }
     ] },
-  { "key": "pq_transfer_rumor", "sport": "both", "scene": "press",
+  { "key": "pq_transfer_rumor", "conditions": { "minApps": 8 }, "sport": "both", "scene": "press",
     "title": ["שמועות העברה", "מה עם העתיד?"],
-    "text": ["'מדברים על קבוצה מליגה גבוהה שמתעניינת בך. אתה נשאר?'", "'{סוכן} נראה ביציע היום. משהו מתבשל?'"],
+    "text": ["'מדברים על קבוצה מליגה גבוהה שמתעניינת בך. אתה נשאר?'", "'שמענו שסקאוטים ראו אותך היום. אתה חושב על מעבר?'"],
+    "choices": [
+      { "label": "מאושר כאן", "success": { "text": ["האוהדים של {קבוצה} שמחים.", "נאמנות."], "effects": { "fanRep": 5 } } },
+      { "label": "אף פעם אי אפשר לדעת", "success": { "text": ["כותרת שמעוררת סערה.", "השמועות גוברות."], "effects": { "followers": 120, "fanRep": -2, "news": { "category": "rumors", "text": "{שחקן} לא סוגר את הדלת לעזיבה" } } } },
+      { "label": "מתרכז במשחק הבא", "success": { "text": ["מקצועי.", "בלי דרמה."], "effects": { "coachApproval": 1 } } }
+    ] },
+  { "key": "pq_agent_seen", "conditions": { "requiresAgent": true }, "sport": "both", "scene": "press",
+    "title": ["הסוכן ביציע", "מה מתבשל?"],
+    "text": ["'{סוכן} נראה ביציע היום. משהו מתבשל?'", "'ראינו אותך מדבר עם {סוכן} אחרי המשחק. יש הצעה על השולחן?'"],
     "choices": [
       { "label": "מאושר כאן", "success": { "text": ["האוהדים של {קבוצה} שמחים.", "נאמנות."], "effects": { "fanRep": 5 } } },
       { "label": "אף פעם אי אפשר לדעת", "success": { "text": ["כותרת שמעוררת סערה.", "השמועות גוברות."], "effects": { "followers": 120, "fanRep": -2, "news": { "category": "rumors", "text": "{שחקן} לא סוגר את הדלת לעזיבה" } } } },
@@ -111,7 +119,7 @@
       { "label": "מבטיח שהוא יחזור חזק", "success": { "text": ["מילים חמות.", "אופטימיות."], "effects": { "teamMorale": 3 } } },
       { "label": "מתמקד בניתוח המשחק", "success": { "text": ["תשובה מקצועית, קצת קרה.", "בסדר."], "effects": { "coachApproval": 1 } } }
     ] },
-  { "key": "pq_social_question", "sport": "both", "scene": "phone",
+  { "key": "pq_social_question", "conditions": { "minFollowers": 400 }, "sport": "both", "scene": "phone",
     "title": ["הרשתות", "הסרטון ברשת"],
     "text": ["'הסרטון שלך מהמשחק כבר ויראלי. אתה עוקב אחרי מה שכותבים?'", "'יש לך יותר ויותר עוקבים. זה משנה לך משהו?'"],
     "choices": [
@@ -119,7 +127,7 @@
       { "label": "לא קורא תגובות", "success": { "text": ["תשובה של מקצוען.", "הראש במשחק."], "effects": { "coachApproval": 2, "confidence": 1 } } },
       { "label": "מבקש מהאוהדים לבוא ליציע", "success": { "text": ["המשחק הבא אולי יהיה מלא.", "הזמנה פתוחה."], "effects": { "fanRep": 4, "followers": 50 } } }
     ] },
-  { "key": "pq_national_dream", "sport": "both", "scene": "press",
+  { "key": "pq_national_dream", "conditions": { "minLevel": 2, "minApps": 10 }, "sport": "both", "scene": "press",
     "title": ["החלום הכחול-לבן", "נבחרת?"],
     "text": ["'עם הכושר הזה, אתה חולם על נבחרת ישראל?'", "'המאמן הלאומי היה ביציע. אתה מרגיש קרוב לזימון?'"],
     "choices": [
@@ -135,7 +143,7 @@
       { "label": "אומר שזה הכי מרגש", "success": { "text": ["מילים שהאוהדים יזכרו.", "רגש אמיתי."], "effects": { "fanRep": 5 } } },
       { "label": "מבקש שישירו לכל הקבוצה", "success": { "text": ["צניעות שהחדר אוהב.", "כולם בשיר."], "effects": { "teamMorale": 4, "fanRep": 2 } } }
     ] },
-  { "key": "pq_bench", "sport": "both", "scene": "press", "conditions": { "matchResult": ["win", "loss", "draw"] },
+  { "key": "pq_bench", "sport": "both", "scene": "press", "conditions": { "matchResult": ["win", "loss", "draw"], "minApps": 3 },
     "title": ["דקות משחק", "על התפקיד שלך"],
     "text": ["'אתה מקבל מספיק דקות? היו משחקים שישבת יותר.'", "'איך אתה מסתדר עם ההחלטות של המאמן לגבי הדקות?'"],
     "choices": [

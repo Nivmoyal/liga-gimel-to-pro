@@ -5,8 +5,9 @@ import { EVENT_POOLS, filterEvents, getAllEvents, parseEvent, parseText } from '
 import { parseClock, scoreAt } from '../services/matchEngine';
 import { gameReducer } from '../state/gameReducer';
 import type { GameAction } from '../state/gameReducer';
-import type { GameState, Position, SetupData, SportType } from '../types/game';
+import type { GameEvent, GameState, Position, SetupData, SportType } from '../types/game';
 import { CLUB_POOLS } from '../data/clubs';
+import localities from '../data/localities.json';
 import { clubPlace, findPlace, nearestStartingClubs, searchPlaces, startingClubs } from '../data/places';
 import { clubIdentity } from '../data/clubIdentity';
 import { SPONSORS } from '../data/sponsors';
@@ -304,6 +305,40 @@ describe('home town and nearby clubs', () => {
   });
 });
 
+describe('every Israeli locality', () => {
+  it('finds small places and offers the clubs near them', () => {
+    const merom = searchPlaces('מרום גולן')[0];
+    expect(merom.name).toBe('מרום גולן');
+    const golan = nearestStartingClubs('football', merom).slice(0, 3).map((c) => c.name);
+    expect(golan).toContain('הפועל צפון הגולן');
+    expect(golan).toContain('הפועל קצרין');
+    const samar = searchPlaces('קיבוץ סמר')[0];
+    expect(samar.name).toBe('סמר');
+    for (const sport of ['football', 'basketball'] as const) {
+      const near = nearestStartingClubs(sport, samar)[0];
+      expect(near.km, sport).toBeLessThan(40);
+      expect(near.name, sport).toMatch(/אילת|אילות/);
+    }
+  });
+
+  it('has a starting club within reach of every locality', () => {
+    for (const [name, lat, lon] of localities as Array<[string, number, number]>) {
+      for (const sport of ['football', 'basketball'] as const) {
+        expect(nearestStartingClubs(sport, { name, lat, lon })[0].km, `${name} ${sport}`).toBeLessThan(55);
+      }
+    }
+  });
+
+  it('builds regional lower leagues', () => {
+    const s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 9, sport: 'football', position: 'ST', home: findPlace('אילת')!, club: 'הפועל אילת', jobId: 'pizza' },
+    })!;
+    const north = s.league.teams.filter((t) => (clubPlace(t.name)?.lat ?? 0) > 32.3);
+    expect(north).toHaveLength(0);
+  });
+});
+
 describe('gradual progress', () => {
   it('starts without sponsors and with a small following', () => {
     const s = gameReducer(null, {
@@ -340,6 +375,42 @@ describe('gradual progress', () => {
     const gained = s.player.attributes.attack - before + s.player.progress.attack;
     expect(gained).toBeGreaterThan(0.05);
     expect(gained).toBeLessThan(0.45);
+  });
+});
+
+describe('situations fit the career stage', () => {
+  const textOf = (e: GameEvent) => [e.title, e.text, e.speaker, e.tip ?? '', ...e.choices.flatMap((c) => [c.label, c.success.text, c.fail?.text ?? ''])].join(' ');
+
+  it('only mention the agent when there is one', () => {
+    for (const e of getAllEvents()) {
+      if (e.trigger) continue;
+      if (/\{סוכן\}|(^|[^מ])הסוכן שלך/.test(textOf(e))) expect(e.conditions?.requiresAgent, e.id).toBe(true);
+    }
+  });
+
+  it('keep press conferences, national papers and TV out of the bottom leagues', () => {
+    const low = (e: GameEvent) => (e.conditions?.minLevel ?? e.conditions?.minDivision ?? 0) < 3 && !e.conditions?.contract?.includes('pro');
+    for (const e of getAllEvents()) {
+      if (e.trigger || e.type === 'inGame') continue;
+      if (low(e)) {
+        expect(e.speaker, e.id).not.toMatch(/ערוץ הספורט|העיתון הארצי/);
+        expect(textOf(e), e.id).not.toMatch(/מסיבת העיתונאים|מסיבת עיתונאים/);
+        if (e.type === 'postMatch') expect(e.scene, e.id).not.toBe('press');
+      }
+    }
+  });
+
+  it('gives a debutant in ליגה ג׳ a local interview, not a press conference', () => {
+    const s = gameReducer(null, {
+      type: 'NEW_GAME',
+      setup: { name: 'בדיקה', shirtNumber: 9, sport: 'football', position: 'ST', home: findPlace('נהריה')!, club: 'בית״ר נהריה', jobId: 'pizza' },
+    })!;
+    const post = filterEvents('postMatch', s.player, { matchResult: 'win', matchday: 0 });
+    expect(post.length).toBeGreaterThan(20);
+    for (const e of post) {
+      expect(e.speaker, e.id).not.toMatch(/ערוץ הספורט|העיתון הארצי|פודקאסט/);
+      expect(textOf(e), e.id).not.toMatch(/סוכן|נבחרת|ויראלי/);
+    }
   });
 });
 

@@ -1,5 +1,6 @@
 import type { LeagueState, LeagueTeam, SportType } from '../types/game';
 import { poolFor } from '../data/clubs';
+import { clubPlace, distanceKm } from '../data/places';
 import { DIVISION_STRENGTH, SEASON_MATCHDAYS } from '../data/sports';
 import { clamp, randInt, shuffle } from './playerUtils';
 
@@ -77,6 +78,27 @@ function buildSchedule(teamCount: number): { rounds: Array<Array<[number, number
   return { rounds, extra };
 }
 
+/** Divisions that are split by region in Israel (north / south leagues). */
+const REGIONAL_UP_TO: Record<SportType, number> = { football: 2, basketball: 1 };
+
+/**
+ * The other twelve clubs. Lower leagues are regional, so they are the clubs
+ * nearest to the player's club; higher leagues are national and drawn from
+ * the whole pool.
+ */
+function pickOpponents(sport: SportType, division: number, playerClub: string): string[] {
+  const pool = poolFor(sport, division).filter((name) => name !== playerClub);
+  const home = clubPlace(playerClub);
+  if (division > REGIONAL_UP_TO[sport] || !home) return shuffle(pool).slice(0, LEAGUE_SIZE - 1);
+  const byDistance = [...pool].sort((a, b) => (clubDistanceFrom(home, a) ?? 999) - (clubDistanceFrom(home, b) ?? 999));
+  return byDistance.slice(0, LEAGUE_SIZE - 1);
+}
+
+function clubDistanceFrom(home: { lat: number; lon: number }, club: string): number | null {
+  const place = clubPlace(club);
+  return place ? distanceKm(home, place) : null;
+}
+
 export function createLeague(
   sport: SportType,
   division: number,
@@ -85,7 +107,7 @@ export function createLeague(
   roundsAlreadyPlayed = 0,
 ): LeagueState {
   const baseStrength = DIVISION_STRENGTH[sport][division];
-  const opponents = shuffle(poolFor(sport, division).filter((name) => name !== playerClub)).slice(0, LEAGUE_SIZE - 1);
+  const opponents = pickOpponents(sport, division, playerClub);
   const teams: LeagueTeam[] = [
     emptyTeam(playerClub, playerClubStrength ?? baseStrength + randInt(-3, 3), true),
     ...opponents.map((name) => emptyTeam(name, baseStrength + randInt(-7, 7), false)),

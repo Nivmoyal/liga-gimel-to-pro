@@ -247,7 +247,7 @@ export function SetupScreen({ onStart, onBack }: { onStart: (setup: SetupData) =
                         <span className="block text-xs text-muted">{divisionName(sport, c.division)}</span>
                       </span>
                       <span className={`shrink-0 text-sm font-black ${c.km <= 15 ? 'text-brand' : 'text-muted'}`}>
-                        {c.km < 3 ? 'בעיר' : `${c.km} ק״מ`}
+                        {c.km < 3 && c.town === home.name ? 'בעיר שלך' : `${Math.max(1, c.km)} ק״מ`}
                       </span>
                     </button>
                   ))}

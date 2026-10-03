@@ -120,6 +120,19 @@ export interface EventConditions {
   weather?: string[];
   /** Only in derbies. */
   derby?: boolean;
+  /**
+   * League level shared by both sports: 0 = ליגה ג׳ (football only),
+   * 1 = ליגה ב׳, 2 = ליגה א׳, 3 = לאומית, 4 = ליגת העל.
+   */
+  minLevel?: number;
+  maxLevel?: number;
+  /** Career appearances needed (nobody asks a debutant about transfers). */
+  minApps?: number;
+  /** Season of the career (1 = first season). */
+  minSeason?: number;
+  minFollowers?: number;
+  /** Happens at most once in a career. */
+  once?: boolean;
 }
 
 export interface GameEvent {
@@ -408,6 +421,8 @@ export interface GameFlags {
   jobRaise: number;
   /** The first brand has shown interest (news sent once). */
   sponsorInterest?: boolean;
+  /** One-time situations already played. */
+  usedOnce?: string[];
 }
 
 export interface GameState {

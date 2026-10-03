@@ -166,7 +166,18 @@ export function isEligible(event: GameEvent, player: Player, extras: FilterExtra
   if (c.minMatchday !== undefined && (extras.matchday ?? 0) < c.minMatchday) return false;
   if (c.weather && (!extras.weather || !c.weather.includes(extras.weather))) return false;
   if (c.derby && !extras.derby) return false;
+  const level = leagueLevel(player);
+  if (c.minLevel !== undefined && level < c.minLevel) return false;
+  if (c.maxLevel !== undefined && level > c.maxLevel) return false;
+  if (c.minApps !== undefined && player.careerStats.apps < c.minApps) return false;
+  if (c.minSeason !== undefined && player.history.length + 1 < c.minSeason) return false;
+  if (c.minFollowers !== undefined && player.followers < c.minFollowers) return false;
   return true;
+}
+
+/** League level on one scale for both sports (basketball has no ליגה ג׳). */
+export function leagueLevel(player: Pick<Player, 'sport' | 'division'>): number {
+  return player.division + (player.sport === 'basketball' ? 1 : 0);
 }
 
 export function filterEvents(type: EventType, player: Player, extras: FilterExtras = {}): GameEvent[] {

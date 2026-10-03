@@ -56,7 +56,7 @@
     ]
   },
   {
-    "key": "pm_coach_mindgames", "sport": "both", "scene": "press", "speaker": "התקשורת",
+    "key": "pm_coach_mindgames", "conditions": { "minApps": 4 }, "sport": "both", "scene": "press", "speaker": "התקשורת",
     "title": ["המאמן שלהם דיבר", "מלחמה פסיכולוגית"],
     "text": ["המאמן של {יריבה} אמר בעיתון שאתה 'שחקן של ליגה נמוכה שמתלהב מעצמו'.", "בכותרת של היום: המאמן של {יריבה} מזלזל ב{קבוצה} ובך אישית."],
     "choices": [
@@ -135,7 +135,7 @@
     ]
   },
   {
-    "key": "pm_local_tv", "sport": "both", "scene": "press", "speaker": "הערוץ המקומי",
+    "key": "pm_local_tv", "conditions": { "minLevel": 2 }, "sport": "both", "scene": "press", "speaker": "הערוץ המקומי",
     "title": ["ראיון לפני המשחק", "מצלמה בחימום"],
     "text": ["כתבת של הערוץ המקומי מבקשת ממך משפט אחד לפני המשחק נגד {יריבה}.", "הערוץ המקומי משדר בשידור חי מהמגרש ומבקש ממך תחזית."],
     "choices": [
@@ -213,7 +213,7 @@
     ]
   },
   {
-    "key": "pm_owner", "sport": "both", "scene": "office", "speaker": "הבעלים",
+    "key": "pm_owner", "conditions": { "minApps": 8 }, "sport": "both", "scene": "office", "speaker": "הבעלים",
     "title": ["הבעלים בחדר", "ביקור לא צפוי"],
     "text": ["הבעלים של {קבוצה} נכנס לחדר ההלבשה ומבקש לדבר איתך לבד.", "הבעלים מחכה לך במסדרון: 'שמעתי שקבוצות מתעניינות בך.'"],
     "choices": [

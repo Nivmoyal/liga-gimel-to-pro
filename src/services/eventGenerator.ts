@@ -54,6 +54,8 @@ interface Context {
   /** For post-match outlets */
   speaker?: string;
   reach?: number;
+  /** Photo for interviews with this outlet (a local radio is not a press conference). */
+  scene?: string;
 }
 
 const CTX = contexts as unknown as Record<string, Context[]>;
@@ -138,7 +140,7 @@ function expandPostMatch(list: Template[]): GameEvent[] {
       id: `g_${t.key}__${o.id}`,
       type: 'postMatch' as const,
       sport: t.sport,
-      scene: t.scene,
+      scene: t.scene === 'press' && o.scene ? o.scene : t.scene,
       speaker: o.speaker ?? 'עיתונאי',
       title: variant(t.title, i)!,
       text: `${o.text} ${variant(t.text, i)}`.trim(),

@@ -3,14 +3,15 @@
     "id": "post_win_001",
     "type": "postMatch",
     "sport": "both",
-    "scene": "press",
+    "scene": "field",
     "speaker": "כתב הרדיו המקומי",
     "title": "ראיון אחרי ניצחון",
     "text": "כתב הרדיו המקומי עוצר אותך ביציאה מ{משטח}: '{שחקן}, ניצחון גדול על {יריבה}. מה הסוד?'",
     "conditions": {
       "matchResult": [
         "win"
-      ]
+      ],
+      "maxLevel": 2
     },
     "choices": [
       {
@@ -51,14 +52,16 @@
     "id": "post_win_002",
     "type": "postMatch",
     "sport": "both",
-    "scene": "press",
+    "scene": "phone",
     "speaker": "עיתונאי ספורט",
     "title": "שאלה על העתיד",
     "text": "עיתונאי מאתר ספורט ארצי שואל: 'אומרים שקבוצות מליגות גבוהות מסתכלות עליך. אתה נשאר ב{קבוצה}?'",
     "conditions": {
       "matchResult": [
         "win"
-      ]
+      ],
+      "minApps": 8,
+      "minLevel": 1
     },
     "choices": [
       {
@@ -193,14 +196,15 @@
     "id": "post_loss_001",
     "type": "postMatch",
     "sport": "both",
-    "scene": "press",
+    "scene": "phone",
     "speaker": "כתבת אתר ספורט",
     "title": "ראיון אחרי הפסד",
     "text": "'הפסד כואב מול {יריבה}. מה השתבש היום?'",
     "conditions": {
       "matchResult": [
         "loss"
-      ]
+      ],
+      "minLevel": 1
     },
     "choices": [
       {
@@ -337,14 +341,15 @@
     "id": "post_loss_004",
     "type": "postMatch",
     "sport": "basketball",
-    "scene": "press",
+    "scene": "phone",
     "speaker": "פודקאסט כדורסל",
     "title": "שאלה על האחוזים",
     "text": "מגיש פודקאסט כדורסל מקומי שואל: 'האחוזים מהשלוש של {קבוצה} היו היום קטסטרופה. זו בעיה של ביטחון?'",
     "conditions": {
       "matchResult": [
         "loss"
-      ]
+      ],
+      "minLevel": 2
     },
     "choices": [
       {
@@ -382,14 +387,15 @@
     "id": "post_draw_001",
     "type": "postMatch",
     "sport": "football",
-    "scene": "press",
+    "scene": "field",
     "speaker": "כתב העיתון המקומי",
     "title": "תיקו מאכזב",
     "text": "'נקודה אחת מול {יריבה}. חצי כוס מלאה או ריקה?'",
     "conditions": {
       "matchResult": [
         "draw"
-      ]
+      ],
+      "maxLevel": 2
     },
     "choices": [
       {
@@ -428,12 +434,13 @@
     "id": "post_any_001",
     "type": "postMatch",
     "sport": "both",
-    "scene": "press",
+    "scene": "phone",
     "speaker": "פודקאסט ספורט",
     "title": "הזמנה לפודקאסט",
     "text": "פודקאסט ספורט אזורי מזמין את {שחקן} לפרק מיוחד על החיים בליגות הנמוכות.",
     "conditions": {
-      "maxDivision": 2
+      "maxDivision": 2,
+      "minApps": 4
     },
     "choices": [
       {
@@ -567,7 +574,8 @@
     "title": "מצלמה של ערוץ הספורט",
     "text": "מצלמה של ערוץ הספורט הארצי מחכה לך בצד {משטח}. זה הראיון הראשון שלך בטלוויזיה בשידור חי.",
     "conditions": {
-      "minDivision": 2
+      "minLevel": 3,
+      "once": true
     },
     "choices": [
       {
@@ -622,7 +630,8 @@
     "conditions": {
       "contract": [
         "pro"
-      ]
+      ],
+      "minLevel": 3
     },
     "choices": [
       {
@@ -784,7 +793,7 @@
     "id": "post_cap_001",
     "type": "postMatch",
     "sport": "both",
-    "scene": "press",
+    "scene": "field",
     "weight": 2,
     "conditions": {
       "requiresCaptain": true,
@@ -792,7 +801,7 @@
         "loss"
       ]
     },
-    "speaker": "התקשורת",
+    "speaker": "הכתבים",
     "title": "הקפטן נשלח לתקשורת",
     "text": "אחרי ההפסד ל{יריבה} כולם מחכים לשמוע את קפטן {קבוצה}.",
     "choices": [

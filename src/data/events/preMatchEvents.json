@@ -303,7 +303,10 @@
           }
         }
       }
-    ]
+    ],
+    "conditions": {
+      "minApps": 5
+    }
   },
   {
     "id": "pre_both_008",
@@ -699,7 +702,10 @@
           }
         }
       }
-    ]
+    ],
+    "conditions": {
+      "minApps": 6
+    }
   },
   {
     "id": "pre_nat_001",

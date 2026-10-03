@@ -183,7 +183,7 @@
       { "label": "מחכה לעונה הבאה", "success": { "text": ["אין לחץ."], "effects": {} } },
       { "label": "שואל את העוקבים", "success": { "text": ["סקר ויראלי. אלפי הצבעות."], "effects": { "followers": 120 } } }
     ] },
-  { "key": "lt_viral", "sport": "both", "scene": "phone", "speaker": "הרשת",
+  { "key": "lt_viral", "conditions": { "minFollowers": 200 }, "sport": "both", "scene": "phone", "speaker": "הרשת",
     "vars": { "challenge": ["אתגר כדור על הראש", "אתגר בעיטה לפח", "ריקוד ויראלי", "אתגר זריקה מעל הגג", "אתגר 100 קפיצות"] },
     "title": ["אתגר ויראלי"], "text": ["העוקבים מתייגים אותך ב{$challenge}."],
     "choices": [
@@ -191,7 +191,7 @@
       { "label": "מאתגר את החבר׳ה מהקבוצה", "success": { "text": ["כל הקבוצה בסרטון."], "effects": { "followers": 150, "teamMorale": 3 } } },
       { "label": "מתעלם", "success": { "text": ["הפוקוס על המגרש."], "effects": {} } }
     ] },
-  { "key": "lt_influencer", "sport": "both", "scene": "phone", "speaker": "{$who}",
+  { "key": "lt_influencer", "conditions": { "minFollowers": 800 }, "sport": "both", "scene": "phone", "speaker": "{$who}",
     "vars": { "who": ["יוטיובר כדורגל", "טיקטוקרית ספורט", "פודקאסטר מצחיק", "שף מפורסם", "ראפר מהעיר"] },
     "title": ["שיתוף פעולה"], "text": ["{$who} רוצה לצלם איתך סרטון משותף."],
     "choices": [
@@ -223,7 +223,7 @@
       { "label": "פעם בשבוע בלבד", "success": { "text": ["איזון טוב."], "effects": { "budget": 250, "energy": -4, "fanRep": 1 } } },
       { "label": "מסרב", "success": { "text": ["אין זמן."], "effects": {} } }
     ] },
-  { "key": "lt_tapping_up", "sport": "both", "scene": "office", "speaker": "מנהל ספורטיבי",
+  { "key": "lt_tapping_up", "conditions": { "minApps": 10 }, "sport": "both", "scene": "office", "speaker": "מנהל ספורטיבי",
     "vars": { "level": ["ליגה גבוהה יותר", "קבוצה יריבה בעיר", "מועדון מהמרכז", "קבוצה מהצפון", "מועדון מהדרום"] },
     "title": ["פנייה לא רשמית"], "text": ["מנהל ספורטיבי של מועדון מ{$level} מזמין אותך לקפה, בלי ידיעת {קבוצה}."],
     "choices": [
@@ -303,7 +303,7 @@
       { "label": "מקשיב ומבטיח", "success": { "text": ["מילים שנשארות."], "effects": { "confidence": 2, "attributes": { "mental": 1 } } } },
       { "label": "משאיר לו הודעה מאוחר יותר", "success": { "text": ["הוא מבין שאתה עסוק."], "effects": {} } }
     ] },
-  { "key": "lt_scout_dm", "sport": "both", "scene": "phone", "speaker": "סקאוט",
+  { "key": "lt_scout_dm", "conditions": { "minApps": 8 }, "sport": "both", "scene": "phone", "speaker": "סקאוט",
     "vars": { "from": ["קבוצה בליגה הלאומית", "מועדון מקפריסין", "קבוצה מאירופה", "אקדמיה מהמרכז", "מכללה באמריקה"] },
     "title": ["הודעה מסקאוט"], "text": ["סקאוט של {$from} שולח לך הודעה: 'אנחנו עוקבים אחריך. שלח לי וידאו.'"],
     "choices": [
@@ -359,7 +359,7 @@
       { "label": "מגיע ומצטלם", "success": { "text": ["תמונה בעיתון המקומי."], "effects": { "fanRep": 3 } } },
       { "label": "מסרב", "success": { "text": ["העירייה מאוכזבת."], "effects": { "fanRep": -2 } } }
     ] },
-  { "key": "lt_documentary", "sport": "both", "scene": "press", "speaker": "במאית",
+  { "key": "lt_documentary", "conditions": { "minApps": 6, "maxLevel": 2 }, "sport": "both", "scene": "press", "speaker": "במאית",
     "vars": { "channel": ["כאן 11", "ערוץ הספורט", "יוטיוב", "פסטיבל סרטים סטודנטיאלי", "פלטפורמת סטרימינג"] },
     "title": ["סרט תיעודי"], "text": ["במאית רוצה לעקוב אחריך חודש לסרט תיעודי ל{$channel} על החיים בליגות הנמוכות."],
     "choices": [

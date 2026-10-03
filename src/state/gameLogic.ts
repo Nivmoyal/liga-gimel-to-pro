@@ -132,7 +132,9 @@ function newsNow(state: GameState, category: NewsItem['category'], text: string)
 }
 
 function markSeen(state: GameState, id: string): GameState {
-  return { ...state, seenEvents: [id, ...state.seenEvents.filter((s) => s !== id)].slice(0, SEEN_MEMORY) };
+  const event = getEventById(id);
+  const flags = event?.conditions?.once ? { ...state.flags, usedOnce: [...(state.flags.usedOnce ?? []), id] } : state.flags;
+  return { ...state, flags, seenEvents: [id, ...state.seenEvents.filter((s) => s !== id)].slice(0, SEEN_MEMORY) };
 }
 
 function withToast(state: GameState, toast: string): GameState {
@@ -688,7 +690,7 @@ export function startMatchday(state: GameState): GameState {
 
   // Injured players watch from the stands: straight to the live match.
   if (role === 'injured') return continuePreMatch({ ...next, phase: 'preMatch' });
-  const pre = pickEvent('preMatch', next.player, next.seenEvents, { matchday: next.matchday, weather: match.info?.weather, derby: match.info?.derby });
+  const pre = pickEvent('preMatch', next.player, next.seenEvents, { matchday: next.matchday, weather: match.info?.weather, derby: match.info?.derby }, next.flags.usedOnce);
   if (!pre) return continuePreMatch({ ...next, phase: 'preMatch' });
   next = { ...next, phase: 'preMatch', currentMatch: { ...match, preEventId: pre.id } };
   return next;
@@ -935,7 +937,7 @@ export function continueSummary(state: GameState): GameState {
     return { ...state, phase: 'postMatch', currentMatch: { ...match, postEventId: post.id, pendingOutcome: null } };
   }
   if (match.role === 'injured') return endMatchday(state);
-  const post = pickEvent('postMatch', state.player, state.seenEvents, { matchResult: match.result.outcome, matchday: state.matchday });
+  const post = pickEvent('postMatch', state.player, state.seenEvents, { matchResult: match.result.outcome, matchday: state.matchday }, state.flags.usedOnce);
   if (!post) return endMatchday(state);
   return { ...state, phase: 'postMatch', currentMatch: { ...match, postEventId: post.id, pendingOutcome: null } };
 }
@@ -1106,7 +1108,7 @@ function queueLifeEvent(state: GameState): GameState {
     };
   }
   if (Math.random() < 0.65) {
-    const event = pickEvent('life', player, state.seenEvents, { matchday: state.matchday });
+    const event = pickEvent('life', player, state.seenEvents, { matchday: state.matchday }, state.flags.usedOnce);
     if (event) return { ...state, pendingLifeEventId: event.id, lifeOutcome: null };
   }
   return { ...state, pendingLifeEventId: null, lifeOutcome: null };

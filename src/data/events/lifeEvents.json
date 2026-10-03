@@ -204,7 +204,9 @@
     "title": "כתבה בעיתון המקומי",
     "text": "העיתון המקומי רוצה לכתוב עליך כתבת שער: 'מ{עבודה} ל{משטח}: הסיפור של {שחקן}'.",
     "conditions": {
-      "requiresJob": true
+      "requiresJob": true,
+      "minApps": 5,
+      "maxLevel": 2
     },
     "choices": [
       {
@@ -710,7 +712,8 @@
     "title": "חסות מקומית",
     "text": "בעל הפיצרייה השכונתית מציע 400 ש״ח בתמורה לסטורי שבועי שלך עם מגש פיצה.",
     "conditions": {
-      "maxDivision": 2
+      "maxDivision": 2,
+      "minApps": 4
     },
     "choices": [
       {
@@ -1032,7 +1035,8 @@
     "title": "הזמנה לתוכנית ספורט",
     "text": "תוכנית הספורט המרכזית בטלוויזיה מזמינה אותך לאולפן לדבר על העונה של {קבוצה}.",
     "conditions": {
-      "minDivision": 2
+      "minLevel": 3,
+      "minApps": 10
     },
     "choices": [
       {

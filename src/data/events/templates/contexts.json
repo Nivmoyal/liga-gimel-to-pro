@@ -47,11 +47,13 @@
     { "id": "big_stage", "text": "המצלמות של ערוץ הספורט כבר מוצבות סביב הפרקט.", "conditions": { "contract": ["pro"] } }
   ],
   "postMatch": [
-    { "id": "radio", "speaker": "הרדיו האזורי", "text": "כתב הרדיו האזורי מושיט מיקרופון:", "reach": 1 },
-    { "id": "tv", "speaker": "ערוץ הספורט", "text": "מצלמת ערוץ הספורט מחכה בצד:", "reach": 2, "conditions": { "minDivision": 2 } },
-    { "id": "paper", "speaker": "העיתון הארצי", "text": "כתב העיתון הארצי רושם בפנקס:", "reach": 1.5 },
-    { "id": "podcast", "speaker": "פודקאסט ספורט", "text": "מגיש פודקאסט ספורט מקליט בטלפון:", "reach": 1.2 },
-    { "id": "club", "speaker": "ערוץ המועדון", "text": "ערוץ היוטיוב של המועדון מצלם לאוהדים:", "reach": 1 },
-    { "id": "fans_site", "speaker": "אתר האוהדים", "text": "עורך אתר האוהדים עוצר אותך ביציאה:", "reach": 0.8 }
+    { "id": "local_radio", "speaker": "הרדיו המקומי", "text": "כתב הרדיו המקומי עוצר אותך ליד הגדר עם טלפון מקליט:", "reach": 0.7, "scene": "field", "conditions": { "maxLevel": 2 } },
+    { "id": "local_paper", "speaker": "העיתון המקומי", "text": "הכתב של העיתון המקומי מחכה ליד היציאה עם פנקס:", "reach": 0.6, "scene": "field", "conditions": { "maxLevel": 2 } },
+    { "id": "club", "speaker": "ערוץ המועדון", "text": "ערוץ היוטיוב של המועדון מצלם לאוהדים:", "reach": 1, "scene": "locker" },
+    { "id": "fans_site", "speaker": "אתר האוהדים", "text": "עורך אתר האוהדים עוצר אותך ביציאה:", "reach": 0.8, "scene": "fans" },
+    { "id": "radio", "speaker": "הרדיו האזורי", "text": "כתב הרדיו האזורי מושיט מיקרופון:", "reach": 1, "scene": "field", "conditions": { "minLevel": 1 } },
+    { "id": "podcast", "speaker": "פודקאסט ספורט", "text": "מגיש פודקאסט ספורט מקליט בטלפון:", "reach": 1.2, "scene": "phone", "conditions": { "minLevel": 2 } },
+    { "id": "paper", "speaker": "העיתון הארצי", "text": "כתב העיתון הארצי רושם בפנקס:", "reach": 1.5, "scene": "press", "conditions": { "minLevel": 3 } },
+    { "id": "tv", "speaker": "ערוץ הספורט", "text": "במסיבת העיתונאים, מצלמת ערוץ הספורט מכוונת אליך:", "reach": 2, "scene": "press", "conditions": { "minLevel": 3 } }
   ]
 }

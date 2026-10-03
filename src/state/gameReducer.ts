@@ -34,6 +34,7 @@ export type GameAction =
   | { type: 'ACCEPT_OFFER'; offerId: string }
   | { type: 'DECLINE_OFFERS' }
   | { type: 'SEASON_CONTINUE' }
+  | { type: 'CUP_PLAY' }
   | { type: 'BUY_ITEM'; id: ShopId }
   | { type: 'CANCEL_ITEM'; id: ShopId }
   | { type: 'CLEAR_TOAST' };
@@ -51,6 +52,8 @@ export function gameReducer(state: GameState | null, action: GameAction): GameSt
       return logic.lifestyle(state, action.option);
     case 'WORK_SHIFT':
       return logic.workShift(state);
+    case 'CUP_PLAY':
+      return logic.startCupMatch(state);
     case 'BUY_ITEM':
       return logic.buyItem(state, action.id);
     case 'CANCEL_ITEM':

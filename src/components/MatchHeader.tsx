@@ -1,5 +1,6 @@
 import type { GameState } from '../types/game';
 import { NATIONAL_TEAM_NAME } from '../data/national';
+import { CUP_NAME, CUP_ROUNDS } from '../data/cup';
 import { ROLE_LABEL } from '../services/matchEngine';
 import { Crest } from './art/Crest';
 
@@ -21,7 +22,7 @@ export function MatchHeader({ state }: { state: GameState }) {
         <Crest name={away} size={18} className="shrink-0" />
       </span>
       <span className="text-[11px] text-muted">
-        {match.national ? NATIONAL_TEAM_NAME[match.national] : `מחזור ${state.matchday + 1}`} | {ROLE_LABEL[match.role]}
+        {match.national ? NATIONAL_TEAM_NAME[match.national] : match.cup !== undefined ? `${CUP_NAME} | ${CUP_ROUNDS[match.cup].name}` : `מחזור ${state.matchday + 1}`} | {ROLE_LABEL[match.role]}
         {player.isCaptain && !match.national ? ' | קפטן' : ''}
       </span>
     </span>

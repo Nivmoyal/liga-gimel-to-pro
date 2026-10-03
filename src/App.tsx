@@ -19,6 +19,7 @@ import { PostMatchInterview } from './components/PostMatchInterview';
 import { TransferWindowModal } from './components/TransferWindowModal';
 import { SeasonEndModal } from './components/SeasonEndModal';
 import { CallUpModal } from './components/CallUpModal';
+import { CupDrawModal } from './components/CupDrawModal';
 import { LiveMatchScreen } from './components/LiveMatchScreen';
 import { TitleScreen } from './components/TitleScreen';
 import { IntroStory } from './components/IntroStory';
@@ -146,6 +147,7 @@ export default function App() {
       {state.phase === 'transfer' && <TransferWindowModal state={state} dispatch={dispatch} />}
       {state.phase === 'seasonEnd' && <SeasonEndModal state={state} dispatch={dispatch} />}
       {state.phase === 'callUp' && <CallUpModal state={state} dispatch={dispatch} />}
+      {state.phase === 'cupDraw' && <CupDrawModal state={state} dispatch={dispatch} />}
 
       {state.toast && (
         <div className="pointer-events-none fixed inset-x-0 top-[max(5.5rem,env(safe-area-inset-top))] z-[60] flex justify-center px-4">

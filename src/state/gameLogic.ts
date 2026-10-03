@@ -18,6 +18,7 @@ import type {
   NationalLevel,
   NewsItem,
   ShopState,
+  CupState,
   PendingOutcome,
   Player,
   SetupData,
@@ -43,6 +44,8 @@ import {
   topDivision,
 } from '../data/sports';
 import { LIFESTYLE_OPTIONS, SOCIAL_POSTS, TRAINING_OPTIONS } from '../data/activities';
+import { CLUB_POOLS } from '../data/clubs';
+import { CUP_NAME, CUP_ROUNDS } from '../data/cup';
 import { getShopItem } from '../data/shop';
 import type { ShopId } from '../data/shop';
 import type { LifestyleId, SocialPostId, TrainingId } from '../data/activities';
@@ -905,6 +908,16 @@ function liveContext(state: GameState) {
       division: top,
     };
   }
+  if (match.cup !== undefined) {
+    const oppDivision = state.cup?.opponentDivision ?? player.division;
+    return {
+      teamName: player.club,
+      teamRoster: rosterFor(player.club, sport, player.division),
+      oppRoster: rosterFor(match.opponent, sport, oppDivision),
+      clubStrength: playerClubStrength(state),
+      division: Math.max(player.division, oppDivision),
+    };
+  }
   return {
     teamName: player.club,
     teamRoster: rosterFor(player.club, sport, player.division),
@@ -1034,6 +1047,7 @@ function finishMatch(state: GameState): GameState {
   const match = state.currentMatch;
   if (!match) return state;
   if (match.national) return finishNationalMatch(state);
+  if (match.cup !== undefined) return finishCupMatch(state);
   const { player } = state;
   const sport = player.sport;
   const clubIdx = playerClubIndex(state.league);
@@ -1126,6 +1140,12 @@ export function continueSummary(state: GameState): GameState {
     if (!post) return endNationalBreak(state);
     return { ...state, phase: 'postMatch', currentMatch: { ...match, postEventId: post.id, pendingOutcome: null } };
   }
+  if (match.cup !== undefined) {
+    const outcome = match.result.penalties === 'won' ? 'win' : match.result.penalties === 'lost' ? 'loss' : match.result.outcome;
+    const post = match.role === 'injured' ? null : pickEvent('postMatch', state.player, state.seenEvents, { ...matchExtras(state, match.opponent), matchResult: outcome }, state.flags.usedOnce);
+    if (!post) return endCupBreak(state);
+    return { ...state, phase: 'postMatch', currentMatch: { ...match, postEventId: post.id, pendingOutcome: null } };
+  }
   if (match.role === 'injured') return endMatchday(state);
   const post = pickEvent('postMatch', state.player, state.seenEvents, { ...matchExtras(state, match.opponent), matchResult: match.result.outcome }, state.flags.usedOnce);
   if (!post) return endMatchday(state);
@@ -1146,6 +1166,7 @@ export function choosePostMatch(state: GameState, index: number): GameState {
 
 export function continuePostMatch(state: GameState): GameState {
   if (state.currentMatch?.national) return endNationalBreak(state);
+  if (state.currentMatch?.cup !== undefined) return endCupBreak(state);
   return endMatchday(state);
 }
 
@@ -1247,6 +1268,9 @@ function endMatchday(state: GameState): GameState {
 
   // Agent discovery or next life event
   next = queueLifeEvent(next);
+
+  const cupDraw = cupRoundDue(next, matchday);
+  if (cupDraw) return { ...next, phase: 'cupDraw', cup: cupDraw };
 
   if (INTERNATIONAL_WINDOWS.includes(matchday)) {
     const callUp = checkCallUp(next);
@@ -1498,6 +1522,125 @@ function startNewSeason(state: GameState): GameState {
     expired.length ? makeNews('rumors', `הסתיימו חוזי החסות של ${player.name} עם ${expired.join(', ')}`, season, 0) : null,
   ]);
   return next;
+}
+
+// ------------------------------------------------------------------
+// State Cup
+// ------------------------------------------------------------------
+
+export function cupOf(state: GameState): CupState {
+  return state.cup && state.cup.season === state.season ? state.cup : { season: state.season, round: 0, out: false, results: [] };
+}
+
+/** Draws the next cup opponent when a round is played after this matchday. */
+function cupRoundDue(state: GameState, matchday: number): CupState | null {
+  const cup = cupOf(state);
+  if (cup.out || cup.round >= CUP_ROUNDS.length || CUP_ROUNDS[cup.round].afterMatchday !== matchday) return null;
+  const { player } = state;
+  const division = Math.min(topDivision(player.sport), player.division + CUP_ROUNDS[cup.round].up);
+  const met = new Set(cup.results.map((r) => r.opponent));
+  const clubs = CLUB_POOLS[player.sport][division] ?? [];
+  const pool = clubs.filter((name) => name !== player.club && !met.has(name));
+  return {
+    ...cup,
+    opponent: pickRandom(pool.length > 0 ? pool : clubs),
+    opponentDivision: division,
+    opponentStrength: DIVISION_STRENGTH[player.sport][division] + randInt(-3, 3),
+    // The club from the lower league hosts.
+    home: division > player.division ? true : Math.random() < 0.5,
+  };
+}
+
+export function startCupMatch(state: GameState): GameState {
+  const cup = state.cup;
+  if (state.phase !== 'cupDraw' || !cup?.opponent) return state;
+  const { player } = state;
+  const home = cup.home ? player.club : cup.opponent;
+  const away = cup.home ? cup.opponent : player.club;
+  const info = matchInfo(player.sport, Math.max(player.division, cup.opponentDivision ?? player.division), home, away, state.season, 100 + cup.round);
+  const role = determineRole(player);
+  const match = { ...createMatchState(cup.opponent, cup.opponentStrength ?? 50, Boolean(cup.home), role, { ...info, derby: false }), cup: cup.round };
+  const next: GameState = { ...state, currentMatch: match, toast: null };
+  if (role === 'injured') return continuePreMatch({ ...next, phase: 'preMatch' });
+  const pre = pickEvent('preMatch', player, state.seenEvents, { ...matchExtras(next, cup.opponent), weather: info.weather }, state.flags.usedOnce);
+  if (!pre) return continuePreMatch({ ...next, phase: 'preMatch' });
+  return { ...next, phase: 'preMatch', currentMatch: { ...match, preEventId: pre.id } };
+}
+
+function finishCupMatch(state: GameState): GameState {
+  const match = state.currentMatch!;
+  const cup = cupOf(state);
+  const roundIndex = match.cup!;
+  const round = CUP_ROUNDS[roundIndex];
+  const { player } = state;
+  const fin = finalizeFromTimeline(match, player);
+  let result = fin.result;
+  // Football cup draws go to penalties; the stronger side has a small edge.
+  if (result.outcome === 'draw') {
+    const edge = clamp((playerClubStrength(state) - match.opponentStrength) / 100, -0.15, 0.15) + (player.position === 'GK' && result.rating !== null ? 0.05 : 0);
+    result = { ...result, penalties: Math.random() < 0.5 + edge ? 'won' : 'lost' };
+  }
+  const advanced = result.outcome === 'win' || result.penalties === 'won';
+  const played = result.rating !== null;
+  const c = { ...player.careerStats };
+  if (played) {
+    c.apps += 1;
+    if (match.role === 'starter') c.starts += 1;
+    c.goals += fin.match.playerGoals;
+    c.assists += fin.match.playerAssists;
+    c.points += fin.match.playerPoints;
+    c.rebounds += fin.match.playerRebounds;
+    c.ratingSum += result.rating ?? 0;
+    if (result.outcome === 'win') c.wins += 1;
+    else if (result.outcome === 'draw') c.draws += 1;
+    else c.losses += 1;
+    if (result.motm) c.motm += 1;
+  }
+  const upset = advanced && (cup.opponentDivision ?? 0) > player.division;
+  const final = roundIndex === CUP_ROUNDS.length - 1;
+  const prize = advanced ? Math.round(round.prize * (1 + player.division * 0.5)) : 0;
+  let nextPlayer = applyPlayerEffects(
+    { ...player, careerStats: c, form: played ? pushForm(player, result.rating!) : player.form },
+    {
+      energy: match.role === 'starter' ? -18 : match.role === 'rotation' ? -10 : 0,
+      confidence: (played ? Math.round((result.rating! - 6.5) * 3) : 0) + (advanced ? 2 : -2),
+      fanRep: advanced ? (final ? 10 : upset ? 5 : 2) : -1,
+      followers: final && advanced ? 800 : upset ? 250 : advanced ? 60 : 0,
+      teamMorale: advanced ? 5 : -4,
+      budget: prize,
+    },
+  );
+  if (played) nextPlayer = matchExperience(nextPlayer, match.role, result.rating!);
+  const sep = player.sport === 'basketball' ? ':' : '-';
+  const score = `${result.teamScore}${sep}${result.oppScore}`;
+  const pens = result.penalties ? ` (${result.penalties === 'won' ? 'ניצחון' : 'הפסד'} בפנדלים)` : '';
+  const nextCup: CupState = {
+    ...cup,
+    round: roundIndex + 1,
+    out: !advanced,
+    opponent: undefined,
+    results: [...cup.results, { round: roundIndex, opponent: match.opponent, score, advanced, penalties: Boolean(result.penalties) }],
+  };
+  const flags = advanced && final ? { ...state.flags, cupWins: (state.flags.cupWins ?? 0) + 1 } : state.flags;
+  let next: GameState = { ...state, player: nextPlayer, currentMatch: { ...fin.match, result }, phase: 'matchSummary', cup: nextCup, flags };
+  const club = player.club;
+  const headline = !advanced
+    ? `${club} הודחה מ${CUP_NAME} ב${round.name}: ${score} מול ${match.opponent}${pens}`
+    : final
+      ? `${club} זוכה ב${CUP_NAME}! ${score} על ${match.opponent} בגמר${pens}`
+      : upset
+        ? `הפתעה ב${CUP_NAME}: ${club} מדיחה את ${match.opponent} מליגה גבוהה, ${score}${pens}`
+        : `${club} עולה ל${CUP_ROUNDS[roundIndex + 1].name} של ${CUP_NAME} אחרי ${score} על ${match.opponent}${pens}`;
+  next = addNews(next, [
+    newsNow(next, 'club', `${headline}.${played ? ` ${player.name} קיבל ציון ${result.rating!.toFixed(1)}.` : ''}`),
+    advanced && final ? newsNow(next, 'fans', `חגיגות בעיר: ${player.name} והחברים מניפים את ${CUP_NAME}`) : null,
+    prize > 0 ? newsNow(next, 'club', `${club} מחלקת לשחקנים מענק עלייה בגביע: ${formatMoney(prize)} לכל אחד`) : null,
+  ]);
+  return next;
+}
+
+function endCupBreak(state: GameState): GameState {
+  return { ...state, phase: 'dashboard', currentMatch: null };
 }
 
 // ------------------------------------------------------------------

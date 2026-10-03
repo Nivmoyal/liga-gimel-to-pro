@@ -291,6 +291,8 @@ export interface MatchResult {
   rating: number | null;
   overtime: boolean;
   motm: boolean;
+  /** Cup draws in football are decided on penalties. */
+  penalties?: 'won' | 'lost';
 }
 
 export interface PendingOutcome {
@@ -339,6 +341,8 @@ export interface MatchState {
   opponent: string;
   /** Set for national team matches (no league table impact). */
   national: NationalLevel | null;
+  /** Round index for State Cup matches (no league table impact). */
+  cup?: number;
   opponentStrength: number;
   home: boolean;
   role: MatchRole;
@@ -404,6 +408,7 @@ export type GamePhase =
   | 'transfer'
   | 'seasonEnd'
   | 'callUp'
+  | 'cupDraw'
   | 'live';
 
 export interface NationalCallUp {
@@ -432,6 +437,8 @@ export interface GameFlags {
   story?: { id: string; season: number; chapter: number };
   /** Storylines already told in this career. */
   storiesUsed?: string[];
+  /** State Cups won in this career. */
+  cupWins?: number;
 }
 
 export interface GameState {
@@ -459,6 +466,29 @@ export interface GameState {
   weekRecap?: string[];
   /** Purchases: owned for good, weekly services and gifts (season last given). */
   shop?: ShopState;
+  /** This season's State Cup run. */
+  cup?: CupState;
+}
+
+export interface CupResult {
+  round: number;
+  opponent: string;
+  score: string;
+  advanced: boolean;
+  penalties?: boolean;
+}
+
+export interface CupState {
+  season: number;
+  /** Next round to play (index into CUP_ROUNDS). */
+  round: number;
+  out: boolean;
+  /** The drawn opponent of the next round. */
+  opponent?: string;
+  opponentDivision?: number;
+  opponentStrength?: number;
+  home?: boolean;
+  results: CupResult[];
 }
 
 export interface ShopState {

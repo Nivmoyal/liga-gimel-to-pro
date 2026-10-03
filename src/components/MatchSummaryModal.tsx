@@ -52,6 +52,7 @@ export function MatchSummaryModal({ state, dispatch }: Props) {
           <div className={`text-sm font-black ${OUTCOME_COLOR[result.outcome]}`}>
             {OUTCOME_LABEL[result.outcome]}
             {result.overtime ? ' (אחרי הארכה)' : ''}
+            {result.penalties ? (result.penalties === 'won' ? ' | ניצחון בפנדלים, עולים שלב' : ' | הפסד בפנדלים, הדחה מהגביע') : ''}
           </div>
           <div className="flex items-center justify-between gap-2">
             <div className="flex w-20 flex-col items-center gap-1">

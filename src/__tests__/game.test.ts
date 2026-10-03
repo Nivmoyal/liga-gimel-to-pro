@@ -146,6 +146,7 @@ function autoplay(setup: SetupData, seasons: number) {
   let guard = 0;
   const seasonTables: number[][] = [];
   let callUps = 0;
+  let cupRounds = 0;
   while (state!.season <= seasons && guard++ < 5000) {
     const s = state!;
     switch (s.phase) {
@@ -196,6 +197,10 @@ function autoplay(setup: SetupData, seasons: number) {
         seasonTables.push(s.league.teams.map((t) => t.played));
         dispatch({ type: 'SEASON_CONTINUE' });
         break;
+      case 'cupDraw':
+        cupRounds += 1;
+        dispatch({ type: 'CUP_PLAY' });
+        break;
       case 'callUp':
         callUps += 1;
         dispatch(guard % 5 === 0 ? { type: 'DECLINE_CALLUP' } : { type: 'ACCEPT_CALLUP' });
@@ -209,7 +214,7 @@ function autoplay(setup: SetupData, seasons: number) {
     }
   }
   expect(guard).toBeLessThan(5000);
-  return { state: state!, seasonTables, callUps };
+  return { state: state!, seasonTables, callUps, cupRounds };
 }
 
 describe('save migration', () => {
@@ -532,12 +537,31 @@ describe('money', () => {
           action = s.currentMatch?.pendingOutcome ? { type: 'POST_CONTINUE' } : { type: 'POST_CHOICE', index: free(s.currentMatch?.postEventId) };
           break;
         default:
-          action = s.phase === 'transfer' ? { type: 'DECLINE_OFFERS' } : { type: 'ACCEPT_CALLUP' };
+          action = s.phase === 'transfer' ? { type: 'DECLINE_OFFERS' } : s.phase === 'cupDraw' ? { type: 'CUP_PLAY' } : { type: 'ACCEPT_CALLUP' };
       }
       s = gameReducer(s, action)!;
       expect(s.player.budget, `${action.type} in ${s.phase}`).toBeGreaterThanOrEqual(before);
     }
     expect(s.matchday).toBe(4);
+  });
+});
+
+describe('State Cup', () => {
+  it('plays knockout rounds against stronger clubs and ends with a winner or an exit', () => {
+    let rounds = 0;
+    let wins = 0;
+    let higher = 0;
+    for (let run = 0; run < 6; run++) {
+      const { state, cupRounds } = autoplay({ name: 'דני כהן', shirtNumber: 9, sport: run % 2 ? 'basketball' : 'football', position: run % 2 ? 'PG' : 'ST', home: findPlace('קצרין')!, club: run % 2 ? 'הפועל ערד' : 'הפועל קצרין', jobId: 'pizza' }, 2);
+      rounds += cupRounds;
+      wins += state.flags.cupWins ?? 0;
+      higher += state.news.filter((n) => n.text.includes('גביע המדינה')).length;
+      expect(state.cup?.results.every((r, i, all) => i === all.length - 1 || r.advanced)).toBe(true);
+    }
+    // Every season starts with a first round, and some teams get further.
+    expect(rounds).toBeGreaterThanOrEqual(12);
+    expect(higher).toBeGreaterThan(0);
+    expect(wins).toBeGreaterThanOrEqual(0);
   });
 });
 
@@ -549,7 +573,7 @@ describe('shop', () => {
     })!;
 
   it('charges once for owned items and keeps them', () => {
-    let s = { ...fresh(), player: { ...fresh().player, budget: 20000 } };
+    let s: GameState = { ...fresh(), player: { ...fresh().player, budget: 20000 } };
     s = buyItem(s, 'car');
     expect(s.player.budget).toBe(11000);
     expect(shopOf(s).owned).toContain('car');
@@ -558,7 +582,7 @@ describe('shop', () => {
   });
 
   it('charges weekly services after each matchday and stops them when money runs out', () => {
-    let s = { ...fresh(), pendingLifeEventId: null, player: { ...fresh().player, budget: 1000 } };
+    let s: GameState = { ...fresh(), pendingLifeEventId: null, player: { ...fresh().player, budget: 1000 } };
     s = buyItem(s, 'skills_coach');
     expect(s.player.budget).toBe(1000);
     expect(shopOf(s).weekly).toContain('skills_coach');
